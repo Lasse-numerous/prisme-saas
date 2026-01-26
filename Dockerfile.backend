@@ -1,0 +1,30 @@
+FROM python:3.13-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    postgresql-client \
+
+    && rm -rf /var/lib/apt/lists/*
+
+# Install uv
+RUN pip install --no-cache-dir uv
+
+# Copy and install from correct directory
+COPY packages/backend/pyproject.toml packages/backend/
+COPY packages/backend/uv.lock* packages/backend/
+WORKDIR /app/packages/backend
+RUN uv pip install --system -e .
+WORKDIR /app
+
+# Copy application code
+COPY packages/backend ./packages/backend
+COPY specs ./specs
+
+ENV PYTHONPATH=/app/packages/backend/src
+
+EXPOSE 8000
+
+CMD ["uvicorn", "prisme_api.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

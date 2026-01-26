@@ -1,0 +1,99 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: prisme_api_backend
+    volumes:
+      - ./packages/backend:/app/packages/backend:cached
+      - ./specs:/app/specs:ro
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/prisme_api?ssl=disable
+
+      - ENVIRONMENT=development
+      - PYTHONPATH=/app/packages/backend/src
+    depends_on:
+      db:
+        condition: service_healthy
+
+    command: uvicorn prisme_api.main:app --host 0.0.0.0 --port 8000 --reload
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "8000:8000"
+    networks:
+      - default
+      - prism_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prisme_api-backend.rule=Host(`prisme-api.localhost`) && (PathPrefix(`/api`) || PathPrefix(`/graphql`) || PathPrefix(`/health`))"
+      - "traefik.http.services.prisme_api-backend.loadbalancer.server.port=8000"
+      - "traefik.docker.network=prism_proxy_network"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: prisme_api_frontend
+    volumes:
+      - ./packages/frontend/src:/app:cached
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://prisme-api.localhost/api
+      - VITE_GRAPHQL_URL=http://prisme-api.localhost/graphql
+      - VITE_GRAPHQL_WS_URL=ws://prisme-api.localhost/graphql/ws
+    depends_on:
+      - backend
+    command: npm run dev -- --host 0.0.0.0 --port 5173
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:5173"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5173:5173"
+    networks:
+      - default
+      - prism_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prisme_api-frontend.rule=Host(`prisme-api.localhost`) && PathPrefix(`/`)"
+      - "traefik.http.routers.prisme_api-frontend.priority=1"
+      - "traefik.http.services.prisme_api-frontend.loadbalancer.server.port=5173"
+      - "traefik.docker.network=prism_proxy_network"
+
+  db:
+    image: postgres:16-alpine
+    container_name: prisme_api_db
+    environment:
+      - POSTGRES_DB=prisme_api
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - prisme_api_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    # Uncomment to expose database port to host (for debugging with external tools)
+    # ports:
+    #   - "${DB_PORT:-5432}:5432"
+
+
+
+
+
+volumes:
+  prisme_api_postgres_data:
+
+
+networks:
+  default:
+    name: prisme_api_network
+  prism_proxy:
+    external: true
+    name: prism_proxy_network
