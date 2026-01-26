@@ -1,0 +1,84 @@
+# Production Docker Compose
+# Variables are read from .env file
+
+services:
+  backend:
+    image: ${DOCKER_REGISTRY}/${GITHUB_REPOSITORY}-backend:${IMAGE_TAG}
+    container_name: ${PROJECT_NAME}_backend
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - SECRET_KEY=${SECRET_KEY}
+      - ENVIRONMENT=${ENVIRONMENT}
+      - BASE_DOMAIN=${DOMAIN}
+      - REDIS_URL=${REDIS_URL}
+      - PYTHONPATH=/app/packages/backend/src
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    ports:
+      - "127.0.0.1:8000:8000"
+    networks:
+      - app
+
+  frontend:
+    image: ${DOCKER_REGISTRY}/${GITHUB_REPOSITORY}-frontend:${IMAGE_TAG}
+    container_name: ${PROJECT_NAME}_frontend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3000/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    ports:
+      - "127.0.0.1:3000:3000"
+    networks:
+      - app
+
+  db:
+    image: postgres:16-alpine
+    container_name: ${PROJECT_NAME}_db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - /mnt/data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app
+
+  redis:
+    image: redis:7-alpine
+    container_name: ${PROJECT_NAME}_redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app
+
+volumes:
+  redis_data:
+
+networks:
+  app:
+    name: ${PROJECT_NAME}_network
