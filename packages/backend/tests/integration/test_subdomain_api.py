@@ -52,7 +52,7 @@ class TestSubdomainAPI:
     async def test_create_subdomain(self, client):
         """Test POST /subdomains"""
         payload = {
-            "name": "testvalueapi",
+            "name": "test_value_api",
         }
 
         response = await client.post("/api/subdomains", json=payload)

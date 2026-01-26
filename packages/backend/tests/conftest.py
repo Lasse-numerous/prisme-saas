@@ -9,19 +9,14 @@ import asyncio
 import os
 from collections.abc import AsyncGenerator, Generator
 
-# Set test environment variables before any app imports
+# Set test database URL before any app imports
 os.environ["DATABASE_URL"] = "sqlite+aiosqlite:///:memory:"
-os.environ["PRISME_ADMIN_API_KEY"] = "test_api_key_for_testing"
-
-# Test API key constant for use in tests
-TEST_API_KEY = "test_api_key_for_testing"
 
 import pytest
 import pytest_asyncio
+from madewithprisme.models.base import Base
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import StaticPool
-
-from prisme_api.models.base import Base
 
 # Use sqlite for tests
 TEST_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
@@ -68,33 +63,10 @@ async def db(engine) -> AsyncGenerator[AsyncSession]:
 
 @pytest_asyncio.fixture
 async def client(db):
-    """Create test client with database session and API key auth."""
+    """Create test client with database session."""
     from httpx import ASGITransport, AsyncClient
-
-    from prisme_api.database import get_db
-    from prisme_api.main import app
-
-    async def override_get_db():
-        yield db
-
-    app.dependency_overrides[get_db] = override_get_db
-
-    transport = ASGITransport(app=app)
-    # Include API key in default headers for authenticated requests
-    headers = {"Authorization": f"Bearer {TEST_API_KEY}"}
-    async with AsyncClient(transport=transport, base_url="http://test", headers=headers) as client:
-        yield client
-
-    app.dependency_overrides.clear()
-
-
-@pytest_asyncio.fixture
-async def unauthenticated_client(db):
-    """Create test client without API key auth."""
-    from httpx import ASGITransport, AsyncClient
-
-    from prisme_api.database import get_db
-    from prisme_api.main import app
+    from madewithprisme.database import get_db
+    from madewithprisme.main import app
 
     async def override_get_db():
         yield db

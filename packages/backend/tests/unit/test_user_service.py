@@ -6,10 +6,9 @@
 from __future__ import annotations
 
 import pytest_asyncio
+from madewithprisme.schemas.user import UserCreate, UserUpdate
+from madewithprisme.services.user import UserService
 from tests.factories.user import UserFactory
-
-from prisme_api.schemas.user import UserCreate, UserUpdate
-from prisme_api.services.user import UserService
 
 
 class TestUserService:

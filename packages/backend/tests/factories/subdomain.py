@@ -7,8 +7,7 @@ from __future__ import annotations
 
 import factory
 from factory.alchemy import SQLAlchemyModelFactory
-
-from prisme_api.models.subdomain import Subdomain
+from madewithprisme.models.subdomain import Subdomain
 
 
 class SubdomainFactory(SQLAlchemyModelFactory):
@@ -19,11 +18,9 @@ class SubdomainFactory(SQLAlchemyModelFactory):
         # Disable auto-commit for async SQLAlchemy - tests call await db.commit()
         sqlalchemy_session_persistence = None
 
-    # Valid subdomain name pattern: alphanumeric with hyphens
-    name = factory.Sequence(lambda n: f"subdomain{n}")
+    name = factory.Sequence(lambda n: f"name_{n}")
     owner_id = factory.Faker("random_int", min=1, max=100)
-    # Valid IPv4 address
-    ip_address = factory.Faker("ipv4")
+    ip_address = factory.Faker("pystr", max_chars=45)
     status = factory.Faker(
         "random_element", elements=["reserved", "active", "suspended", "released"]
     )

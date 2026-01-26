@@ -11,18 +11,17 @@ import asyncio
 import os
 from logging.config import fileConfig
 
-from sqlalchemy import pool
-from sqlalchemy.ext.asyncio import async_engine_from_config
-
-from alembic import context
-
 # Import all models to ensure they're registered with Base.metadata
-from prisme_api.models import (
+from madewithprisme.models import (
     APIKey,  # noqa: F401
     Base,
     Subdomain,  # noqa: F401
     User,  # noqa: F401
 )
+from sqlalchemy import pool
+from sqlalchemy.ext.asyncio import async_engine_from_config
+
+from alembic import context
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

@@ -6,10 +6,9 @@
 from __future__ import annotations
 
 import pytest_asyncio
+from madewithprisme.schemas.subdomain import SubdomainCreate, SubdomainUpdate
+from madewithprisme.services.subdomain import SubdomainService
 from tests.factories.subdomain import SubdomainFactory
-
-from prisme_api.schemas.subdomain import SubdomainCreate, SubdomainUpdate
-from prisme_api.services.subdomain import SubdomainService
 
 
 class TestSubdomainService:
@@ -24,7 +23,7 @@ class TestSubdomainService:
     async def test_create(self, service, db):
         """Test creating a subdomain."""
         data = SubdomainCreate(
-            name="testvaluecreate",
+            name="test_value_create",
         )
 
         result = await service.create(data=data)

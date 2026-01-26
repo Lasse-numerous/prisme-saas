@@ -57,7 +57,7 @@ export interface PaginationParams {
 
 // ============================================
 // User Types
-// ============================================/** User account for prisme.dev */
+// ============================================/** User account for madewithpris.me */
 export interface User {
   id: number;
   /** User email address */
@@ -228,7 +228,7 @@ export interface APIKeyFilter {
 // ============================================
 // Subdomain Types
 // ============================================export type SubdomainStatus = 'reserved' | 'active' | 'suspended' | 'released';
-/** A managed prisme.dev subdomain */
+/** A managed madewithpris.me subdomain */
 export interface Subdomain {
   id: number;
   /** Subdomain name (e.g., 'myapp') */

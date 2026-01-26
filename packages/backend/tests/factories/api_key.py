@@ -7,8 +7,7 @@ from __future__ import annotations
 
 import factory
 from factory.alchemy import SQLAlchemyModelFactory
-
-from prisme_api.models.api_key import APIKey
+from madewithprisme.models.api_key import APIKey
 
 
 class APIKeyFactory(SQLAlchemyModelFactory):

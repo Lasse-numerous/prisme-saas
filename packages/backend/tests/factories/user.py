@@ -7,8 +7,7 @@ from __future__ import annotations
 
 import factory
 from factory.alchemy import SQLAlchemyModelFactory
-
-from prisme_api.models.user import User
+from madewithprisme.models.user import User
 
 
 class UserFactory(SQLAlchemyModelFactory):

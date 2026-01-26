@@ -30,10 +30,10 @@ import { useAuth } from './contexts/AuthContext';
 // PRISM:PROTECTED:END
 
 /** App name and description for branding */
-const APP_NAME = "Prisme.dev API";
-const APP_INITIAL = "P";
+const APP_NAME = "MadeWithPris.me API";
+const APP_INITIAL = "M";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const _APP_DESCRIPTION = "Managed subdomain service for prisme.dev";
+const _APP_DESCRIPTION = "Managed subdomain service for madewithpris.me";
 
 /** Shared layout with sidebar navigation */
 function Layout({ children }: { children?: React.ReactNode }): ReactElement {
