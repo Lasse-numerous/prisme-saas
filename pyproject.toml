@@ -1,0 +1,159 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "prisme-saas"
+version = "0.1.0"
+description = "Prisme.dev - Managed subdomain service built with Prism"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.13"
+authors = [
+    { name = "Prism Contributors" }
+]
+keywords = ["prisme", "subdomain", "dns", "managed-hosting"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+    "fastapi>=0.109.0",
+    "uvicorn[standard]>=0.27.0",
+    "sqlalchemy[asyncio]>=2.0.25",
+    "asyncpg>=0.29.0",
+    "alembic>=1.13.1",
+    "aiosqlite>=0.20.0",
+    "pydantic>=2.6.0",
+    "pydantic-settings>=2.1.0",
+    "strawberry-graphql[fastapi]>=0.219.0",
+    "fastmcp>=0.1.0",
+    "PyJWT>=2.9.0",
+    "passlib[bcrypt]>=1.7.4",
+    "python-multipart>=0.0.9",
+    "httpx>=0.27.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.24",
+    "pytest-cov>=6.0",
+    "pytest-timeout>=2.3",
+    "factory-boy>=3.3",
+    "ruff>=0.9",
+    "mypy>=1.14",
+    "pre-commit>=4.0",
+    "python-semantic-release>=9.0",
+]
+docs = [
+    "mkdocs>=1.6",
+    "mkdocs-material>=9.5",
+    "mkdocstrings[python]>=0.24",
+    "mkdocs-minify-plugin>=0.8",
+    "pymdown-extensions>=10.0",
+    "pygments>=2.17",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["packages/backend/src/prisme_api"]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+src = ["packages/backend/src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # pyflakes
+    "I",      # isort
+    "UP",     # pyupgrade
+    "B",      # flake8-bugbear
+    "SIM",    # flake8-simplify
+    "RUF",    # ruff-specific
+    # Note: TCH (type-checking imports) omitted - generated code doesn't support it well
+]
+ignore = [
+    "E501",   # line too long (handled by formatter)
+    "W293",   # blank line contains whitespace (false positive in template strings)
+    "RUF001", # ambiguous unicode (intentional in regex patterns)
+    "RUF012", # mutable class attributes without ClassVar (acceptable pattern)
+    "SIM105", # contextlib.suppress vs try-except-pass (readability preference)
+    "B008",   # Function call in default argument (standard FastAPI pattern with Depends)
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["prisme_api"]
+
+[tool.ruff.lint.per-file-ignores]
+# Auto-generated code - relax strict checks
+"packages/backend/src/prisme_api/**/_generated/**/*.py" = [
+    "F821",  # Undefined names (lazy imports for strawberry)
+]
+# Test conftest sets env vars before imports (required for test configuration)
+"packages/backend/tests/conftest.py" = ["E402"]
+
+[tool.mypy]
+python_version = "3.13"
+# Relaxed strict mode - enable incrementally
+strict = false
+warn_return_any = false
+warn_unused_ignores = false
+disallow_untyped_defs = false
+check_untyped_defs = true
+plugins = ["pydantic.mypy"]
+# Ignore missing type stubs
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+check_untyped_defs = false
+
+[tool.pytest.ini_options]
+testpaths = ["packages/backend/tests"]
+pythonpath = ["packages/backend/src", "packages/backend"]
+asyncio_mode = "auto"
+addopts = [
+    "-ra",
+    "-q",
+    "--strict-markers",
+    "--strict-config",
+    "-m",
+    "not slow and not e2e and not docker",
+]
+markers = [
+    "slow: marks tests as slow (run with: pytest -m slow)",
+    "e2e: marks end-to-end tests (run with: pytest -m e2e)",
+    "docker: marks tests requiring Docker (run with: pytest -m docker)",
+]
+timeout = 120
+
+[tool.coverage.run]
+source = ["packages/backend/src/prisme_api"]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+]
+
+[tool.semantic_release]
+version_toml = ["pyproject.toml:project.version"]
+branch = "main"
+commit_message = "chore(release): {version}"
+
+[tool.semantic_release.changelog]
+changelog_file = "CHANGELOG.md"
+
+[tool.semantic_release.commit_parser_options]
+allowed_tags = ["build", "chore", "ci", "docs", "feat", "fix", "perf", "refactor", "style", "test"]
+minor_tags = ["feat"]
+patch_tags = ["fix", "perf"]

@@ -1,0 +1,49 @@
+--- generated+++ user@@ -1,32 +1,36 @@ """Service for Subdomain.
+
+-✅ YOUR CODE - Safe to modify, will not be overwritten.
+-This file was generated once by Prism and is yours to customize.
++Custom service logic for managing subdomains with Hetzner DNS integration.
+ """
+
+ from __future__ import annotations
+
++from sqlalchemy import select
++
+ from ._generated.subdomain_base import SubdomainServiceBase
++from prisme_api.models.subdomain import Subdomain
+
+
+ class SubdomainService(SubdomainServiceBase):
+     """Custom service logic for Subdomain.
+
+-    Add your custom methods and override base methods here.
++    Extends the base service with:
++    - Lookup by name (unique field)
++    - Subdomain validation
+     """
+
+-    # Example: Override a lifecycle hook
+-    # async def before_create(self, data: SubdomainCreate) -> None:
+-    #     # Custom validation or transformation
+-    #     pass
++    async def get_by_name(self, name: str) -> Subdomain | None:
++        """Get a subdomain by its unique name.
+
+-    # Example: Add a custom method
+-    # async def find_by_email(self, email: str) -> Subdomain | None:
+-    #     query = select(self.model).where(self.model.email == email)
+-    #     result = await self.db.execute(query)
+-    #     return result.scalar_one_or_none()
++        Args:
++            name: The subdomain name (e.g., 'myapp')
+
+-    pass
++        Returns:
++            The Subdomain object if found, None otherwise
++        """
++        query = select(self.model).where(self.model.name == name.lower())
++        result = await self.db.execute(query)
++        return result.scalar_one_or_none()
+
+
+ __all__ = ["SubdomainService"]

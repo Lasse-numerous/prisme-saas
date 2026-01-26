@@ -1,0 +1,31 @@
+{
+  "last_updated": "2026-01-26T17:05:43.545156",
+  "overrides": [
+    {
+      "path": "packages/backend/src/prisme_api/services/subdomain.py",
+      "strategy": "generate_once",
+      "timestamp": "2026-01-26T17:05:43.517851",
+      "generated_hash": "016540a92fa7559150db284329aabc6378e80abff53d11dabf09ef37710d5d08",
+      "user_hash": "e39f12f255617f38cb4eccdb8c63e6e0984d26bf9b2b4681bee24e44852c5ce2",
+      "reviewed": false,
+      "diff_summary": {
+        "lines_added": 3,
+        "lines_removed": 0,
+        "lines_changed": 20
+      }
+    },
+    {
+      "path": "packages/backend/src/prisme_api/api/rest/subdomain.py",
+      "strategy": "generate_once",
+      "timestamp": "2026-01-26T17:05:43.545140",
+      "generated_hash": "d24cbccb9f97b79688822c128d6a4590ecc599a0fa4beaaa7a83bb51793088ee",
+      "user_hash": "731622637810a79e4e62500b84b5319826d8d82363814ed1a337614fd8a1f3e8",
+      "reviewed": false,
+      "diff_summary": {
+        "lines_added": 0,
+        "lines_removed": 0,
+        "lines_changed": 259
+      }
+    }
+  ]
+}
