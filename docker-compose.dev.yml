@@ -40,7 +40,7 @@ services:
       dockerfile: Dockerfile.frontend
     container_name: madewithprisme_frontend
     volumes:
-      - ./packages/frontend/src:/app:cached
+      - ./packages/frontend:/app:cached
       - /app/node_modules
     environment:
       - VITE_API_URL=http://madewithpris.me.localhost/api

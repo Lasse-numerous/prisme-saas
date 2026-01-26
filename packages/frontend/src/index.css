@@ -1,16 +1,164 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-bg: 248 250 252;
+    --color-surface: 255 255 255;
+    --color-text: 15 23 42;
+    --color-text-muted: 100 116 139;
+    --color-border: 226 232 240;
+    --color-accent: 14 165 233;
+  }
+
+  html {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-nordic-50 text-nordic-900 min-h-screen;
+  }
+}
+
+@layer components {
+  /* Nordic Button Styles */
+  .btn {
+    @apply inline-flex items-center justify-center px-4 py-2.5 text-sm font-medium
+           rounded-nordic transition-all duration-200 ease-out
+           focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply btn bg-nordic-900 text-white hover:bg-nordic-800
+           focus:ring-nordic-500 shadow-nordic hover:shadow-nordic-md;
+  }
+
+  .btn-secondary {
+    @apply btn bg-white text-nordic-700 border border-nordic-200
+           hover:bg-nordic-50 hover:border-nordic-300
+           focus:ring-nordic-500 shadow-nordic;
+  }
+
+  .btn-ghost {
+    @apply btn text-nordic-600 hover:bg-nordic-100 hover:text-nordic-900;
+  }
+
+  .btn-danger {
+    @apply btn bg-red-600 text-white hover:bg-red-700
+           focus:ring-red-500 shadow-nordic;
+  }
+
+  /* Nordic Card */
+  .card {
+    @apply bg-white rounded-nordic border border-nordic-200 shadow-nordic;
+  }
+
+  .card-hover {
+    @apply card hover:shadow-nordic-md hover:border-nordic-300 transition-all duration-200;
+  }
+
+  /* Nordic Input */
+  .input {
+    @apply w-full px-3.5 py-2.5 text-sm bg-white border border-nordic-200 rounded-nordic
+           placeholder:text-nordic-400
+           focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent-500
+           transition-colors duration-200;
+  }
+
+  .input-error {
+    @apply input border-red-300 focus:ring-red-500/20 focus:border-red-500;
+  }
+
+  /* Nordic Select */
+  .select {
+    @apply input appearance-none pr-10;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    background-size: 1.25rem 1.25rem;
+  }
+
+  /* Nordic Checkbox */
+  .checkbox {
+    @apply w-4 h-4 rounded border-nordic-300 text-accent-600
+           focus:ring-2 focus:ring-accent-500/20 focus:ring-offset-0
+           transition-colors duration-200;
+  }
+
+  /* Nordic Table */
+  .table {
+    @apply w-full text-sm text-left;
+  }
+
+  .table thead {
+    @apply bg-nordic-50 border-b border-nordic-200;
+  }
+
+  .table th {
+    @apply px-4 py-3 font-medium text-nordic-600 uppercase tracking-wider text-xs;
+  }
+
+  .table td {
+    @apply px-4 py-4 border-b border-nordic-100;
+  }
+
+  .table tbody tr {
+    @apply hover:bg-nordic-50/50 transition-colors duration-150;
+  }
+
+  /* Nordic Label */
+  .label {
+    @apply block text-sm font-medium text-nordic-700 mb-1.5;
+  }
+
+  /* Nordic Badge */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-default {
+    @apply badge bg-nordic-100 text-nordic-700;
+  }
+
+  .badge-success {
+    @apply badge bg-green-100 text-green-800;
+  }
+
+  .badge-warning {
+    @apply badge bg-amber-100 text-amber-800;
+  }
+
+  .badge-error {
+    @apply badge bg-red-100 text-red-800;
+  }
+
+  /* Page Layout */
+  .page-container {
+    @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8;
+  }
+
+  .page-header {
+    @apply mb-8;
+  }
+
+  .page-title {
+    @apply text-2xl font-semibold text-nordic-900 tracking-tight;
+  }
+
+  .page-subtitle {
+    @apply mt-1 text-nordic-500;
+  }
+}
+
+/* Smooth transitions */
 * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+  @apply transition-colors duration-150;
 }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  line-height: 1.6;
-  color: #333;
-  background-color: #f5f5f5;
-}
-
-#root {
-  min-height: 100vh;
+/* Focus visible for accessibility */
+:focus-visible {
+  @apply outline-none ring-2 ring-accent-500 ring-offset-2;
 }

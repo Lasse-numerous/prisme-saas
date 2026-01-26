@@ -3,11 +3,11 @@ FROM node:22-alpine
 WORKDIR /app
 
 # Install dependencies
-COPY packages/frontend/src/package*.json ./
+COPY packages/frontend/package*.json ./
 RUN npm install
 
 # Copy application code
-COPY packages/frontend/src ./
+COPY packages/frontend ./
 
 EXPOSE 5173
 
