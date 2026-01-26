@@ -12,7 +12,7 @@ Include your API key in the `Authorization` header:
 
 ```bash
 curl -H "Authorization: Bearer prisme_live_sk_xxxxx" \
-     https://api.prisme.dev/subdomains
+     https://api.madewithpris.me/subdomains
 ```
 
 ### Key Security

@@ -1,16 +1,16 @@
 # Getting Started
 
-This guide walks you through setting up your first prisme.dev subdomain.
+This guide walks you through setting up your first madewithpris.me subdomain.
 
 ## Prerequisites
 
-- A [prisme.dev](https://prisme.dev) account and API key
+- A [madewithpris.me](https://madewithpris.me) account and API key
 - [Prism CLI](https://github.com/Lasse-numerous/prisme) installed (`pip install prisme`)
 - A Hetzner Cloud account (for server deployment)
 
 ## Step 1: Authenticate
 
-Store your prisme.dev API key:
+Store your madewithpris.me API key:
 
 ```bash
 prism auth login
@@ -31,7 +31,7 @@ Choose a subdomain name (3-63 characters, alphanumeric and hyphens):
 prism subdomain claim myapp
 ```
 
-This reserves `myapp.prisme.dev` for your use.
+This reserves `myapp.madewithpris.me` for your use.
 
 ## Step 3: Deploy Your App
 
@@ -63,7 +63,7 @@ Check DNS propagation status:
 prism subdomain status myapp
 ```
 
-Your app should now be accessible at `https://myapp.prisme.dev`!
+Your app should now be accessible at `https://myapp.madewithpris.me`!
 
 ## Next Steps
 

@@ -1,10 +1,10 @@
-"""Prisme.dev API - Managed subdomain service specification.
+"""MadeWithPris.me API - Managed subdomain service specification.
 
-This spec defines the data models for the prisme.dev managed subdomain service.
+This spec defines the data models for the madewithpris.me managed subdomain service.
 Models include:
 - User: Account management with email verification and MFA
 - APIKey: User-specific API keys for authentication
-- Subdomain: Managed *.prisme.dev subdomains
+- Subdomain: Managed *.madewithpris.me subdomains
 """
 
 from prism import (
@@ -21,10 +21,10 @@ from prism import (
 from prism.spec import AuthConfig
 
 spec = StackSpec(
-    name="prisme-api",
-    title="Prisme.dev API",
+    name="madewithprisme",
+    title="MadeWithPris.me API",
     version="1.0.0",
-    description="Managed subdomain service for prisme.dev",
+    description="Managed subdomain service for madewithpris.me",
     database=DatabaseConfig(
         dialect="postgresql",
         async_driver=True,
@@ -43,7 +43,7 @@ spec = StackSpec(
         ModelSpec(
             name="User",
             table_name="users",
-            description="User account for prisme.dev",
+            description="User account for madewithpris.me",
             timestamps=True,
             soft_delete=True,
             fields=[
@@ -205,7 +205,7 @@ spec = StackSpec(
         ModelSpec(
             name="Subdomain",
             table_name="subdomains",
-            description="A managed prisme.dev subdomain",
+            description="A managed madewithpris.me subdomain",
             timestamps=True,
             soft_delete=False,
             fields=[

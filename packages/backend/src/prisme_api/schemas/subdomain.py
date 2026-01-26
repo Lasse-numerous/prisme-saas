@@ -14,7 +14,7 @@ from .base import SchemaBase
 
 
 class SubdomainBase(SchemaBase):
-    """A managed prisme.dev subdomain"""
+    """A managed madewithpris.me subdomain"""
 
     name: str = Field(
         min_length=3,

@@ -10,7 +10,7 @@ import strawberry
 from strawberry.types import Info
 
 
-@strawberry.type(description="User account for prisme.dev")
+@strawberry.type(description="User account for madewithpris.me")
 class UserType:
     """GraphQL type for User."""
 

@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 
 class Subdomain(Base, TimestampMixin):
-    """A managed prisme.dev subdomain"""
+    """A managed madewithpris.me subdomain"""
 
     __tablename__ = "subdomains"
 

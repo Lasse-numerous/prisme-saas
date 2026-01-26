@@ -3,14 +3,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.backend
-    container_name: prisme_api_backend
+    container_name: madewithprisme_backend
     volumes:
       - ./packages/backend:/app/packages/backend:cached
       - ./specs:/app/specs:ro
     environment:
-      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/prisme_api?ssl=disable
-
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/madewithprisme?ssl=disable
       - ENVIRONMENT=development
+      - BASE_DOMAIN=madewithpris.me
       - PYTHONPATH=/app/packages/backend/src
     depends_on:
       db:
@@ -28,23 +28,24 @@ services:
       - default
       - prism_proxy
     labels:
+      # Local dev: madewithpris.me.localhost | Production: api.madewithpris.me
       - "traefik.enable=true"
-      - "traefik.http.routers.prisme_api-backend.rule=Host(`prisme-api.localhost`) && (PathPrefix(`/api`) || PathPrefix(`/graphql`) || PathPrefix(`/health`))"
-      - "traefik.http.services.prisme_api-backend.loadbalancer.server.port=8000"
+      - "traefik.http.routers.madewithprisme-backend.rule=Host(`madewithpris.me.localhost`) && (PathPrefix(`/api`) || PathPrefix(`/graphql`) || PathPrefix(`/health`))"
+      - "traefik.http.services.madewithprisme-backend.loadbalancer.server.port=8000"
       - "traefik.docker.network=prism_proxy_network"
 
   frontend:
     build:
       context: .
       dockerfile: Dockerfile.frontend
-    container_name: prisme_api_frontend
+    container_name: madewithprisme_frontend
     volumes:
       - ./packages/frontend/src:/app:cached
       - /app/node_modules
     environment:
-      - VITE_API_URL=http://prisme-api.localhost/api
-      - VITE_GRAPHQL_URL=http://prisme-api.localhost/graphql
-      - VITE_GRAPHQL_WS_URL=ws://prisme-api.localhost/graphql/ws
+      - VITE_API_URL=http://madewithpris.me.localhost/api
+      - VITE_GRAPHQL_URL=http://madewithpris.me.localhost/graphql
+      - VITE_GRAPHQL_WS_URL=ws://madewithpris.me.localhost/graphql/ws
     depends_on:
       - backend
     command: npm run dev -- --host 0.0.0.0 --port 5173
@@ -59,21 +60,22 @@ services:
       - default
       - prism_proxy
     labels:
+      # Local dev: madewithpris.me.localhost | Production: madewithpris.me
       - "traefik.enable=true"
-      - "traefik.http.routers.prisme_api-frontend.rule=Host(`prisme-api.localhost`) && PathPrefix(`/`)"
-      - "traefik.http.routers.prisme_api-frontend.priority=1"
-      - "traefik.http.services.prisme_api-frontend.loadbalancer.server.port=5173"
+      - "traefik.http.routers.madewithprisme-frontend.rule=Host(`madewithpris.me.localhost`) && PathPrefix(`/`)"
+      - "traefik.http.routers.madewithprisme-frontend.priority=1"
+      - "traefik.http.services.madewithprisme-frontend.loadbalancer.server.port=5173"
       - "traefik.docker.network=prism_proxy_network"
 
   db:
     image: postgres:16-alpine
-    container_name: prisme_api_db
+    container_name: madewithprisme_db
     environment:
-      - POSTGRES_DB=prisme_api
+      - POSTGRES_DB=madewithprisme
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     volumes:
-      - prisme_api_postgres_data:/var/lib/postgresql/data
+      - madewithprisme_postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -88,12 +90,12 @@ services:
 
 
 volumes:
-  prisme_api_postgres_data:
+  madewithprisme_postgres_data:
 
 
 networks:
   default:
-    name: prisme_api_network
+    name: madewithprisme_network
   prism_proxy:
     external: true
     name: prism_proxy_network

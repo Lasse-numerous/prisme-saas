@@ -10,7 +10,7 @@ import strawberry
 from strawberry.types import Info
 
 
-@strawberry.type(description="A managed prisme.dev subdomain")
+@strawberry.type(description="A managed madewithpris.me subdomain")
 class SubdomainType:
     """GraphQL type for Subdomain."""
 

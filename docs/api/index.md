@@ -1,11 +1,11 @@
 # API Reference
 
-The prisme.dev REST API allows you to manage subdomains programmatically.
+The madewithpris.me REST API allows you to manage subdomains programmatically.
 
 ## Base URL
 
 ```
-https://api.prisme.dev
+https://api.madewithpris.me
 ```
 
 ## Authentication

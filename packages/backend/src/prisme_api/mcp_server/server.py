@@ -26,8 +26,8 @@ from .user_tools import register_user_tools
 
 # Create the MCP server
 mcp = FastMCP(
-    name="Prisme.dev API",
-    instructions="Managed subdomain service for prisme.dev",
+    name="MadeWithPris.me API",
+    instructions="Managed subdomain service for madewithpris.me",
 )
 
 

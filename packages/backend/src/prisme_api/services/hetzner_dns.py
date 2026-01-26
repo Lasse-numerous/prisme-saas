@@ -33,7 +33,7 @@ class HetznerDNSService:
     """Service for managing Hetzner DNS records."""
 
     BASE_URL = "https://dns.hetzner.com/api/v1"
-    DOMAIN = "prisme.dev"
+    DOMAIN = "madewithpris.me"  # Production domain on GoDaddy
 
     def __init__(
         self,
@@ -45,7 +45,7 @@ class HetznerDNSService:
         Args:
             api_token: Hetzner DNS API token. If not provided, reads from
                 HETZNER_DNS_API_TOKEN environment variable.
-            zone_id: Hetzner DNS zone ID for prisme.dev. If not provided,
+            zone_id: Hetzner DNS zone ID for madewithpris.me. If not provided,
                 reads from HETZNER_DNS_ZONE_ID environment variable.
 
         Raises:

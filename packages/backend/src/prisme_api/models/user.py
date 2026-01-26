@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 
 class User(Base, TimestampMixin, SoftDeleteMixin):
-    """User account for prisme.dev"""
+    """User account for madewithpris.me"""
 
     __tablename__ = "users"
 

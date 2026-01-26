@@ -15,7 +15,7 @@ prism auth login
 prism subdomain claim myapp
 prism subdomain activate myapp --ip 1.2.3.4
 
-# Done! Visit https://myapp.prisme.dev
+# Done! Visit https://myapp.madewithpris.me
 ```
 
 ## Detailed Steps
@@ -31,7 +31,7 @@ uv pip install prisme
 
 ### 2. Get an API Key
 
-1. Visit [prisme.dev](https://prisme.dev)
+1. Visit [madewithpris.me](https://madewithpris.me)
 2. Create an account or log in
 3. Generate an API key from your dashboard
 
@@ -61,7 +61,7 @@ Subdomain names must be:
 prism subdomain activate myapp --ip 1.2.3.4
 ```
 
-This creates a DNS A record pointing `myapp.prisme.dev` to your server.
+This creates a DNS A record pointing `myapp.madewithpris.me` to your server.
 
 ### 6. Configure Traefik
 
@@ -75,4 +75,4 @@ Check propagation status:
 prism subdomain status myapp
 ```
 
-Once propagated, visit `https://myapp.prisme.dev`!
+Once propagated, visit `https://myapp.madewithpris.me`!

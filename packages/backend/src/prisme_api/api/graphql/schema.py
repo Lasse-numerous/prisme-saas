@@ -13,9 +13,9 @@ from ._generated.mutations import APIKeyMutations, SubdomainMutations, UserMutat
 from ._generated.queries import APIKeyQueries, SubdomainQueries, UserQueries
 
 
-@strawberry.type(description="Prisme.dev API - GraphQL API")
+@strawberry.type(description="MadeWithPris.me API - GraphQL API")
 class Query(UserQueries, APIKeyQueries, SubdomainQueries):
-    """Managed subdomain service for prisme.dev"""
+    """Managed subdomain service for madewithpris.me"""
 
     pass
 

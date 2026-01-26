@@ -1,16 +1,16 @@
-# Prisme.dev
+# MadeWithPris.me
 
 **Managed subdomain service for Prism projects.**
 
-Get a production-ready subdomain at `https://yourapp.prisme.dev` in minutes.
+Get a production-ready subdomain at `https://yourapp.madewithpris.me` in minutes.
 
-## What is Prisme.dev?
+## What is MadeWithPris.me?
 
-Prisme.dev provides managed `*.prisme.dev` subdomains with automatic HTTPS for Prism projects deployed to Hetzner. This is **not** managed hosting—you bring your own Hetzner server, and Prisme provides DNS + SSL convenience.
+MadeWithPris.me provides managed `*.madewithpris.me` subdomains with automatic HTTPS for Prism projects deployed to Hetzner. This is **not** managed hosting—you bring your own Hetzner server, and MadeWithPris.me provides DNS + SSL convenience.
 
 ## Key Features
 
-- **Quick Setup**: Spin up `https://myapp.prisme.dev` in under 5 minutes
+- **Quick Setup**: Spin up `https://myapp.madewithpris.me` in under 5 minutes
 - **Automatic DNS**: We manage the DNS A records pointing to your server
 - **Let's Encrypt SSL**: Your Traefik instance handles certificate provisioning
 - **CLI Integration**: Seamless `prism subdomain` commands
@@ -19,11 +19,11 @@ Prisme.dev provides managed `*.prisme.dev` subdomains with automatic HTTPS for P
 
 ```mermaid
 flowchart LR
-    CLI[prism CLI] -->|1. claim| API[Prisme API]
-    API -->|2. DNS record| DNS[Hetzner DNS]
+    CLI[prism CLI] -->|1. claim| API[MadeWithPris.me API]
+    API -->|2. DNS record| DNS[GoDaddy DNS]
     CLI -->|3. deploy| Server[Your Hetzner Server]
     Server -->|4. SSL cert| LE[Let's Encrypt]
-    Browser[Users] -->|myapp.prisme.dev| Server
+    Browser[Users] -->|myapp.madewithpris.me| Server
 ```
 
 1. **Claim** a subdomain with `prism subdomain claim myapp`
@@ -44,7 +44,7 @@ prism subdomain claim myapp
 prism deploy apply
 prism subdomain activate myapp --ip $(prism deploy ip)
 
-# Your app is now live at https://myapp.prisme.dev!
+# Your app is now live at https://myapp.madewithpris.me!
 ```
 
 ## Documentation

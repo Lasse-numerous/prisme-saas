@@ -13,7 +13,7 @@ from .base import SchemaBase
 
 
 class UserBase(SchemaBase):
-    """User account for prisme.dev"""
+    """User account for madewithpris.me"""
 
     email: str = Field(max_length=255, description="User email address")
     password_hash: str | None = Field(

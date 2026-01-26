@@ -1,6 +1,6 @@
 # Subdomains API
 
-Manage your prisme.dev subdomains.
+Manage your madewithpris.me subdomains.
 
 ## List Subdomains
 

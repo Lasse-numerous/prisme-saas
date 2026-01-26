@@ -24,14 +24,22 @@ class Settings(BaseSettings):
     secret_key: str = "change-me-in-production"
     debug: bool = False
 
+    # Domain configuration
+    base_domain: str = "madewithpris.me"  # Production domain on GoDaddy
+    environment: str = "development"
+
     # CORS - include common dev server ports and Docker hostnames
     cors_origins: list[str] = [
         "http://localhost:5173",
         "http://localhost:5174",
         "http://localhost:5175",
         "http://localhost:3000",
-        "http://prisme-saas.localhost",
-        "http://prisme-saas.localhost:80",
+        "http://madewithpris.me",
+        "https://madewithpris.me",
+        "http://api.madewithpris.me",
+        "https://api.madewithpris.me",
+        "http://madewithpris.me.localhost",
+        "http://madewithpris.me.localhost:80",
     ]
 
 

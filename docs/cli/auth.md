@@ -1,10 +1,10 @@
 # prism auth
 
-Authentication commands for prisme.dev.
+Authentication commands for madewithpris.me.
 
 ## prism auth login
 
-Authenticate with your prisme.dev API key.
+Authenticate with your madewithpris.me API key.
 
 ```bash
 prism auth login
@@ -15,7 +15,7 @@ prism auth login
 When run without arguments, prompts for your API key:
 
 ```
-Enter your prisme.dev API key: prisme_live_sk_xxxxx
+Enter your madewithpris.me API key: prisme_live_sk_xxxxx
 Verifying API key...
 ✓ Successfully authenticated!
 ```
@@ -53,7 +53,7 @@ prism auth status
 ### Output (Authenticated)
 
 ```
-✓ Authenticated with prisme.dev
+✓ Authenticated with madewithpris.me
   API Key: prisme_live_sk_xxx...xxx (last 4 chars shown)
   Config: ~/.config/prism/credentials.json
 ```

@@ -1,6 +1,10 @@
-# prisme-saas
+# MadeWithPris.me
 
-Prisme Saas - Built with Prism
+**Managed subdomain service for Prism projects** - Get `https://yourapp.madewithpris.me` in minutes.
+
+## Overview
+
+MadeWithPris.me provides managed `*.madewithpris.me` subdomains with automatic HTTPS for Prism projects deployed to Hetzner. You bring your own server, we handle the DNS.
 
 ## Quick Start
 
@@ -9,62 +13,46 @@ Prisme Saas - Built with Prism
 uv sync
 
 # Start database
-docker-compose -f docker/docker-compose.yml up -d db
+docker-compose -f docker-compose.dev.yml up -d db
 
 # Generate code from spec
 prism generate
 
 # Run the API
-uvicorn prisme_saas.main:app --reload
+uvicorn prisme_api.main:app --reload
+```
+
+## Development
+
+```bash
+# Run with Docker (recommended)
+docker-compose -f docker-compose.dev.yml up
+
+# Access at http://madewithpris.me.localhost (requires Traefik proxy)
+# Or directly at http://localhost:8000
 ```
 
 ## API Documentation
 
 - OpenAPI docs: http://localhost:8000/docs
-- GraphQL: http://localhost:8000/graphql
+- Health check: http://localhost:8000/health
 
-## MCP (Model Context Protocol) Integration
+## Production
 
-This project includes an MCP server that allows AI assistants to interact with your data.
+- **Domain**: madewithpris.me (GoDaddy)
+- **API**: api.madewithpris.me
+- **Subdomains**: *.madewithpris.me
 
-### Running the MCP Server
+## Architecture
 
-```bash
-# SSE mode (HTTP server for development)
-python -c "from prisme_saas.mcp_server.server import run_server; run_server(transport='sse')"
-
-# stdio mode (for Claude Desktop)
-python -c "from prisme_saas.mcp_server.server import run_server; run_server()"
 ```
-
-### Cursor IDE
-
-Add to your Cursor settings (`.cursor/mcp.json`):
-
-```json
-{
-  "mcpServers": {
-    "prisme_saas": {
-      "url": "http://localhost:8765/sse"
-    }
-  }
-}
+┌─────────────────┐     ┌──────────────────┐     ┌─────────────┐
+│  prism CLI      │────▶│ MadeWithPris.me  │────▶│ GoDaddy DNS │
+│                 │     │      API         │     │             │
+└─────────────────┘     └──────────────────┘     └─────────────┘
+                                │
+                                ▼
+                        ┌──────────────┐
+                        │  PostgreSQL  │
+                        └──────────────┘
 ```
-
-### Claude Desktop
-
-Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
-
-```json
-{
-  "mcpServers": {
-    "prisme_saas": {
-      "command": "uv",
-      "args": ["run", "python", "-c", "from prisme_saas.mcp_server.server import run_server; run_server()"],
-      "cwd": "{{ absolute_path_to_project }}"
-    }
-  }
-}
-```
-
-Replace `{{ absolute_path_to_project }}` with the actual path to your project.

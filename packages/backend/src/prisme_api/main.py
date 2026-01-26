@@ -49,8 +49,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
 
 
 app = FastAPI(
-    title="Prisme.dev API",
-    description="Managed subdomain service for prisme.dev",
+    title="MadeWithPris.me API",
+    description="Managed subdomain service for madewithpris.me - claim your *.madewithpris.me subdomain",
     version="0.1.0",
     lifespan=lifespan,
 )

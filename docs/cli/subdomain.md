@@ -1,6 +1,6 @@
 # prism subdomain
 
-Manage prisme.dev subdomains.
+Manage madewithpris.me subdomains.
 
 ## prism subdomain list
 
@@ -47,7 +47,7 @@ prism subdomain claim myapp
 
 ```
 ✓ Subdomain 'myapp' claimed successfully!
-  URL: https://myapp.prisme.dev (not yet active)
+  URL: https://myapp.madewithpris.me (not yet active)
 
 To activate, run:
   prism subdomain activate myapp --ip <your-server-ip>
@@ -93,7 +93,7 @@ prism subdomain activate myapp --ip 1.2.3.4
 
 ```
 ✓ Subdomain 'myapp' activated!
-  URL: https://myapp.prisme.dev
+  URL: https://myapp.madewithpris.me
   IP: 1.2.3.4
 
 DNS propagation may take a few minutes.
@@ -125,7 +125,7 @@ prism subdomain status myapp
 ### Output (Propagated)
 
 ```
-Subdomain: myapp.prisme.dev
+Subdomain: myapp.madewithpris.me
 Status: active
 IP Address: 1.2.3.4
 
@@ -140,7 +140,7 @@ DNS Propagation:
 ### Output (Propagating)
 
 ```
-Subdomain: myapp.prisme.dev
+Subdomain: myapp.madewithpris.me
 Status: active
 IP Address: 1.2.3.4
 
@@ -177,7 +177,7 @@ prism subdomain release myapp
 ### Output
 
 ```
-⚠️  This will permanently release 'myapp.prisme.dev'
+⚠️  This will permanently release 'myapp.madewithpris.me'
    The DNS record will be deleted and the subdomain will become available for others.
 
 Are you sure? [y/N]: y
