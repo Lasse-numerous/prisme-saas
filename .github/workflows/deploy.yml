@@ -159,13 +159,8 @@ jobs:
             MCP_ADMIN_API_KEY=${MCP_ADMIN_API_KEY}
             SECRETS_EOF
 
-            # Merge secrets into .env (create if not exists)
-            touch .env
-            # Remove old secret values and append new ones
-            grep -v -E '^(DOCKER_REGISTRY|GITHUB_REPOSITORY|PROJECT_NAME|ENVIRONMENT|IMAGE_TAG|DOMAIN|POSTGRES_|DATABASE_URL|REDIS_URL|SECRET_KEY|AUTHENTIK_|MCP_ADMIN_API_KEY)=' .env > .env.tmp || true
-            cat .env.secrets >> .env.tmp
-            mv .env.tmp .env
-            rm .env.secrets
+            # Create clean .env from secrets (overwrite to prevent duplicate accumulation)
+            mv .env.secrets .env
 
             # Debug: verify env vars are set (show presence, not values)
             echo "=== Environment Check ==="
@@ -343,12 +338,8 @@ jobs:
             MCP_ADMIN_API_KEY=${MCP_ADMIN_API_KEY}
             SECRETS_EOF
 
-            # Merge secrets into .env
-            touch .env
-            grep -v -E '^(DOCKER_REGISTRY|GITHUB_REPOSITORY|PROJECT_NAME|ENVIRONMENT|IMAGE_TAG|DOMAIN|POSTGRES_|DATABASE_URL|REDIS_URL|SECRET_KEY|AUTHENTIK_|MCP_ADMIN_API_KEY)=' .env > .env.tmp || true
-            cat .env.secrets >> .env.tmp
-            mv .env.tmp .env
-            rm .env.secrets
+            # Create clean .env from secrets (overwrite to prevent duplicate accumulation)
+            mv .env.secrets .env
 
             # Pull new images
             docker compose -f docker-compose.prod.yml pull
