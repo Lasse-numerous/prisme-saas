@@ -69,9 +69,9 @@ variable "deploy_production" {
 # =============================================================================
 
 variable "staging_server_type" {
-  description = "Server type for staging (cx11, cx21, cx31, cx41, cx51)"
+  description = "Server type for staging (cpx11, cpx21, cx31, cx41, cx51)"
   type        = string
-  default     = "cx11"
+  default     = "cpx11"
 }
 
 variable "staging_volume_size" {
@@ -85,9 +85,9 @@ variable "staging_volume_size" {
 # =============================================================================
 
 variable "production_server_type" {
-  description = "Server type for production (cx21, cx31, cx41, cx51)"
+  description = "Server type for production (cpx21, cx31, cx41, cx51)"
   type        = string
-  default     = "cx21"
+  default     = "cpx21"
 }
 
 variable "production_volume_size" {

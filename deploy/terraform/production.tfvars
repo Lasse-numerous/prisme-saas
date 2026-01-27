@@ -8,7 +8,7 @@ deploy_staging    = false
 deploy_production = true
 
 # Server configuration
-production_server_type = "cx21"
+production_server_type = "cpx21"
 production_volume_size = 20
 production_floating_ip = true
 
