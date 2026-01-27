@@ -170,8 +170,8 @@ jobs:
             # Pull new images
             docker compose -f docker-compose.staging.yml pull
 
-            # Deploy
-            docker compose -f docker-compose.staging.yml up -d --remove-orphans
+            # Deploy (force recreate to clear any unhealthy container state)
+            docker compose -f docker-compose.staging.yml up -d --remove-orphans --force-recreate
 
             # Wait for services to be ready
             sleep 20
@@ -324,8 +324,8 @@ jobs:
             # Pull new images
             docker compose -f docker-compose.prod.yml pull
 
-            # Deploy
-            docker compose -f docker-compose.prod.yml up -d --remove-orphans
+            # Deploy (force recreate to clear any unhealthy container state)
+            docker compose -f docker-compose.prod.yml up -d --remove-orphans --force-recreate
 
             # Wait for services to be ready
             sleep 15
