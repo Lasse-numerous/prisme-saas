@@ -90,6 +90,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Copy compose files to Staging
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.STAGING_HOST }}
+          username: deploy
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "docker-compose.staging.yml"
+          target: ${{ env.APP_DIR }}
+
       - name: Deploy to Staging Server
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -99,18 +108,23 @@ jobs:
           script: |
             cd ${{ env.APP_DIR }}
 
-            # Pull new images
-            docker compose -f docker-compose.prod.yml pull
+            # Pull new images (staging includes Authentik)
+            docker compose -f docker-compose.staging.yml pull
 
             # Update IMAGE_TAG in .env
             sed -i 's/^IMAGE_TAG=.*/IMAGE_TAG=${{ github.sha }}/' .env
 
             # Deploy with zero-downtime
-            docker compose -f docker-compose.prod.yml up -d --remove-orphans
+            docker compose -f docker-compose.staging.yml up -d --remove-orphans
 
-            # Wait for health check
-            sleep 10
-            curl -f http://localhost/health || exit 1
+            # Wait for services to be ready
+            sleep 15
+
+            # Run database migrations
+            docker compose -f docker-compose.staging.yml exec -T backend alembic upgrade head
+
+            # Health check
+            curl -f http://localhost:8000/health || exit 1
 
             # Cleanup old images
             docker image prune -f
@@ -122,7 +136,7 @@ jobs:
           username: deploy
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            curl -f http://localhost/health || exit 1
+            curl -f http://localhost:8000/health || exit 1
             echo "Staging deployment verified successfully"
 
   deploy-production:
@@ -136,6 +150,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Copy compose files to Production
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: deploy
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "docker-compose.prod.yml"
+          target: ${{ env.APP_DIR }}
 
       - name: Deploy to Production Server
         uses: appleboy/ssh-action@v1.0.3
@@ -158,9 +181,14 @@ jobs:
             # Deploy with zero-downtime
             docker compose -f docker-compose.prod.yml up -d --remove-orphans
 
-            # Wait for health check
-            sleep 10
-            curl -f http://localhost/health || exit 1
+            # Wait for services to be ready
+            sleep 15
+
+            # Run database migrations
+            docker compose -f docker-compose.prod.yml exec -T backend alembic upgrade head
+
+            # Health check
+            curl -f http://localhost:8000/health || exit 1
 
             # Cleanup old images
             docker image prune -f
@@ -172,5 +200,5 @@ jobs:
           username: deploy
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            curl -f http://localhost/health || exit 1
+            curl -f http://localhost:8000/health || exit 1
             echo "Production deployment verified successfully"
