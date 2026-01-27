@@ -49,32 +49,37 @@ class TestSubdomainAPI:
         assert response.status_code == 404
 
     @pytest.mark.asyncio
-    async def test_create_subdomain(self, client):
-        """Test POST /subdomains"""
+    async def test_claim_subdomain(self, client):
+        """Test POST /subdomains/claim"""
         payload = {
-            "name": "test_value_api",
+            "name": "testclaim",  # Valid subdomain name (no underscores)
         }
 
-        response = await client.post("/api/subdomains", json=payload)
+        response = await client.post("/api/subdomains/claim", json=payload)
 
         assert response.status_code == 201
         data = response.json()
         assert "id" in data
+        assert data["name"] == "testclaim"
+        assert data["status"] == "reserved"
 
     @pytest.mark.asyncio
-    async def test_update_subdomain(self, client, db):
-        """Test PATCH /subdomains/{id}"""
+    async def test_activate_subdomain(self, client, db):
+        """Test POST /subdomains/{name}/activate"""
         SubdomainFactory._meta.sqlalchemy_session = db
-        instance = SubdomainFactory.create()
+        instance = SubdomainFactory.create(status="reserved")
         await db.commit()
 
         payload = {
-            "owner_id": 1,
+            "ip_address": "192.168.1.1",
         }
 
-        response = await client.patch(f"/api/subdomains/{instance.id}", json=payload)
+        response = await client.post(f"/api/subdomains/{instance.name}/activate", json=payload)
 
         assert response.status_code == 200
+        data = response.json()
+        assert data["status"] == "active"
+        assert data["ip_address"] == "192.168.1.1"
 
     @pytest.mark.asyncio
     async def test_delete_subdomain(self, client, db):
