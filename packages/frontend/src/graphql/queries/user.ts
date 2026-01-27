@@ -19,6 +19,10 @@ export const GetUserQuery = graphql(`
       mfaSecret
       subdomainLimit
       isAdmin
+      authentikId
+      username
+      roles
+      isActive
       createdAt
       updatedAt
       deletedAt
@@ -47,6 +51,10 @@ export const ListUsersQuery = graphql(`
           mfaSecret
           subdomainLimit
           isAdmin
+          authentikId
+          username
+          roles
+          isActive
           createdAt
           updatedAt
           deletedAt

@@ -19,6 +19,10 @@ export const CreateUserMutation = graphql(`
       mfaSecret
       subdomainLimit
       isAdmin
+      authentikId
+      username
+      roles
+      isActive
       createdAt
       updatedAt
       deletedAt
@@ -45,6 +49,10 @@ export const UpdateUserMutation = graphql(`
       mfaSecret
       subdomainLimit
       isAdmin
+      authentikId
+      username
+      roles
+      isActive
       createdAt
       updatedAt
       deletedAt

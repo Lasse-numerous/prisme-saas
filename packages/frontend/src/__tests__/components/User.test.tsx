@@ -22,6 +22,10 @@ const mockUser: User = {
   mfaSecret: 'test string',
   subdomainLimit: 42,
   isAdmin: true,
+  authentikId: 'test string',
+  username: 'test string',
+  roles: { test: 'value' },
+  isActive: true,
   createdAt: '2024-01-01T00:00:00Z',
   updatedAt: '2024-01-01T00:00:00Z',
 };

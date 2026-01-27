@@ -76,6 +76,14 @@ export interface User {
   subdomainLimit: number;
   /** Whether user has admin privileges */
   isAdmin: boolean;
+  /** Authentik user ID for SSO */
+  authentikId?: string | null;
+  /** Username (optional, email is primary) */
+  username?: string | null;
+  /** User roles for authorization */
+  roles: Record<string, unknown>;
+  /** Whether user account is active */
+  isActive: boolean;
   /** Related APIKey entities */
   apiKeys?: APIKey[];
   /** Related Subdomain entities */
@@ -103,6 +111,14 @@ export interface UserCreate {
   subdomainLimit: number;
   /** Whether user has admin privileges */
   isAdmin: boolean;
+  /** Authentik user ID for SSO */
+  authentikId?: string | null;
+  /** Username (optional, email is primary) */
+  username?: string | null;
+  /** User roles for authorization */
+  roles: Record<string, unknown>;
+  /** Whether user account is active */
+  isActive: boolean;
   /** IDs of related APIKey entities */
   apiKeysIds?: number[];
   /** IDs of related Subdomain entities */
@@ -127,6 +143,14 @@ export interface UserUpdate {
   subdomainLimit?: number;
   /** Whether user has admin privileges */
   isAdmin?: boolean;
+  /** Authentik user ID for SSO */
+  authentikId?: string;
+  /** Username (optional, email is primary) */
+  username?: string;
+  /** User roles for authorization */
+  roles?: Record<string, unknown>;
+  /** Whether user account is active */
+  isActive?: boolean;
   /** IDs of related APIKey entities */
   apiKeysIds?: number[];
   /** IDs of related Subdomain entities */
@@ -144,6 +168,10 @@ export interface UserFilter {
   mfaSecret?: string;
   subdomainLimit?: number;
   isAdmin?: boolean;
+  authentikId?: string;
+  username?: string;
+  roles?: Record<string, unknown>;
+  isActive?: boolean;
   createdAfter?: string;
   createdBefore?: string;
   includeDeleted?: boolean;

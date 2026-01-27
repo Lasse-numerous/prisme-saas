@@ -8,8 +8,10 @@
 
 import { useEffect, type ReactElement } from 'react';
 import { createBrowserRouter, Link, NavLink, Outlet, useLocation } from 'react-router-dom';
+import { ThemeToggle } from './ui/ThemeToggle';
 import { Login } from './pages/Login';
 import { Signup } from './pages/Signup';
+import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import UsersListPage from './pages/users';
 import UserDetailPage from './pages/users/[id]';
 import UserCreatePage from './pages/users/new';
@@ -52,22 +54,24 @@ function Layout({ children }: { children?: React.ReactNode }): ReactElement {
   }, [location]);
 
   return (
-    <div className="min-h-screen bg-nordic-50">
+    <div className="min-h-screen bg-surface">
       {/* Sidebar */}
-      <aside className="fixed inset-y-0 left-0 w-64 bg-white border-r border-nordic-200">
+      <aside className="fixed inset-y-0 left-0 w-64 bg-surface-elevated border-r border-border">
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="flex items-center h-16 px-6 border-b border-nordic-100">
+          <div className="flex items-center h-16 px-6 border-b border-border-light">
             <Link to="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-nordic-900 rounded-nordic flex items-center justify-center">
+              <div className="w-8 h-8 bg-primary rounded-md flex items-center justify-center">
                 <span className="text-white font-bold text-sm">{APP_INITIAL}</span>
               </div>
-              <span className="font-semibold text-nordic-900">{APP_NAME}</span>
+              <span className="font-semibold text-foreground">{APP_NAME}</span>
             </Link>
           </div>
 
           {/* Navigation */}
           <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+          {/* Admin-only: Users management */}
+          {user?.roles?.includes('admin') && (
           <NavLink
             to="/users"
             className={({ isActive }) =>
@@ -79,10 +83,13 @@ function Layout({ children }: { children?: React.ReactNode }): ReactElement {
             }
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
             </svg>
             Users
           </NavLink>
+          )}
+          {/* Protected: API Keys (any authenticated user) */}
+          {isAuthenticated && (
           <NavLink
             to="/api-keys"
             className={({ isActive }) =>
@@ -94,10 +101,13 @@ function Layout({ children }: { children?: React.ReactNode }): ReactElement {
             }
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
             </svg>
-            APIKeys
+            API Keys
           </NavLink>
+          )}
+          {/* Protected: Subdomains (any authenticated user) */}
+          {isAuthenticated && (
           <NavLink
             to="/subdomains"
             className={({ isActive }) =>
@@ -109,40 +119,80 @@ function Layout({ children }: { children?: React.ReactNode }): ReactElement {
             }
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
             </svg>
             Subdomains
           </NavLink>
+          )}
+          {/* Unauthenticated: Login/Signup */}
+          {!isAuthenticated && (
+          <>
+          <NavLink
+            to="/login"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-3 py-2 rounded-nordic text-sm font-medium transition-colors ${
+                isActive
+                  ? 'bg-nordic-100 text-nordic-900'
+                  : 'text-nordic-600 hover:bg-nordic-50 hover:text-nordic-900'
+              }`
+            }
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+            </svg>
+            Login
+          </NavLink>
+          <NavLink
+            to="/signup"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-3 py-2 rounded-nordic text-sm font-medium transition-colors ${
+                isActive
+                  ? 'bg-nordic-100 text-nordic-900'
+                  : 'text-nordic-600 hover:bg-nordic-50 hover:text-nordic-900'
+              }`
+            }
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+            </svg>
+            Sign Up
+          </NavLink>
+          </>
+          )}
             {/* PRISM:PROTECTED:START - Custom Nav Links */}
             {/* Add your custom navigation links here */}
             {/* PRISM:PROTECTED:END */}
           </nav>
 
           {/* Footer */}
-          <div className="p-4 border-t border-nordic-100">
+          <div className="p-4 border-t border-border-light">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs text-muted">Theme</span>
+              <ThemeToggle size="sm" />
+            </div>
 {isAuthenticated && user ? (
               <div className="space-y-2">
                 <div className="flex items-center gap-2 px-2">
-                  <div className="w-8 h-8 bg-nordic-100 rounded-full flex items-center justify-center">
-                    <span className="text-nordic-600 text-xs font-medium">
+                  <div className="w-8 h-8 bg-surface-sunken rounded-full flex items-center justify-center">
+                    <span className="text-muted-foreground text-xs font-medium">
                       {((user as any).email || (user as any).username || "U").charAt(0).toUpperCase()}
                     </span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium text-nordic-900 truncate">
+                    <p className="text-xs font-medium text-foreground truncate">
                       {(user as any).email || (user as any).username || "User"}
                     </p>
                   </div>
                 </div>
                 <button
                   onClick={logout}
-                  className="w-full px-2 py-1.5 text-xs text-nordic-600 hover:text-nordic-900 hover:bg-nordic-50 rounded transition-colors text-left"
+                  className="w-full px-2 py-1.5 text-xs text-muted hover:text-foreground hover:bg-surface-sunken rounded transition-colors text-left"
                 >
                   Sign out
                 </button>
               </div>
             ) : (
-              <p className="text-xs text-nordic-400 text-center">
+              <p className="text-xs text-muted text-center">
                 Built with Prism
               </p>
             )}          </div>
@@ -163,13 +213,13 @@ function HomePage(): ReactElement {
   return (
     <div className="page-container">
       <div className="card p-8 text-center">
-        <div className="w-16 h-16 bg-nordic-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg className="w-8 h-8 text-nordic-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="w-16 h-16 bg-surface-sunken rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg className="w-8 h-8 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
         </div>
-        <h1 className="text-2xl font-semibold text-nordic-900 mb-2">Welcome</h1>
-        <p className="text-nordic-500 max-w-md mx-auto">
+        <h1 className="text-2xl font-semibold text-foreground mb-2">Welcome</h1>
+        <p className="text-muted max-w-md mx-auto">
           Select an item from the sidebar to get started.
         </p>
       </div>
@@ -183,20 +233,23 @@ export const router = createBrowserRouter([
     element: <Layout />,
     children: [
       { path: '/', element: <HomePage /> },
-  { path: '/login', element: <Login /> },
-  { path: '/signup', element: <Signup /> },
-  { path: '/users', element: <UsersListPage /> },
-  { path: '/users/:id', element: <UserDetailPage /> },
-  { path: '/users/new', element: <UserCreatePage /> },
-  { path: '/users/:id/edit', element: <UserEditPage /> },
-  { path: '/api-keys', element: <APIKeysListPage /> },
-  { path: '/api-keys/:id', element: <APIKeyDetailPage /> },
-  { path: '/api-keys/new', element: <APIKeyCreatePage /> },
-  { path: '/api-keys/:id/edit', element: <APIKeyEditPage /> },
-  { path: '/subdomains', element: <SubdomainsListPage /> },
-  { path: '/subdomains/:id', element: <SubdomainDetailPage /> },
-  { path: '/subdomains/new', element: <SubdomainCreatePage /> },
-  { path: '/subdomains/:id/edit', element: <SubdomainEditPage /> },
+      // Public routes
+      { path: '/login', element: <Login /> },
+      { path: '/signup', element: <Signup /> },
+      // Admin-only routes (Users management)
+      { path: '/users', element: <ProtectedRoute roles={['admin']}><UsersListPage /></ProtectedRoute> },
+      { path: '/users/:id', element: <ProtectedRoute roles={['admin']}><UserDetailPage /></ProtectedRoute> },
+      { path: '/users/new', element: <ProtectedRoute roles={['admin']}><UserCreatePage /></ProtectedRoute> },
+      { path: '/users/:id/edit', element: <ProtectedRoute roles={['admin']}><UserEditPage /></ProtectedRoute> },
+      // Protected routes (any authenticated user - users see their own)
+      { path: '/api-keys', element: <ProtectedRoute><APIKeysListPage /></ProtectedRoute> },
+      { path: '/api-keys/:id', element: <ProtectedRoute><APIKeyDetailPage /></ProtectedRoute> },
+      { path: '/api-keys/new', element: <ProtectedRoute><APIKeyCreatePage /></ProtectedRoute> },
+      { path: '/api-keys/:id/edit', element: <ProtectedRoute><APIKeyEditPage /></ProtectedRoute> },
+      { path: '/subdomains', element: <ProtectedRoute><SubdomainsListPage /></ProtectedRoute> },
+      { path: '/subdomains/:id', element: <ProtectedRoute><SubdomainDetailPage /></ProtectedRoute> },
+      { path: '/subdomains/new', element: <ProtectedRoute><SubdomainCreatePage /></ProtectedRoute> },
+      { path: '/subdomains/:id/edit', element: <ProtectedRoute><SubdomainEditPage /></ProtectedRoute> },
       // PRISM:PROTECTED:START - Custom Routes
       // Add your custom routes here:
       // { path: '/custom', element: <MyCustomPage /> },

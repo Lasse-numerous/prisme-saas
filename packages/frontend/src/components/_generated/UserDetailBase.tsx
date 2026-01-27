@@ -105,6 +105,22 @@ export function UserDetailBase({
             <dd className="text-nordic-900">{String(data.isAdmin ?? '-')}</dd>
           </div>
           <div>
+            <dt className="text-sm font-medium text-nordic-500 mb-1" title="Authentik user ID for SSO">Authentik Id</dt>
+            <dd className="text-nordic-900">{String(data.authentikId ?? '-')}</dd>
+          </div>
+          <div>
+            <dt className="text-sm font-medium text-nordic-500 mb-1" title="Username (optional, email is primary)">Username</dt>
+            <dd className="text-nordic-900">{String(data.username ?? '-')}</dd>
+          </div>
+          <div>
+            <dt className="text-sm font-medium text-nordic-500 mb-1" title="User roles for authorization">Roles</dt>
+            <dd className="text-nordic-900">{String(data.roles ?? '-')}</dd>
+          </div>
+          <div>
+            <dt className="text-sm font-medium text-nordic-500 mb-1" title="Whether user account is active">Is Active</dt>
+            <dd className="text-nordic-900">{String(data.isActive ?? '-')}</dd>
+          </div>
+          <div>
             <dt className="text-sm font-medium text-nordic-500 mb-1">Created</dt>
             <dd className="text-nordic-900">{new Date(data.createdAt).toLocaleString()}</dd>
           </div>

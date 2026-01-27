@@ -16,7 +16,11 @@ export const USER_FIELD_SPECS: FieldSpec[] = [
   { name: 'emailVerified', type: 'boolean', required: false, displayName: 'Email Verified', description: 'Whether email has been verified' },
   { name: 'mfaEnabled', type: 'boolean', required: false, displayName: 'Mfa Enabled', description: 'Whether MFA is enabled' },
   { name: 'subdomainLimit', type: 'integer', required: false, displayName: 'Subdomain Limit', description: 'Maximum number of subdomains allowed' },
-  { name: 'isAdmin', type: 'boolean', required: false, displayName: 'Is Admin', description: 'Whether user has admin privileges' }
+  { name: 'isAdmin', type: 'boolean', required: false, displayName: 'Is Admin', description: 'Whether user has admin privileges' },
+  { name: 'authentikId', type: 'string', required: false, displayName: 'Authentik Id', description: 'Authentik user ID for SSO' },
+  { name: 'username', type: 'string', required: false, displayName: 'Username', description: 'Username (optional, email is primary)' },
+  { name: 'roles', type: 'json', required: false, displayName: 'Roles', description: 'User roles for authorization' },
+  { name: 'isActive', type: 'boolean', required: false, displayName: 'Is Active', description: 'Whether user account is active' }
 ];
 
 export interface UserFormBaseProps {

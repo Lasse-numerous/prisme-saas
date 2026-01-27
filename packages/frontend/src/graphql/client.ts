@@ -26,7 +26,7 @@ export const client = createClient({
     subscriptionExchange({
       forwardSubscription: (request) => ({
         subscribe: (sink) => ({
-          unsubscribe: wsClient.subscribe(request as { query: string; variables?: Record<string, unknown> }, sink),
+          unsubscribe: wsClient.subscribe(request, sink),
         }),
       }),
     }),
