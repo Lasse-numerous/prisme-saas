@@ -125,28 +125,43 @@ jobs:
           script: |
             cd ${{ env.APP_DIR }}
 
-            # Update .env with secrets
+            # Update .env with secrets and config
             cat > .env.secrets << 'SECRETS_EOF'
+            # Docker image config
+            DOCKER_REGISTRY=ghcr.io
+            GITHUB_REPOSITORY=lasse-numerous/prisme-saas
+            PROJECT_NAME=prisme-saas
+            ENVIRONMENT=staging
             IMAGE_TAG=${IMAGE_TAG}
             DOMAIN=${DOMAIN}
-            DATABASE_URL=${DATABASE_URL}
+            # Database
+            POSTGRES_DB=prisme
+            POSTGRES_USER=prisme
             POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+            DATABASE_URL=${DATABASE_URL}
+            REDIS_URL=redis://redis:6379
+            # App secrets
             SECRET_KEY=${SECRET_KEY}
+            # Authentik config
             AUTHENTIK_SECRET_KEY=${AUTHENTIK_SECRET_KEY}
+            AUTHENTIK_DB_USER=authentik
+            AUTHENTIK_DB_NAME=authentik
             AUTHENTIK_DB_PASSWORD=${AUTHENTIK_DB_PASSWORD}
+            AUTHENTIK_VERSION=2024.2
             AUTHENTIK_CLIENT_ID=${AUTHENTIK_CLIENT_ID}
             AUTHENTIK_CLIENT_SECRET=${AUTHENTIK_CLIENT_SECRET}
             AUTHENTIK_WEBHOOK_SECRET=${AUTHENTIK_WEBHOOK_SECRET}
             AUTHENTIK_ISSUER_URL=https://auth-staging.madewithpris.me/application/o/madewithprisme/
             AUTHENTIK_REDIRECT_URI=https://${DOMAIN}/api/auth/callback
             AUTHENTIK_POST_LOGOUT_REDIRECT_URI=https://${DOMAIN}/
+            # MCP
             MCP_ADMIN_API_KEY=${MCP_ADMIN_API_KEY}
             SECRETS_EOF
 
             # Merge secrets into .env (create if not exists)
             touch .env
             # Remove old secret values and append new ones
-            grep -v -E '^(IMAGE_TAG|DOMAIN|DATABASE_URL|POSTGRES_PASSWORD|SECRET_KEY|AUTHENTIK_|MCP_ADMIN_API_KEY)=' .env > .env.tmp || true
+            grep -v -E '^(DOCKER_REGISTRY|GITHUB_REPOSITORY|PROJECT_NAME|ENVIRONMENT|IMAGE_TAG|DOMAIN|POSTGRES_|DATABASE_URL|REDIS_URL|SECRET_KEY|AUTHENTIK_|MCP_ADMIN_API_KEY)=' .env > .env.tmp || true
             cat .env.secrets >> .env.tmp
             mv .env.tmp .env
             rm .env.secrets
@@ -264,27 +279,42 @@ jobs:
             # Backup current .env
             cp .env .env.backup.$(date +%Y%m%d_%H%M%S) 2>/dev/null || true
 
-            # Update .env with secrets
+            # Update .env with secrets and config
             cat > .env.secrets << 'SECRETS_EOF'
+            # Docker image config
+            DOCKER_REGISTRY=ghcr.io
+            GITHUB_REPOSITORY=lasse-numerous/prisme-saas
+            PROJECT_NAME=prisme-saas
+            ENVIRONMENT=production
             IMAGE_TAG=${IMAGE_TAG}
             DOMAIN=${DOMAIN}
-            DATABASE_URL=${DATABASE_URL}
+            # Database
+            POSTGRES_DB=prisme
+            POSTGRES_USER=prisme
             POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+            DATABASE_URL=${DATABASE_URL}
+            REDIS_URL=redis://redis:6379
+            # App secrets
             SECRET_KEY=${SECRET_KEY}
+            # Authentik config (for when enabled in production)
             AUTHENTIK_SECRET_KEY=${AUTHENTIK_SECRET_KEY}
+            AUTHENTIK_DB_USER=authentik
+            AUTHENTIK_DB_NAME=authentik
             AUTHENTIK_DB_PASSWORD=${AUTHENTIK_DB_PASSWORD}
+            AUTHENTIK_VERSION=2024.2
             AUTHENTIK_CLIENT_ID=${AUTHENTIK_CLIENT_ID}
             AUTHENTIK_CLIENT_SECRET=${AUTHENTIK_CLIENT_SECRET}
             AUTHENTIK_WEBHOOK_SECRET=${AUTHENTIK_WEBHOOK_SECRET}
             AUTHENTIK_ISSUER_URL=https://auth.madewithpris.me/application/o/madewithprisme/
             AUTHENTIK_REDIRECT_URI=https://${DOMAIN}/api/auth/callback
             AUTHENTIK_POST_LOGOUT_REDIRECT_URI=https://${DOMAIN}/
+            # MCP
             MCP_ADMIN_API_KEY=${MCP_ADMIN_API_KEY}
             SECRETS_EOF
 
             # Merge secrets into .env
             touch .env
-            grep -v -E '^(IMAGE_TAG|DOMAIN|DATABASE_URL|POSTGRES_PASSWORD|SECRET_KEY|AUTHENTIK_|MCP_ADMIN_API_KEY)=' .env > .env.tmp || true
+            grep -v -E '^(DOCKER_REGISTRY|GITHUB_REPOSITORY|PROJECT_NAME|ENVIRONMENT|IMAGE_TAG|DOMAIN|POSTGRES_|DATABASE_URL|REDIS_URL|SECRET_KEY|AUTHENTIK_|MCP_ADMIN_API_KEY)=' .env > .env.tmp || true
             cat .env.secrets >> .env.tmp
             mv .env.tmp .env
             rm .env.secrets
