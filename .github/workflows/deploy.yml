@@ -126,7 +126,8 @@ jobs:
             cd ${{ env.APP_DIR }}
 
             # Update .env with secrets and config
-            cat > .env.secrets << 'SECRETS_EOF'
+            # Note: Unquoted SECRETS_EOF allows variable expansion
+            cat > .env.secrets << SECRETS_EOF
             # Docker image config
             DOCKER_REGISTRY=ghcr.io
             GITHUB_REPOSITORY=lasse-numerous/prisme-saas
@@ -280,7 +281,8 @@ jobs:
             cp .env .env.backup.$(date +%Y%m%d_%H%M%S) 2>/dev/null || true
 
             # Update .env with secrets and config
-            cat > .env.secrets << 'SECRETS_EOF'
+            # Note: Unquoted SECRETS_EOF allows variable expansion
+            cat > .env.secrets << SECRETS_EOF
             # Docker image config
             DOCKER_REGISTRY=ghcr.io
             GITHUB_REPOSITORY=lasse-numerous/prisme-saas
