@@ -14,9 +14,10 @@ os.environ["DATABASE_URL"] = "sqlite+aiosqlite:///:memory:"
 
 import pytest
 import pytest_asyncio
-from madewithprisme.models.base import Base
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import StaticPool
+
+from prisme_api.models.base import Base
 
 # Use sqlite for tests
 TEST_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
@@ -65,8 +66,9 @@ async def db(engine) -> AsyncGenerator[AsyncSession]:
 async def client(db):
     """Create test client with database session."""
     from httpx import ASGITransport, AsyncClient
-    from madewithprisme.database import get_db
-    from madewithprisme.main import app
+
+    from prisme_api.database import get_db
+    from prisme_api.main import app
 
     async def override_get_db():
         yield db

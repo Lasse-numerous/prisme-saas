@@ -6,9 +6,10 @@
 from __future__ import annotations
 
 import pytest_asyncio
-from madewithprisme.schemas.api_key import APIKeyCreate, APIKeyUpdate
-from madewithprisme.services.api_key import APIKeyService
 from tests.factories.api_key import APIKeyFactory
+
+from prisme_api.schemas.api_key import APIKeyCreate, APIKeyUpdate
+from prisme_api.services.api_key import APIKeyService
 
 
 class TestAPIKeyService:

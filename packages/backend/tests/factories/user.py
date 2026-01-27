@@ -7,7 +7,8 @@ from __future__ import annotations
 
 import factory
 from factory.alchemy import SQLAlchemyModelFactory
-from madewithprisme.models.user import User
+
+from prisme_api.models.user import User
 
 
 class UserFactory(SQLAlchemyModelFactory):
@@ -26,6 +27,10 @@ class UserFactory(SQLAlchemyModelFactory):
     mfa_secret = factory.Faker("pystr", max_chars=255)
     subdomain_limit = factory.Faker("random_int", min=1, max=1000)
     is_admin = factory.Faker("boolean")
+    authentik_id = factory.Sequence(lambda n: f"authentik_id_{n}")
+    username = factory.Faker("name")
+    roles = factory.LazyFunction(lambda: {"key": "value"})
+    is_active = factory.Faker("boolean")
 
 
 # Convenience function

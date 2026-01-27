@@ -7,7 +7,8 @@ from __future__ import annotations
 
 import factory
 from factory.alchemy import SQLAlchemyModelFactory
-from madewithprisme.models.subdomain import Subdomain
+
+from prisme_api.models.subdomain import Subdomain
 
 
 class SubdomainFactory(SQLAlchemyModelFactory):
