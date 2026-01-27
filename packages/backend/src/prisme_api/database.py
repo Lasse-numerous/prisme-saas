@@ -11,10 +11,16 @@ from collections.abc import AsyncGenerator
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 # Get database URL from environment
-DATABASE_URL = os.environ.get(
+_raw_url = os.environ.get(
     "DATABASE_URL",
     "sqlite+aiosqlite:///:memory:",
 )
+
+# Convert postgresql:// to postgresql+asyncpg:// for async support
+if _raw_url.startswith("postgresql://"):
+    DATABASE_URL = _raw_url.replace("postgresql://", "postgresql+asyncpg://", 1)
+else:
+    DATABASE_URL = _raw_url
 
 # Create async engine
 engine = create_async_engine(
