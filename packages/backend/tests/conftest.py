@@ -65,19 +65,27 @@ async def db(engine) -> AsyncGenerator[AsyncSession]:
 
 @pytest_asyncio.fixture
 async def test_user(db):
-    """Create a test user for authentication tests."""
+    """Create or get a test user for authentication tests."""
+    from sqlalchemy import select
+
     from prisme_api.models.user import User
 
-    user = User(
-        email="test@example.com",
-        authentik_id="test-authentik-id",
-        username="testuser",
-        roles=["admin"],  # Give admin role for full access in tests
-        is_active=True,
-    )
-    db.add(user)
-    await db.commit()
-    await db.refresh(user)
+    # Check if test user already exists
+    result = await db.execute(select(User).where(User.email == "test@example.com"))
+    user = result.scalar_one_or_none()
+
+    if user is None:
+        user = User(
+            email="test@example.com",
+            authentik_id="test-authentik-id",
+            username="testuser",
+            roles=["admin"],  # Give admin role for full access in tests
+            is_active=True,
+        )
+        db.add(user)
+        await db.commit()
+        await db.refresh(user)
+
     return user
 
 

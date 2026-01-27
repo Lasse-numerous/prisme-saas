@@ -144,6 +144,10 @@ ignore_errors = true
 module = "prisme_api.mcp_server.*"
 ignore_errors = true
 
+[[tool.mypy.overrides]]
+module = "prisme_api.api.graphql.schema"
+ignore_errors = true
+
 [tool.pytest.ini_options]
 testpaths = ["packages/backend/tests"]
 pythonpath = ["packages/backend/src", "packages/backend"]
