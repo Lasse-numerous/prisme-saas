@@ -26,6 +26,7 @@ ENV/
 # Environment
 .env
 .env.local
+.env.authentik
 
 # Node
 node_modules/
