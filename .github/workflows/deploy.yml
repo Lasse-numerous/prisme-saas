@@ -176,8 +176,19 @@ jobs:
             # Pull new images
             docker compose -f docker-compose.staging.yml pull
 
+            # Debug: Show what docker compose sees for postgres config
+            echo "=== Docker Compose Config (db services) ==="
+            docker compose -f docker-compose.staging.yml config | grep -A 15 "authentik-db:" | head -20
+            docker compose -f docker-compose.staging.yml config | grep -A 15 "^  db:" | head -20
+            echo "========================="
+
             # Stop and remove old containers first to ensure clean state
             docker compose -f docker-compose.staging.yml down --remove-orphans || true
+
+            # Delete postgres data volumes to start fresh (required when password wasn't set initially)
+            echo "=== Removing old postgres volumes to allow fresh initialization ==="
+            docker volume ls
+            docker volume rm -f prisme-saas_authentik_db_data prisme-saas_postgres_data 2>/dev/null || echo "Volumes not found or in use"
 
             # Deploy with fresh containers
             docker compose -f docker-compose.staging.yml up -d
