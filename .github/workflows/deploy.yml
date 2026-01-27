@@ -169,10 +169,13 @@ jobs:
 
             # Debug: verify env vars are set (show presence, not values)
             echo "=== Environment Check ==="
+            echo "POSTGRES_PASSWORD is set: $([ -n \"$POSTGRES_PASSWORD\" ] && echo 'yes' || echo 'NO - MISSING!')"
             echo "AUTHENTIK_DB_PASSWORD is set: $([ -n \"$AUTHENTIK_DB_PASSWORD\" ] && echo 'yes' || echo 'NO - MISSING!')"
-            echo "AUTHENTIK_SECRET_KEY is set: $([ -n \"$AUTHENTIK_SECRET_KEY\" ] && echo 'yes' || echo 'NO - MISSING!')"
+            echo "=== .env file contents (sensitive values redacted) ==="
+            grep -E '^POSTGRES_PASSWORD=' .env | sed 's/=.*/=<redacted>/' || echo "POSTGRES_PASSWORD not in .env!"
             grep -E '^AUTHENTIK_DB_PASSWORD=' .env | sed 's/=.*/=<redacted>/' || echo "AUTHENTIK_DB_PASSWORD not in .env!"
-            grep -E '^AUTHENTIK_DB_USER=' .env || echo "AUTHENTIK_DB_USER not in .env (will use default)"
+            echo "=== Full .env keys (no values) ==="
+            cut -d= -f1 .env | head -20
             echo "========================="
 
             # Pull new images
