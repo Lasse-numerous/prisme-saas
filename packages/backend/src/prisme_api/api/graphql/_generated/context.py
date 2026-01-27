@@ -7,27 +7,74 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import Depends
+from fastapi import Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from strawberry.fastapi import BaseContext
 
+from prisme_api.auth.dependencies import get_current_user_optional
 from prisme_api.database import get_db
+from prisme_api.models.user import User
 
 
 class Context(BaseContext):
     """GraphQL context passed to all resolvers."""
 
-    def __init__(self, db: AsyncSession) -> None:
+    def __init__(self, db: AsyncSession, user: User | None = None) -> None:
         self.db = db
-        # Add user, auth info, etc. here
-        # self.user = None
+        self.user = user
+
+    def require_auth(self) -> User:
+        """Require authentication and return user.
+
+        Raises:
+            PermissionError: If user is not authenticated
+        """
+        if self.user is None:
+            raise PermissionError("Authentication required")
+        return self.user
+
+    def require_role(self, *roles: str) -> User:
+        """Require specific roles and return user.
+
+        Args:
+            *roles: One or more role names required
+
+        Raises:
+            PermissionError: If user is not authenticated or lacks required role
+        """
+        user = self.require_auth()
+        user_roles = set(user.roles or [])
+
+        if "admin" in user_roles or any(role in user_roles for role in roles):
+            return user
+
+        raise PermissionError(f"Required roles: {', '.join(roles)}")
+
+    def is_owner_or_admin(self, owner_id: int | None) -> bool:
+        """Check if current user owns the resource or is admin.
+
+        Args:
+            owner_id: ID of the resource owner
+
+        Returns:
+            True if user is owner or admin, False otherwise
+        """
+        if self.user is None:
+            return False
+        if "admin" in (self.user.roles or []):
+            return True
+        return owner_id == self.user.id
 
 
 async def get_context(
+    request: Request,
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> Context:
     """Create GraphQL context from request."""
-    return Context(db=db)
+    user = await get_current_user_optional(
+        db=db, session_token=request.cookies.get("prisme_session")
+    )
+    return Context(db=db, user=user)
 
 
 __all__ = ["Context", "get_context"]

@@ -1,7 +1,7 @@
 """Custom REST API routes for Subdomain.
 
 This file extends the base routes with:
-- API key authentication
+- Owner-based access control (users see their own, admins see all)
 - Reserved name validation
 - Hetzner DNS integration
 - DNS propagation status endpoint
@@ -11,13 +11,16 @@ from __future__ import annotations
 
 import logging
 import re
+from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
 
-from prisme_api.middleware.api_key import APIKey, get_api_key
+from prisme_api.auth.dependencies import CurrentActiveUser, get_current_active_user
+from prisme_api.schemas.base import PaginatedResponse
 from prisme_api.schemas.subdomain import (
     SubdomainCreate,
+    SubdomainFilter,
     SubdomainRead,
     SubdomainUpdate,
 )
@@ -28,8 +31,7 @@ from prisme_api.services.hetzner_dns import (
 )
 from prisme_api.services.subdomain import SubdomainService
 
-from ._generated.deps import DbSession
-from ._generated.subdomain_routes import router as base_router
+from ._generated.deps import DbSession, Pagination, Sorting
 
 logger = logging.getLogger(__name__)
 
@@ -71,10 +73,11 @@ def validate_ip_address(ip: str) -> str | None:
 
 
 # Create a new router with authentication required
-router = APIRouter(dependencies=[Depends(get_api_key)])
-
-# Include base routes (they will inherit the authentication dependency)
-router.include_router(base_router)
+router = APIRouter(
+    prefix="/subdomains",
+    tags=["subdomains"],
+    dependencies=[Depends(get_current_active_user)],
+)
 
 
 class PropagationStatus(BaseModel):
@@ -114,8 +117,79 @@ def get_dns_service() -> HetznerDNSService | None:
         return None
 
 
+@router.get(
+    "",
+    response_model=PaginatedResponse[SubdomainRead],
+    summary="List subdomains",
+)
+async def list_subdomains(
+    db: DbSession,
+    current_user: CurrentActiveUser,
+    pagination: Pagination,
+    sorting: Sorting,
+) -> PaginatedResponse[SubdomainRead]:
+    """List subdomains - users see only their own, admins see all."""
+    service = SubdomainService(db)
+
+    # Apply owner filter for non-admin users
+    filters = None
+    if "admin" not in (current_user.roles or []):
+        filters = SubdomainFilter(owner_id=current_user.id)
+
+    items = await service.list(
+        skip=pagination.skip,
+        limit=pagination.limit,
+        sort_by=sorting.sort_by,
+        sort_order=sorting.sort_order,
+        filters=filters,
+    )
+
+    total = await service.count_filtered(filters=filters)
+    pages = (
+        (total + pagination.page_size - 1) // pagination.page_size if pagination.page_size else 1
+    )
+
+    return PaginatedResponse(
+        items=[SubdomainRead.model_validate(item) for item in items],
+        total=total,
+        page=pagination.page,
+        page_size=pagination.page_size,
+        pages=pages,
+    )
+
+
+@router.get(
+    "/{id}",
+    response_model=SubdomainRead,
+    summary="Get subdomain",
+)
+async def get_subdomain(
+    db: DbSession,
+    id: int,
+    current_user: CurrentActiveUser,
+) -> SubdomainRead:
+    """Get a subdomain by ID - users can only access their own."""
+    service = SubdomainService(db)
+
+    result = await service.get(id)
+    if result is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Subdomain not found",
+        )
+
+    # Check ownership for non-admin users
+    if "admin" not in (current_user.roles or []) and result.owner_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied",
+        )
+
+    return SubdomainRead.model_validate(result)
+
+
 @router.post(
-    "/subdomains/claim",
+    "/claim",
     response_model=SubdomainRead,
     status_code=status.HTTP_201_CREATED,
     summary="Claim a subdomain",
@@ -123,7 +197,7 @@ def get_dns_service() -> HetznerDNSService | None:
 async def claim_subdomain(
     db: DbSession,
     request: SubdomainClaimRequest,
-    api_key: APIKey,
+    current_user: CurrentActiveUser,
 ) -> SubdomainRead:
     """Claim a subdomain name (reserve it without IP).
 
@@ -156,16 +230,16 @@ async def claim_subdomain(
             detail=f"Subdomain '{name}' is already claimed",
         )
 
-    # Create subdomain in reserved state
-    data = SubdomainCreate(name=name, status="reserved")
+    # Create subdomain in reserved state, owned by current user
+    data = SubdomainCreate(name=name, status="reserved", owner_id=current_user.id)
     result = await service.create(data=data)
 
-    logger.info(f"Subdomain claimed: {name}")
+    logger.info(f"Subdomain claimed: {name} by user {current_user.id}")
     return SubdomainRead.model_validate(result)
 
 
 @router.post(
-    "/subdomains/{name}/activate",
+    "/{name}/activate",
     response_model=SubdomainRead,
     summary="Activate a subdomain with IP address",
 )
@@ -173,11 +247,12 @@ async def activate_subdomain(
     db: DbSession,
     name: str,
     request: SubdomainActivateRequest,
-    api_key: APIKey,
+    current_user: CurrentActiveUser,
 ) -> SubdomainRead:
     """Activate a subdomain by setting its IP address and creating DNS record.
 
     This creates an A record pointing to the provided IP address.
+    Users can only activate their own subdomains.
     """
     # Validate IP address format first
     ip_error = validate_ip_address(request.ip_address)
@@ -195,6 +270,13 @@ async def activate_subdomain(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Subdomain '{name}' not found",
+        )
+
+    # Check ownership for non-admin users
+    if "admin" not in (current_user.roles or []) and subdomain.owner_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied",
         )
 
     if subdomain.status == "suspended":
@@ -238,19 +320,19 @@ async def activate_subdomain(
 
 
 @router.get(
-    "/subdomains/{name}/status",
+    "/{name}/status",
     response_model=PropagationStatus,
     summary="Get subdomain DNS propagation status",
 )
 async def get_subdomain_status(
     db: DbSession,
     name: str,
-    api_key: APIKey,
+    current_user: CurrentActiveUser,
 ) -> PropagationStatus:
     """Check DNS propagation status for a subdomain.
 
     Returns the current status and whether the DNS record has propagated
-    to major DNS resolvers.
+    to major DNS resolvers. Users can only check their own subdomains.
     """
     service = SubdomainService(db)
 
@@ -259,6 +341,13 @@ async def get_subdomain_status(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Subdomain '{name}' not found",
+        )
+
+    # Check ownership for non-admin users
+    if "admin" not in (current_user.roles or []) and subdomain.owner_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied",
         )
 
     propagation = {}
@@ -278,18 +367,19 @@ async def get_subdomain_status(
 
 
 @router.post(
-    "/subdomains/{name}/release",
+    "/{name}/release",
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Release a subdomain",
 )
 async def release_subdomain(
     db: DbSession,
     name: str,
-    api_key: APIKey,
+    current_user: CurrentActiveUser,
 ) -> None:
     """Release a subdomain and delete its DNS record.
 
     This deletes the DNS record and marks the subdomain as released.
+    Users can only release their own subdomains.
     """
     service = SubdomainService(db)
 
@@ -298,6 +388,13 @@ async def release_subdomain(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Subdomain '{name}' not found",
+        )
+
+    # Check ownership for non-admin users
+    if "admin" not in (current_user.roles or []) and subdomain.owner_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied",
         )
 
     # Delete DNS record if exists
@@ -316,6 +413,49 @@ async def release_subdomain(
     # Delete subdomain from database
     await service.delete(id=subdomain.id, soft=False)
     logger.info(f"Subdomain released: {name}")
+
+
+@router.delete(
+    "/{id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete subdomain",
+)
+async def delete_subdomain(
+    db: DbSession,
+    id: int,
+    current_user: CurrentActiveUser,
+    hard: Annotated[bool, Query(description="Permanently delete")] = False,
+) -> None:
+    """Delete a subdomain - users can only delete their own."""
+    service = SubdomainService(db)
+
+    existing = await service.get(id)
+    if existing is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Subdomain not found",
+        )
+
+    # Check ownership for non-admin users
+    if "admin" not in (current_user.roles or []) and existing.owner_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied",
+        )
+
+    # Delete DNS record if exists
+    if existing.dns_record_id:
+        dns_service = get_dns_service()
+        if dns_service:
+            try:
+                await dns_service.delete_a_record(existing.dns_record_id)
+                logger.info(f"DNS record deleted for subdomain {id}")
+            except HetznerDNSError as e:
+                logger.error(f"Failed to delete DNS record for subdomain {id}: {e}")
+            finally:
+                await dns_service.close()
+
+    await service.delete(id=id, soft=not hard)
 
 
 __all__ = ["router"]

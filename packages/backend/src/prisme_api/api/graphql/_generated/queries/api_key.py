@@ -29,11 +29,19 @@ class APIKeyQueries:
         info: Info[Context, None],
         id: int,
     ) -> APIKeyType | None:
-        """Get a APIKey by ID."""
+        """Get an API key by ID. Users can only access their own."""
+        # Require authentication
+        info.context.require_auth()
+
         service = APIKeyService(info.context.db)
         result = await service.get(id)
         if result is None:
             return None
+
+        # Check ownership for non-admin users
+        if not info.context.is_owner_or_admin(result.user_id):
+            raise PermissionError("Access denied")
+
         return api_key_from_model(result)
 
     @strawberry.field(description="List api_keys with filtering and pagination")
@@ -43,7 +51,10 @@ class APIKeyQueries:
         where: APIKeyWhereInput | None = None,
         pagination: OffsetPaginationInput | None = None,
     ) -> Connection[APIKeyType]:
-        """List api_keys."""
+        """List API keys. Users see only their own, admins see all."""
+        # Require authentication
+        user = info.context.require_auth()
+
         service = APIKeyService(info.context.db)
 
         page = pagination.page if pagination else 1
@@ -51,7 +62,11 @@ class APIKeyQueries:
         skip = (page - 1) * page_size
 
         # Convert GraphQL where input to service filter
-        filters = _convert_where_to_filter(where) if where else None
+        filters = _convert_where_to_filter(where) if where else APIKeyFilter()
+
+        # Apply owner filter for non-admin users
+        if "admin" not in (user.roles or []):
+            filters = APIKeyFilter(**filters.model_dump(), user_id=user.id)
 
         items = await service.list(skip=skip, limit=page_size, filters=filters)
         total = await service.count_filtered(filters=filters)

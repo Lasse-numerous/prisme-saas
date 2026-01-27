@@ -6,12 +6,17 @@ This file was generated once by Prism and is yours to customize.
 
 from __future__ import annotations
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+
+from prisme_api.auth.dependencies import require_roles
 
 from ._generated.user_routes import router as base_router
 
-# Create a new router that includes the base routes
-router = APIRouter()
+# Create a new router with admin-only access
+# All user management endpoints require admin role
+router = APIRouter(
+    dependencies=[Depends(require_roles("admin"))],
+)
 router.include_router(base_router)
 
 

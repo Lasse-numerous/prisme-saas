@@ -7,12 +7,20 @@ from __future__ import annotations
 
 from fastapi import APIRouter
 
+from prisme_api.auth.webhooks import router as webhooks_router
+
 from .api_key import router as api_key_router
+from .auth import router as auth_router
 from .subdomain import router as subdomain_router
 from .user import router as user_router
 
 router = APIRouter()
 
+# Auth routes (public)
+router.include_router(auth_router)
+router.include_router(webhooks_router)
+
+# Model routes
 router.include_router(user_router)
 router.include_router(api_key_router)
 router.include_router(subdomain_router)

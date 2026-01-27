@@ -29,7 +29,10 @@ class UserQueries:
         info: Info[Context, None],
         id: int,
     ) -> UserType | None:
-        """Get a User by ID."""
+        """Get a User by ID. Admin only."""
+        # Require admin role
+        info.context.require_role("admin")
+
         service = UserService(info.context.db)
         result = await service.get(id)
         if result is None:
@@ -43,7 +46,10 @@ class UserQueries:
         where: UserWhereInput | None = None,
         pagination: OffsetPaginationInput | None = None,
     ) -> Connection[UserType]:
-        """List users."""
+        """List users. Admin only."""
+        # Require admin role
+        info.context.require_role("admin")
+
         service = UserService(info.context.db)
 
         page = pagination.page if pagination else 1
