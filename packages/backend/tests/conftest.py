@@ -8,6 +8,7 @@ from __future__ import annotations
 import asyncio
 import os
 from collections.abc import AsyncGenerator, Generator
+from unittest.mock import AsyncMock, patch
 
 # Set test database URL before any app imports
 os.environ["DATABASE_URL"] = "sqlite+aiosqlite:///:memory:"
@@ -63,8 +64,63 @@ async def db(engine) -> AsyncGenerator[AsyncSession]:
 
 
 @pytest_asyncio.fixture
-async def client(db):
-    """Create test client with database session."""
+async def test_user(db):
+    """Create a test user for authentication tests."""
+    from prisme_api.models.user import User
+
+    user = User(
+        email="test@example.com",
+        authentik_id="test-authentik-id",
+        username="testuser",
+        roles=["admin"],  # Give admin role for full access in tests
+        is_active=True,
+    )
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+    return user
+
+
+@pytest_asyncio.fixture
+async def client(db, test_user):
+    """Create test client with database session and mocked authentication."""
+    from httpx import ASGITransport, AsyncClient
+
+    from prisme_api.database import get_db
+    from prisme_api.main import app
+
+    async def override_get_db():
+        yield db
+
+    app.dependency_overrides[get_db] = override_get_db
+
+    # Mock the OIDC client to return valid claims for test user
+    mock_claims = {
+        "sub": test_user.authentik_id,
+        "email": test_user.email,
+        "preferred_username": test_user.username,
+        "groups": test_user.roles,
+    }
+
+    transport = ASGITransport(app=app)
+    with patch(
+        "prisme_api.auth.dependencies.oidc_client.validate_id_token",
+        new_callable=AsyncMock,
+        return_value=mock_claims,
+    ):
+        async with AsyncClient(
+            transport=transport,
+            base_url="http://test",
+            cookies={"prisme_session": "mock-session-token"},
+        ) as client:
+            yield client
+
+    app.dependency_overrides.clear()
+
+
+@pytest_asyncio.fixture
+async def unauthenticated_client(db):
+    """Create test client without authentication."""
     from httpx import ASGITransport, AsyncClient
 
     from prisme_api.database import get_db
