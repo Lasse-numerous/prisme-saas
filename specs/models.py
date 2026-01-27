@@ -8,7 +8,6 @@ Models include:
 """
 
 from prism import (
-    APIKeyConfig,
     DatabaseConfig,
     FieldSpec,
     FieldType,
@@ -18,7 +17,7 @@ from prism import (
     RESTExposure,
     StackSpec,
 )
-from prism.spec import AuthConfig
+from prism.spec.auth import AuthConfig, AuthentikConfig, AuthentikMFAConfig, Role
 
 spec = StackSpec(
     name="madewithprisme",
@@ -31,12 +30,24 @@ spec = StackSpec(
     ),
     auth=AuthConfig(
         enabled=True,
-        preset="api_key",
-        api_key=APIKeyConfig(
-            header="Authorization",
-            scheme="Bearer",
-            env_var="PRISME_ADMIN_API_KEY",
+        preset="authentik",
+        authentik=AuthentikConfig(
+            version="2024.2",
+            subdomain="auth",  # auth.madewithpris.me
+            mfa=AuthentikMFAConfig(
+                enabled=True,
+                methods=["totp", "email"],
+            ),
+            self_signup=True,
+            email_verification=True,
         ),
+        user_model="User",
+        username_field="email",
+        default_role="user",
+        roles=[
+            Role(name="admin", permissions=["*"], description="Full access"),
+            Role(name="user", permissions=["own:*"], description="Access own resources"),
+        ],
     ),
     models=[
         # User account model
@@ -108,6 +119,36 @@ spec = StackSpec(
                     default=False,
                     required=True,
                     description="Whether user has admin privileges",
+                ),
+                FieldSpec(
+                    name="authentik_id",
+                    type=FieldType.STRING,
+                    required=False,
+                    unique=True,
+                    max_length=255,
+                    description="Authentik user ID for SSO",
+                    indexed=True,
+                ),
+                FieldSpec(
+                    name="username",
+                    type=FieldType.STRING,
+                    required=False,
+                    max_length=100,
+                    description="Username (optional, email is primary)",
+                ),
+                FieldSpec(
+                    name="roles",
+                    type=FieldType.JSON,
+                    required=True,
+                    default=["user"],
+                    description="User roles for authorization",
+                ),
+                FieldSpec(
+                    name="is_active",
+                    type=FieldType.BOOLEAN,
+                    default=True,
+                    required=True,
+                    description="Whether user account is active",
                 ),
             ],
             relationships=[

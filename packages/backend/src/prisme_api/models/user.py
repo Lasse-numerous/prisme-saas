@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Boolean, Integer, String
+from sqlalchemy import JSON, Boolean, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base, SoftDeleteMixin, TimestampMixin
@@ -31,6 +31,12 @@ class User(Base, TimestampMixin, SoftDeleteMixin):
     mfa_secret: Mapped[str | None] = mapped_column(String(255), nullable=True)
     subdomain_limit: Mapped[int] = mapped_column(Integer, default=5)
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
+    authentik_id: Mapped[str | None] = mapped_column(
+        String(255), unique=True, index=True, nullable=True
+    )
+    username: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    roles: Mapped[dict | list] = mapped_column(JSON, default=["user"])
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
     # Relationships
     api_keys: Mapped[list[APIKey]] = relationship("APIKey", back_populates="user")
