@@ -167,14 +167,40 @@ jobs:
             mv .env.tmp .env
             rm .env.secrets
 
+            # Debug: verify env vars are set (show presence, not values)
+            echo "=== Environment Check ==="
+            echo "AUTHENTIK_DB_PASSWORD is set: $([ -n \"$AUTHENTIK_DB_PASSWORD\" ] && echo 'yes' || echo 'NO - MISSING!')"
+            echo "AUTHENTIK_SECRET_KEY is set: $([ -n \"$AUTHENTIK_SECRET_KEY\" ] && echo 'yes' || echo 'NO - MISSING!')"
+            grep -E '^AUTHENTIK_DB_PASSWORD=' .env | sed 's/=.*/=<redacted>/' || echo "AUTHENTIK_DB_PASSWORD not in .env!"
+            grep -E '^AUTHENTIK_DB_USER=' .env || echo "AUTHENTIK_DB_USER not in .env (will use default)"
+            echo "========================="
+
             # Pull new images
             docker compose -f docker-compose.staging.yml pull
 
-            # Deploy (force recreate to clear any unhealthy container state)
-            docker compose -f docker-compose.staging.yml up -d --remove-orphans --force-recreate
+            # Stop and remove old containers first to ensure clean state
+            docker compose -f docker-compose.staging.yml down --remove-orphans || true
 
-            # Wait for services to be ready
-            sleep 20
+            # Deploy with fresh containers
+            docker compose -f docker-compose.staging.yml up -d
+
+            # Debug: Check authentik-db container status and logs
+            echo "=== Container Status ==="
+            docker compose -f docker-compose.staging.yml ps
+            echo "=== Authentik DB Logs ==="
+            docker compose -f docker-compose.staging.yml logs --tail=50 authentik-db || echo "No authentik-db logs"
+            echo "========================="
+
+            # Wait for services to be ready (longer wait for first-time DB init)
+            sleep 30
+
+            # Check if backend is running
+            if ! docker compose -f docker-compose.staging.yml ps backend | grep -q "running"; then
+              echo "Backend not running. Checking logs..."
+              docker compose -f docker-compose.staging.yml logs --tail=30 backend
+              docker compose -f docker-compose.staging.yml logs --tail=30 db
+              exit 1
+            fi
 
             # Run database migrations
             docker compose -f docker-compose.staging.yml exec -T backend alembic upgrade head
