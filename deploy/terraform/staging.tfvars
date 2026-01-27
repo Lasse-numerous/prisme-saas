@@ -8,7 +8,7 @@ deploy_staging    = true
 deploy_production = false
 
 # Server configuration
-staging_server_type = "cax11"
+staging_server_type = "cx23"
 staging_volume_size = 10
 
 # Location

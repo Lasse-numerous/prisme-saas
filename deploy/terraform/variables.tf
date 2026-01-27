@@ -20,7 +20,7 @@ variable "domain" {
 variable "github_repository" {
   description = "GitHub repository (owner/repo) for container images"
   type        = string
-  default     = "lassethomsen/prisme-saas"
+  default     = "Lasse-numerous/prisme-saas"
 }
 
 # =============================================================================
