@@ -5,7 +5,7 @@
  * Exports for OIDC authentication with Authentik.
  */
 
-export { AuthProvider, useAuth } from '../contexts/AuthContext';
-export type { AuthContextType, User } from '../contexts/AuthContext';
+export { AuthProvider, useAuth } from '../../contexts/AuthContext';
+export type { AuthContextType, User } from '../../contexts/AuthContext';
 export { AuthCallback } from './AuthCallback';
 export { ProtectedRoute } from './ProtectedRoute';
