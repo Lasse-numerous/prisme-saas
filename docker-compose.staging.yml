@@ -110,6 +110,9 @@ services:
       - AUTHENTIK_REDIRECT_URI=${AUTHENTIK_REDIRECT_URI}
       - APP_NAME=MadeWithPris.me Staging
       - APP_LAUNCH_URL=https://${DOMAIN}/
+      # GitHub OAuth (optional)
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID:-}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET:-}
     volumes:
       - authentik_media:/media
       - authentik_templates:/templates
@@ -143,6 +146,9 @@ services:
       - AUTHENTIK_REDIRECT_URI=${AUTHENTIK_REDIRECT_URI}
       - APP_NAME=MadeWithPris.me Staging
       - APP_LAUNCH_URL=https://${DOMAIN}/
+      # GitHub OAuth (optional)
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID:-}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET:-}
     volumes:
       - authentik_media:/media
       - authentik_certs:/certs

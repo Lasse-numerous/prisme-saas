@@ -169,13 +169,16 @@ jobs:
           AUTHENTIK_CLIENT_ID: ${{ secrets.AUTHENTIK_CLIENT_ID }}
           AUTHENTIK_CLIENT_SECRET: ${{ secrets.AUTHENTIK_CLIENT_SECRET }}
           AUTHENTIK_WEBHOOK_SECRET: ${{ secrets.AUTHENTIK_WEBHOOK_SECRET }}
+          # GitHub OAuth (optional)
+          GITHUB_CLIENT_ID: ${{ secrets.GH_OAUTH_CLIENT_ID }}
+          GITHUB_CLIENT_SECRET: ${{ secrets.GH_OAUTH_CLIENT_SECRET }}
           # MCP
           MCP_ADMIN_API_KEY: ${{ secrets.MCP_ADMIN_API_KEY }}
         with:
           host: ${{ steps.host.outputs.ip }}
           username: deploy
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          envs: IMAGE_TAG,DOMAIN,DATABASE_URL,POSTGRES_PASSWORD,SECRET_KEY,AUTHENTIK_SECRET_KEY,AUTHENTIK_DB_PASSWORD,AUTHENTIK_CLIENT_ID,AUTHENTIK_CLIENT_SECRET,AUTHENTIK_WEBHOOK_SECRET,MCP_ADMIN_API_KEY
+          envs: IMAGE_TAG,DOMAIN,DATABASE_URL,POSTGRES_PASSWORD,SECRET_KEY,AUTHENTIK_SECRET_KEY,AUTHENTIK_DB_PASSWORD,AUTHENTIK_CLIENT_ID,AUTHENTIK_CLIENT_SECRET,AUTHENTIK_WEBHOOK_SECRET,GITHUB_CLIENT_ID,GITHUB_CLIENT_SECRET,MCP_ADMIN_API_KEY
           script: |
             cd ${{ env.APP_DIR }}
 
@@ -209,6 +212,9 @@ jobs:
             AUTHENTIK_ISSUER_URL=https://auth-staging.madewithpris.me/application/o/madewithprisme/
             AUTHENTIK_REDIRECT_URI=https://${DOMAIN}/api/auth/callback
             AUTHENTIK_POST_LOGOUT_REDIRECT_URI=https://${DOMAIN}/
+            # GitHub OAuth
+            GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
+            GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
             # MCP
             MCP_ADMIN_API_KEY=${MCP_ADMIN_API_KEY}
             SECRETS_EOF
