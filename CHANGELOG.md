@@ -1,6 +1,19 @@
 # CHANGELOG
 
 
+## v0.3.1 (2026-01-28)
+
+### Bug Fixes
+
+- Remove /api prefix from VITE_API_URL (routes already include it)
+  ([`78a0621`](https://github.com/Lasse-numerous/prisme-saas/commit/78a0621358a2fa9139a8d16d9cac3c3c11a954e2))
+
+### Chores
+
+- Remove standalone authentik compose (inline in staging/prod)
+  ([`9a304ef`](https://github.com/Lasse-numerous/prisme-saas/commit/9a304ef8107b021ce8ce12d43220d20129c94b7c))
+
+
 ## v0.3.0 (2026-01-28)
 
 ### Features
