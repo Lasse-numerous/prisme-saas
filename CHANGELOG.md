@@ -1,6 +1,25 @@
 # CHANGELOG
 
 
+## v0.5.3 (2026-01-28)
+
+### Bug Fixes
+
+- Correct JWKS URL to use application-level path
+  ([`77ca55c`](https://github.com/Lasse-numerous/prisme-saas/commit/77ca55c47742ea226b0ba1089719546d0f85d3cc))
+
+JWKS is at /application/o/{app}/jwks/, not /application/o/jwks/
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+### Chores
+
+- Add logging for OIDC errors
+  ([`a528b8e`](https://github.com/Lasse-numerous/prisme-saas/commit/a528b8eeda8fb1c578ebbe6288acdabf8dbb14e5))
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+
 ## v0.5.2 (2026-01-28)
 
 ### Bug Fixes
