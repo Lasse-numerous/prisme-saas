@@ -340,6 +340,18 @@ prism docker down             # Stop all
 prism docker reset-db         # Reset DB in Docker
 ```
 
+### Dev Containers
+```bash
+prism devcontainer up              # Start/create workspace container
+prism devcontainer down            # Stop workspace (preserves data)
+prism devcontainer shell           # Open interactive shell in container
+prism devcontainer logs [service]  # View container logs
+prism devcontainer status          # Show service status
+prism devcontainer list            # List all workspaces
+prism devcontainer generate        # Generate .devcontainer config
+prism devcontainer exec COMMAND    # Run command in container
+```
+
 ### Deployment (Hetzner Cloud)
 ```bash
 prism deploy init --domain example.com
@@ -443,6 +455,43 @@ Prisme generates MCP tools automatically. Each model gets:
 
 Tools are in `mcp_server/tools/`.
 
+## Dev Container Workspaces
+
+Prism supports two devcontainer modes:
+
+### VS Code Dev Container (`--devcontainer` flag)
+Generate a `.devcontainer/` configuration for VS Code Remote Containers:
+```bash
+prism create my-project --devcontainer
+# or for existing projects:
+prism devcontainer generate
+```
+This creates config files that VS Code uses to open the project in a container.
+
+### Full Workspace Mode (`prism devcontainer` commands)
+Run complete development environments as isolated workspaces:
+```bash
+prism devcontainer up    # Start workspace
+prism devcontainer shell # Get a shell inside
+```
+
+**Workspace naming**: `{project}-{branch}` (e.g., `prisme-saas-main`)
+
+**What's included**:
+- Claude Code and Prism CLI pre-installed
+- Python with uv, Node.js with configured package manager
+- PostgreSQL database (isolated per workspace)
+- All project dependencies
+
+**Traefik routing**: Each workspace is accessible at `http://{workspace}.localhost`
+- Frontend: `http://prisme-saas-main.localhost`
+- Backend API: `http://prisme-saas-main.localhost/api`
+
+**Persistence**: Volumes preserve your work between restarts:
+- Source code (bind mount)
+- Python/Node dependencies (named volumes)
+- Database data (named volume)
+
 ## Quick Fixes
 
 | Problem | Solution |
@@ -453,3 +502,4 @@ Tools are in `mcp_server/tools/`.
 | Lost customizations | You edited `_generated/` - restore from git |
 | Docker not starting | `prism docker down && prism dev --docker` |
 | Tests failing | `prism test` after `prism generate` |
+| Devcontainer not connecting | `prism devcontainer down && prism devcontainer up` |

@@ -20,7 +20,7 @@ from prism import (
 from prism.spec.auth import AuthConfig, AuthentikConfig, AuthentikMFAConfig, Role
 
 spec = StackSpec(
-    name="madewithprisme",
+    name="prisme_api",
     title="MadeWithPris.me API",
     version="1.0.0",
     description="Managed subdomain service for madewithpris.me",
