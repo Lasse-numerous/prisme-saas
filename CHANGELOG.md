@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.2.2 (2026-01-28)
+
+### Bug Fixes
+
+- Update terraform to 1.9.0 for S3 backend compatibility
+  ([`7f6a3d5`](https://github.com/Lasse-numerous/prisme-saas/commit/7f6a3d5aec4552b2cc8665c9abd3a420f061eb39))
+
+
 ## v0.2.1 (2026-01-28)
 
 ### Bug Fixes

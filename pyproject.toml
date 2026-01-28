@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "prisme-saas"
-version = "0.2.1"
+version = "0.2.2"
 description = "Prisme.dev - Managed subdomain service built with Prism"
 readme = "README.md"
 license = "MIT"
