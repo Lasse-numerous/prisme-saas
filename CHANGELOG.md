@@ -1,6 +1,23 @@
 # CHANGELOG
 
 
+## v0.5.0 (2026-01-28)
+
+### Features
+
+- Add Authentik blueprints for idempotent OAuth2 setup
+  ([`855e11f`](https://github.com/Lasse-numerous/prisme-saas/commit/855e11fed3ab94a0cdc2aad0c1e9e759a3eaa97b))
+
+- Add Authentik blueprint for OAuth2 provider and application - Update docker-compose.staging.yml to
+  mount blueprints - Update deploy workflow to copy blueprints to server - Add script to generate
+  and set OAuth credentials - Exclude blueprints from YAML lint (uses custom tags)
+
+The blueprint automatically configures: - OAuth2 provider with client_id/secret from env vars -
+  Application with slug "madewithprisme"
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+
 ## v0.4.0 (2026-01-28)
 
 ### Features
