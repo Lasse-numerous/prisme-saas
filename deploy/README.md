@@ -119,7 +119,8 @@ deploy/
 │   └── .env.production.template # Production environment template
 └── scripts/
     ├── deploy.sh                # Deployment script
-    └── rollback.sh              # Rollback script
+    ├── rollback.sh              # Rollback script
+    └── setup-github-secrets.sh  # GitHub secrets setup script
 ```
 
 ## Server Specifications
@@ -164,18 +165,55 @@ ssh deploy@STAGING_IP "cd /opt/${PROJECT_NAME} && docker compose exec db pg_dump
 
 The `.github/workflows/deploy.yml` workflow automatically:
 
-1. Builds Docker images on push
+1. Builds Docker images on push to `main`
 2. Pushes to GitHub Container Registry
-3. Deploys to staging on `staging` branch
-4. Deploys to production on `main` branch
+3. Deploys to staging on push to `main` branch
+4. Deploys to production only via manual workflow dispatch
+
+### Setting Up GitHub Secrets
+
+Use the setup script to configure all required secrets:
+
+```bash
+# Setup staging environment secrets
+./scripts/setup-github-secrets.sh staging --ssh-key-path ~/.ssh/hetzner-management
+
+# Setup production environment secrets
+./scripts/setup-github-secrets.sh production --ssh-key-path ~/.ssh/hetzner-management
+```
+
+Then manually set the host IPs after terraform apply:
+```bash
+# Get server IP from terraform
+cd terraform
+STAGING_IP=$(terraform output -raw staging_server_ip)
+
+# Set in GitHub
+gh secret set STAGING_HOST --env staging -R Lasse-numerous/prisme-saas <<< "$STAGING_IP"
+```
 
 ### Required GitHub Secrets
 
+**Repository Secrets:**
+
 | Secret | Description |
 |--------|-------------|
-| `STAGING_HOST` | Staging server IP address |
-| `PRODUCTION_HOST` | Production server IP/floating IP |
 | `SSH_PRIVATE_KEY` | SSH private key for deploy user |
+
+**Environment Secrets (staging/production):**
+
+| Secret | Description |
+|--------|-------------|
+| `STAGING_HOST` / `PRODUCTION_HOST` | Server IP address |
+| `POSTGRES_PASSWORD` | PostgreSQL password |
+| `DATABASE_URL` | Full database connection string |
+| `SECRET_KEY` | Application secret key |
+| `AUTHENTIK_SECRET_KEY` | Authentik encryption key |
+| `AUTHENTIK_DB_PASSWORD` | Authentik PostgreSQL password |
+| `AUTHENTIK_CLIENT_ID` | OAuth client ID (set after Authentik setup) |
+| `AUTHENTIK_CLIENT_SECRET` | OAuth client secret (set after Authentik setup) |
+| `AUTHENTIK_WEBHOOK_SECRET` | Webhook signature secret |
+| `MCP_ADMIN_API_KEY` | MCP server admin API key |
 
 ## Troubleshooting
 
