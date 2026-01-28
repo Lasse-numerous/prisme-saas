@@ -127,12 +127,12 @@ runcmd:
   - systemctl daemon-reload
   - systemctl enable ${project_name}.service
 
-  # Create nginx default config (will be replaced after certbot)
+  # Create nginx config with proper domain for certbot
   - |
     cat > /etc/nginx/sites-available/${project_name} << 'NGINXEOF'
     server {
         listen 80;
-        server_name _;
+        server_name ${domain};
 
         location /health {
             return 200 'OK';

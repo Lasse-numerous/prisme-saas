@@ -269,6 +269,27 @@ jobs:
               echo "Authentik already initialized."
             fi
 
+      - name: Setup SSL certificate
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ steps.host.outputs.ip }}
+          username: deploy
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            DOMAIN="${{ vars.STAGING_DOMAIN || 'staging.madewithpris.me' }}"
+
+            # Check if SSL is already configured
+            if sudo test -f "/etc/letsencrypt/live/$DOMAIN/fullchain.pem"; then
+              echo "SSL certificate already exists for $DOMAIN"
+            else
+              echo "Setting up SSL certificate for $DOMAIN..."
+              # Update nginx server_name if needed
+              sudo sed -i "s/server_name .*;/server_name $DOMAIN;/" /etc/nginx/sites-available/prisme-saas
+              sudo nginx -t && sudo systemctl reload nginx
+              # Get certificate
+              sudo certbot --nginx -d "$DOMAIN" --non-interactive --agree-tos -m deploy@madewithpris.me
+            fi
+
       - name: Verify deployment
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -399,6 +420,27 @@ jobs:
 
             # Cleanup old images
             docker image prune -f
+
+      - name: Setup SSL certificate
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ steps.host.outputs.ip }}
+          username: deploy
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            DOMAIN="${{ vars.PRODUCTION_DOMAIN || 'madewithpris.me' }}"
+
+            # Check if SSL is already configured
+            if sudo test -f "/etc/letsencrypt/live/$DOMAIN/fullchain.pem"; then
+              echo "SSL certificate already exists for $DOMAIN"
+            else
+              echo "Setting up SSL certificate for $DOMAIN..."
+              # Update nginx server_name if needed
+              sudo sed -i "s/server_name .*;/server_name $DOMAIN;/" /etc/nginx/sites-available/prisme-saas
+              sudo nginx -t && sudo systemctl reload nginx
+              # Get certificate
+              sudo certbot --nginx -d "$DOMAIN" --non-interactive --agree-tos -m deploy@madewithpris.me
+            fi
 
       - name: Verify deployment
         uses: appleboy/ssh-action@v1.0.3
