@@ -29,8 +29,8 @@ import SubdomainEditPage from './pages/subdomains/[id]/edit';
 import { useAuth } from './contexts/AuthContext';
 
 // PRISM:PROTECTED:START - Custom Imports
-// Add your custom page imports here:
-// import MyCustomPage from './pages/custom';
+import LandingPage from './pages/LandingPage';
+import Dashboard from './pages/Dashboard';
 // PRISM:PROTECTED:END
 
 /** App name and description for branding */
@@ -210,23 +210,10 @@ function Layout({ children }: { children?: React.ReactNode }): ReactElement {
   );
 }
 
-/** Home page with welcome message */
+/** Home page: landing for guests, dashboard for authenticated users */
 function HomePage(): ReactElement {
-  return (
-    <div className="page-container">
-      <div className="card p-8 text-center">
-        <div className="w-16 h-16 bg-surface-sunken rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg className="w-8 h-8 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
-          </svg>
-        </div>
-        <h1 className="text-2xl font-semibold text-foreground mb-2">Welcome</h1>
-        <p className="text-muted max-w-md mx-auto">
-          Select an item from the sidebar to get started.
-        </p>
-      </div>
-    </div>
-  );
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? <Dashboard /> : <LandingPage />;
 }
 
 /** Application router with all model routes */
