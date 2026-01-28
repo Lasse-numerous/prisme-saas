@@ -175,13 +175,15 @@ jobs:
           GITHUB_CLIENT_SECRET: ${{ secrets.GH_OAUTH_CLIENT_SECRET }}
           # Email (Resend)
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          # JWT for self-issued sessions
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
           # MCP
           MCP_ADMIN_API_KEY: ${{ secrets.MCP_ADMIN_API_KEY }}
         with:
           host: ${{ steps.host.outputs.ip }}
           username: deploy
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          envs: IMAGE_TAG,DOMAIN,DATABASE_URL,POSTGRES_PASSWORD,SECRET_KEY,AUTHENTIK_SECRET_KEY,AUTHENTIK_DB_PASSWORD,AUTHENTIK_CLIENT_ID,AUTHENTIK_CLIENT_SECRET,AUTHENTIK_WEBHOOK_SECRET,GITHUB_CLIENT_ID,GITHUB_CLIENT_SECRET,RESEND_API_KEY,MCP_ADMIN_API_KEY
+          envs: IMAGE_TAG,DOMAIN,DATABASE_URL,POSTGRES_PASSWORD,SECRET_KEY,AUTHENTIK_SECRET_KEY,AUTHENTIK_DB_PASSWORD,AUTHENTIK_CLIENT_ID,AUTHENTIK_CLIENT_SECRET,AUTHENTIK_WEBHOOK_SECRET,GITHUB_CLIENT_ID,GITHUB_CLIENT_SECRET,RESEND_API_KEY,MCP_ADMIN_API_KEY,JWT_SECRET
           script: |
             cd ${{ env.APP_DIR }}
 
@@ -203,7 +205,9 @@ jobs:
             REDIS_URL=redis://redis:6379
             # App secrets
             SECRET_KEY=${SECRET_KEY}
+            JWT_SECRET=${JWT_SECRET}
             # Authentik config
+            AUTHENTIK_BASE_URL=https://auth-staging.madewithpris.me
             AUTHENTIK_SECRET_KEY=${AUTHENTIK_SECRET_KEY}
             AUTHENTIK_DB_USER=authentik
             AUTHENTIK_DB_NAME=authentik
@@ -397,13 +401,15 @@ jobs:
           AUTHENTIK_CLIENT_ID: ${{ secrets.AUTHENTIK_CLIENT_ID }}
           AUTHENTIK_CLIENT_SECRET: ${{ secrets.AUTHENTIK_CLIENT_SECRET }}
           AUTHENTIK_WEBHOOK_SECRET: ${{ secrets.AUTHENTIK_WEBHOOK_SECRET }}
+          # JWT for self-issued sessions
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
           # MCP
           MCP_ADMIN_API_KEY: ${{ secrets.MCP_ADMIN_API_KEY }}
         with:
           host: ${{ steps.host.outputs.ip }}
           username: deploy
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          envs: IMAGE_TAG,DOMAIN,DATABASE_URL,POSTGRES_PASSWORD,SECRET_KEY,AUTHENTIK_SECRET_KEY,AUTHENTIK_DB_PASSWORD,AUTHENTIK_CLIENT_ID,AUTHENTIK_CLIENT_SECRET,AUTHENTIK_WEBHOOK_SECRET,MCP_ADMIN_API_KEY
+          envs: IMAGE_TAG,DOMAIN,DATABASE_URL,POSTGRES_PASSWORD,SECRET_KEY,AUTHENTIK_SECRET_KEY,AUTHENTIK_DB_PASSWORD,AUTHENTIK_CLIENT_ID,AUTHENTIK_CLIENT_SECRET,AUTHENTIK_WEBHOOK_SECRET,MCP_ADMIN_API_KEY,JWT_SECRET
           script: |
             cd ${{ env.APP_DIR }}
 
@@ -428,7 +434,9 @@ jobs:
             REDIS_URL=redis://redis:6379
             # App secrets
             SECRET_KEY=${SECRET_KEY}
-            # Authentik config (for when enabled in production)
+            JWT_SECRET=${JWT_SECRET}
+            # Authentik config
+            AUTHENTIK_BASE_URL=https://auth.madewithpris.me
             AUTHENTIK_SECRET_KEY=${AUTHENTIK_SECRET_KEY}
             AUTHENTIK_DB_USER=authentik
             AUTHENTIK_DB_NAME=authentik
