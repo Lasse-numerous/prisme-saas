@@ -1,6 +1,19 @@
 # CHANGELOG
 
 
+## v0.10.2 (2026-01-28)
+
+### Bug Fixes
+
+- **deploy**: Add AUTHENTIK_BASE_URL and JWT_SECRET to deploy env vars
+  ([`2705fd7`](https://github.com/Lasse-numerous/prisme-saas/commit/2705fd78241438c3f68e36302da445962ada4d64))
+
+The Flow Executor client needs AUTHENTIK_BASE_URL to reach Authentik's API, and JWT_SECRET is
+  required for self-issued session tokens.
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+
 ## v0.10.1 (2026-01-28)
 
 ### Bug Fixes
