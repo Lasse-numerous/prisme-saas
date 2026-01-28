@@ -7,12 +7,14 @@
 
 <p>Thanks for signing up for MadeWithPris.me! Please verify your email address to complete your registration and get started.</p>
 
+{% with verify_url="https://madewithpris.me/verify-email?token="|add:token.key %}
 <div class="button-container">
-  <a href="{{ url }}" class="button">Verify Email Address</a>
+  <a href="{{ verify_url }}" class="button">Verify Email Address</a>
 </div>
 
 <p>Or copy and paste this link into your browser:</p>
-<p class="small-text">{{ url }}</p>
+<p class="small-text">{{ verify_url }}</p>
+{% endwith %}
 
 <hr class="divider">
 

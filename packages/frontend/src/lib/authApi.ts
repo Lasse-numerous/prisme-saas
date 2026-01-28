@@ -100,6 +100,18 @@ export async function submitRecoveryFlow(
   });
 }
 
+export async function verifyRecoveryToken(
+  token: string
+): Promise<FlowStartResponse> {
+  return apiPost('/api/auth/flow/recovery/verify-token', { token });
+}
+
+export async function verifyEmailToken(
+  token: string
+): Promise<FlowStartResponse> {
+  return apiPost('/api/auth/flow/signup/verify-token', { token });
+}
+
 export function getGitHubLoginUrl(): string {
   return `${API_BASE_URL}/api/auth/github/login`;
 }

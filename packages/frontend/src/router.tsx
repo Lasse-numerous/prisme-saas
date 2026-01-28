@@ -31,6 +31,8 @@ import { useAuth } from './contexts/AuthContext';
 // PRISM:PROTECTED:START - Custom Imports
 import LandingPage from './pages/LandingPage';
 import Dashboard from './pages/Dashboard';
+import ResetPassword from './pages/ResetPassword';
+import VerifyEmail from './pages/VerifyEmail';
 // PRISM:PROTECTED:END
 
 /** App name and description for branding */
@@ -242,8 +244,8 @@ export const router = createBrowserRouter([
       { path: '/subdomains/new', element: <ProtectedRoute><SubdomainCreatePage /></ProtectedRoute> },
       { path: '/subdomains/:id/edit', element: <ProtectedRoute><SubdomainEditPage /></ProtectedRoute> },
       // PRISM:PROTECTED:START - Custom Routes
-      // Add your custom routes here:
-      // { path: '/custom', element: <MyCustomPage /> },
+      { path: '/reset-password', element: <ResetPassword /> },
+      { path: '/verify-email', element: <VerifyEmail /> },
       // PRISM:PROTECTED:END
     ],
   },

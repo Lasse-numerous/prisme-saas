@@ -16,6 +16,7 @@ import httpx
 import redis.asyncio as redis
 from fastapi import APIRouter, Cookie, Depends, HTTPException, Query, Response, status
 from fastapi.responses import RedirectResponse
+from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -264,6 +265,136 @@ async def flow_signup_resend_email(
         return {"message": "Verification email resent"}
     except FlowExecutorError as e:
         raise HTTPException(status_code=502, detail=str(e)) from e
+
+
+# ── Email token verification (keeps users in our UX) ───────────
+
+
+class TokenVerifyRequest(BaseModel):
+    """Request body for email token verification."""
+
+    token: str
+
+
+class TokenVerifyResponse(BaseModel):
+    """Response from email token verification."""
+
+    flow_token: str
+    challenge: FlowChallenge | None = None
+
+
+@router.post("/flow/recovery/verify-token", response_model=TokenVerifyResponse)
+async def verify_recovery_token(
+    body: TokenVerifyRequest,
+    executor: Annotated[FlowExecutorClient, Depends(get_flow_executor)],
+) -> TokenVerifyResponse:
+    """Verify a password reset email token and advance the flow to the password stage.
+
+    The email links the user to the frontend with ?token=<key>. The frontend
+    calls this endpoint which simulates clicking the Authentik email link,
+    advancing the flow past the email stage to the password prompt.
+    """
+    try:
+        # Hit Authentik's flow executor with the token query param, as if the
+        # user clicked the email link. This advances past the email stage.
+        flow_token = secrets.token_urlsafe(32)
+        recovery_slug = authentik_settings.recovery_flow_slug
+        url = f"{executor.base_url}/api/v3/flows/executor/{recovery_slug}/?token={body.token}"
+
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(
+                url,
+                headers={"Accept": "application/json"},
+                follow_redirects=True,
+            )
+
+            if resp.status_code not in (200, 302):
+                logger.error("Recovery token verify failed: %s %s", resp.status_code, resp.text)
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid or expired reset token",
+                )
+
+            # Store the Authentik session cookies under our flow_token
+            cookies = dict(resp.cookies)
+            await executor._store_cookies(flow_token, cookies)
+
+            body_json = resp.json()
+            challenge_data = executor._translate_challenge(body_json)
+
+            # If we got an access_denied challenge, the token is invalid/expired
+            if challenge_data.get("type") == "access_denied":
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=challenge_data.get("error", "Invalid or expired reset token"),
+                )
+
+            return TokenVerifyResponse(
+                flow_token=flow_token,
+                challenge=FlowChallenge(**challenge_data),
+            )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.exception("Recovery token verification error")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired reset token",
+        ) from e
+
+
+@router.post("/flow/signup/verify-token", response_model=TokenVerifyResponse)
+async def verify_signup_token(
+    body: TokenVerifyRequest,
+    executor: Annotated[FlowExecutorClient, Depends(get_flow_executor)],
+) -> TokenVerifyResponse:
+    """Verify a signup email verification token and advance the flow.
+
+    Same pattern as recovery token verification but for the enrollment flow.
+    """
+    try:
+        flow_token = secrets.token_urlsafe(32)
+        enrollment_slug = authentik_settings.enrollment_flow_slug
+        url = f"{executor.base_url}/api/v3/flows/executor/{enrollment_slug}/?token={body.token}"
+
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(
+                url,
+                headers={"Accept": "application/json"},
+                follow_redirects=True,
+            )
+
+            if resp.status_code not in (200, 302):
+                logger.error("Signup token verify failed: %s %s", resp.status_code, resp.text)
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid or expired verification token",
+                )
+
+            cookies = dict(resp.cookies)
+            await executor._store_cookies(flow_token, cookies)
+
+            body_json = resp.json()
+            challenge_data = executor._translate_challenge(body_json)
+
+            if challenge_data.get("type") == "access_denied":
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=challenge_data.get("error", "Invalid or expired verification token"),
+                )
+
+            return TokenVerifyResponse(
+                flow_token=flow_token,
+                challenge=FlowChallenge(**challenge_data),
+            )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.exception("Signup token verification error")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired verification token",
+        ) from e
 
 
 # ── Recovery (forgot password) flow endpoints ──────────────────

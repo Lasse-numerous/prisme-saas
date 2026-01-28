@@ -50,6 +50,9 @@ class AuthentikSettings(BaseSettings):
     github_client_secret: str = os.getenv("GITHUB_CLIENT_SECRET", "")
     github_redirect_uri: str = os.getenv("GITHUB_REDIRECT_URI", "")
 
+    # Frontend URL (used for email token redirect links)
+    frontend_url: str = os.getenv("FRONTEND_URL", "https://madewithpris.me")
+
     # Webhook Configuration
     webhook_secret: str = os.getenv("AUTHENTIK_WEBHOOK_SECRET", "")
 
