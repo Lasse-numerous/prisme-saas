@@ -1,6 +1,20 @@
 # CHANGELOG
 
 
+## v0.7.0 (2026-01-28)
+
+### Features
+
+- Add email/password auth with optional TOTP MFA
+  ([`e2d9f9f`](https://github.com/Lasse-numerous/prisme-saas/commit/e2d9f9f2d0971ebfe3babaf4e8c101805ee31479))
+
+- Add email-password.yaml blueprint for signup and password recovery - Add totp-mfa.yaml blueprint
+  for optional authenticator app MFA - Configure Resend SMTP for Authentik email delivery - Pass
+  RESEND_API_KEY to staging deployment
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+
 ## v0.6.0 (2026-01-28)
 
 ### Documentation
