@@ -129,6 +129,20 @@ async def callback(
         result = await db.execute(select(User).where(User.authentik_id == authentik_id))
         user = result.scalar_one_or_none()
 
+        # Validate email domain against whitelist for new users
+        if not user:
+            from prisme_api.services.allowed_email_domain import AllowedEmailDomainService
+
+            email_domain_service = AllowedEmailDomainService(db)
+            email = claims.get("email", f"{claims.get('preferred_username', 'user')}@local")
+
+            if not await email_domain_service.is_domain_allowed(email):
+                domain = email.split("@")[1] if "@" in email else "unknown"
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail=f"Email domain '{domain}' is not allowed for signup. Contact admin for access.",
+                )
+
         if not user:
             # Create new user from claims
             email = claims.get("email", f"{claims.get('preferred_username', 'user')}@local")

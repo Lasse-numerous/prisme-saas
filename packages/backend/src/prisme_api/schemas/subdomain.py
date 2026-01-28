@@ -35,6 +35,13 @@ class SubdomainBase(SchemaBase):
     dns_record_id: str | None = Field(
         default=None, max_length=50, description="Hetzner DNS record ID"
     )
+    port: int = Field(default=80, description="Target port for routing (default: 80)")
+    released_at: datetime | None = Field(
+        default=None, description="When the subdomain was released"
+    )
+    cooldown_until: datetime | None = Field(
+        default=None, description="Cooldown period end (30 days after release)"
+    )
 
 
 class SubdomainCreate(SubdomainBase):
@@ -67,6 +74,13 @@ class SubdomainUpdate(SchemaBase):
     )
     dns_record_id: str | None = Field(
         default=None, max_length=50, description="Hetzner DNS record ID"
+    )
+    port: int | None = Field(default=None, description="Target port for routing")
+    released_at: datetime | None = Field(
+        default=None, description="When the subdomain was released"
+    )
+    cooldown_until: datetime | None = Field(
+        default=None, description="Cooldown period end (30 days after release)"
     )
 
 
