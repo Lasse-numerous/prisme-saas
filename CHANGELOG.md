@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.4.0 (2026-01-28)
+
+### Features
+
+- Add Authentik nginx config and SSL to deploy workflow
+  ([`5b14ba6`](https://github.com/Lasse-numerous/prisme-saas/commit/5b14ba6ee757f9880c9b02d85b9f7897c06f00e3))
+
+
 ## v0.3.1 (2026-01-28)
 
 ### Bug Fixes
