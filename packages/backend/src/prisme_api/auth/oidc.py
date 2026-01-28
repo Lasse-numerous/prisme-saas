@@ -190,7 +190,8 @@ class OIDCClient:
                 id_token,
                 jwks,
                 claims_options={
-                    "iss": {"essential": True, "value": self.settings.issuer_url.rstrip("/")},
+                    # Keep trailing slash - Authentik includes it in the issuer
+                    "iss": {"essential": True, "value": self.settings.issuer_url},
                     "aud": {"essential": True, "value": self.settings.client_id},
                     "exp": {"essential": True},
                 },
