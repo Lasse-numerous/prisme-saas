@@ -1,6 +1,76 @@
 # CHANGELOG
 
 
+## v0.10.0 (2026-01-28)
+
+### Chores
+
+- Update uv.lock with new auth dependencies
+  ([`379bff7`](https://github.com/Lasse-numerous/prisme-saas/commit/379bff703443f0557b700bdf984224479c59a51e))
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+- **deps**: Bump appleboy/ssh-action from 1.0.3 to 1.2.4
+  ([`d56dfeb`](https://github.com/Lasse-numerous/prisme-saas/commit/d56dfeb789e11ba3c9500a163e2fe3a0b0e2354e))
+
+Bumps [appleboy/ssh-action](https://github.com/appleboy/ssh-action) from 1.0.3 to 1.2.4. - [Release
+  notes](https://github.com/appleboy/ssh-action/releases) -
+  [Commits](https://github.com/appleboy/ssh-action/compare/v1.0.3...v1.2.4)
+
+--- updated-dependencies: - dependency-name: appleboy/ssh-action dependency-version: 1.2.4
+
+dependency-type: direct:production
+
+update-type: version-update:semver-minor ...
+
+Signed-off-by: dependabot[bot] <support@github.com>
+
+### Features
+
+- Add devcontainer configuration and documentation
+  ([`3cc98de`](https://github.com/Lasse-numerous/prisme-saas/commit/3cc98dea89d97303b4e2ef23c9a752eaf6370df7))
+
+- Add .devcontainer/ with Docker Compose setup for isolated development - Add Development with
+  Devcontainer section to README
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+- Add devcontainer configuration for development
+  ([`332e83e`](https://github.com/Lasse-numerous/prisme-saas/commit/332e83ef386365fbd5c05732cd6656f16d3ad66f))
+
+Adds VS Code devcontainer support for easier development setup: - Dockerfile.dev with Python 3.13,
+  Node.js, and uv - docker-compose.yml with PostgreSQL and isolated volumes - devcontainer.json with
+  VS Code settings and extensions - setup.sh for container initialization - .env.template for
+  environment configuration
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+- **auth**: Add Flow Executor client, self-issued JWT sessions, and new auth endpoints
+  ([`72c491b`](https://github.com/Lasse-numerous/prisme-saas/commit/72c491bfe65e8eee8241f450acdb54913ac218c4))
+
+Replace OIDC redirect flow with Authentik Flow Executor API for custom auth UX. Backend now proxies
+  Authentik flows and issues self-signed HS256 JWT session cookies.
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+- **frontend**: Add auth API client and new auth components
+  ([`3ab0fdb`](https://github.com/Lasse-numerous/prisme-saas/commit/3ab0fdb5ec1bda9762397b0490ed4791f88f9117))
+
+Add authApi.ts for driving backend flow endpoints, plus EmailVerification, TOTPVerify, and TOTPSetup
+  components for multi-step auth flows.
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+- **frontend**: Rewrite LoginForm, SignupForm with flow executor + simplify AuthContext
+  ([`c59105b`](https://github.com/Lasse-numerous/prisme-saas/commit/c59105b4047f38b24b7088fc0e9e66dcbf0ba468))
+
+LoginForm now drives Authentik login flow with multi-step support (credentials, TOTP MFA, email
+  verification error). SignupForm drives enrollment flow with email verification step. AuthContext
+  simplified - login/signup logic moved to forms.
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+
 ## v0.9.0 (2026-01-28)
 
 ### Bug Fixes
