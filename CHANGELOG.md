@@ -1,6 +1,19 @@
 # CHANGELOG
 
 
+## v0.1.1 (2026-01-28)
+
+### Bug Fixes
+
+- Update terraform conditions for workflow_run trigger
+  ([`e94aedb`](https://github.com/Lasse-numerous/prisme-saas/commit/e94aedb3de0ad6cb18b7e19765afb9e9a1d44d22))
+
+Changed conditions from 'push' to 'workflow_run' event type so apply, outputs, and deploy trigger
+  steps actually run.
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+
 ## v0.1.0 (2026-01-28)
 
 ### Bug Fixes
