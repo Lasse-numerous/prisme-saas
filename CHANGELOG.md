@@ -1,6 +1,19 @@
 # CHANGELOG
 
 
+## v0.8.1 (2026-01-28)
+
+### Bug Fixes
+
+- **email**: Use SMTP port 587 with STARTTLS for Resend
+  ([`8ebf346`](https://github.com/Lasse-numerous/prisme-saas/commit/8ebf34685f622da8579792def2d5c7259f51fbe2))
+
+Hetzner blocks outbound port 465 (SMTP SSL). Changed Authentik email configuration to use port 587
+  with STARTTLS which is not blocked.
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+
 ## v0.8.0 (2026-01-28)
 
 ### Chores
