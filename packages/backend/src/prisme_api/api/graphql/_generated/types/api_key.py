@@ -4,10 +4,13 @@
 """
 
 import datetime
-from typing import Annotated, Any
+from typing import TYPE_CHECKING, Annotated, Any
 
 import strawberry
 from strawberry.types import Info
+
+if TYPE_CHECKING:
+    from .user import UserType
 
 
 @strawberry.type(description="API keys for user authentication")
@@ -37,12 +40,7 @@ class APIKeyType:
     # Relationship resolvers
 
     @strawberry.field
-    async def user(
-        self, info: Info
-    ) -> (
-        Annotated["UserType", strawberry.lazy("prisme_api.api.graphql._generated.types.user")]
-        | None
-    ):
+    async def user(self, info: Info) -> Annotated["UserType", strawberry.lazy(".user")] | None:
         """Fetch related User entities."""
         from .user import user_from_model
 

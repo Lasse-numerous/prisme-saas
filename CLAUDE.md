@@ -6,30 +6,74 @@ You are an expert in the Prisme framework and prim CLI. This file contains your 
 
 ```bash
 # Most common commands
-prism generate              # Generate code from spec
-prism generate --dry-run    # Preview changes
-prism dev                   # Start dev servers
-prism dev --docker          # Start in Docker
-prism test                  # Run all tests
-prism db migrate            # Create/run migrations
-prism review list           # See override status
+uv run prism generate              # Generate code from spec
+uv run prism generate --dry-run    # Preview changes
+uv run prism dev                   # Start dev servers
+uv run prism dev --docker          # Start in Docker
+uv run prism test                  # Run all tests
+uv run prism db migrate            # Create/run migrations
+uv run prism review list           # See override status
 ```
 
 ## Project Context
 
-This is `prisme-saas`, a project built with the Prisme framework. Key locations:
+This is `prisme-saas` (v0.8.0), a **subdomain-as-a-service platform** for managing `*.madewithpris.me` subdomains with wildcard DNS routing. Built with the Prisme framework.
+
+- **Domain**: madewithpris.me
+- **Backend package**: `prisme_api` (Python 3.13, FastAPI, async SQLAlchemy, asyncpg)
+- **Frontend**: React 18, TypeScript, Vite, urql (GraphQL), Tailwind CSS (Nordic theme)
+- **Auth**: Authentik SSO (OIDC) + API keys + JWT
+- **Infrastructure**: Hetzner Cloud, Traefik reverse proxy, Docker, GitHub Actions CI/CD
+- **Email**: Resend API
+
+Key locations:
 
 - **Spec file**: `specs/models.py` - Single source of truth for all models
 - **Config**: `prism.config.py` - Prisme configuration
-- **Backend**: `packages/backend/` - Python/FastAPI/SQLAlchemy
-- **Frontend**: `packages/frontend/` - React/TypeScript/Vite
+- **Backend**: `packages/backend/src/prisme_api/` - Python/FastAPI/SQLAlchemy
+- **Frontend**: `packages/frontend/src/` - React/TypeScript/Vite
+- **Deploy**: `deploy/` - Terraform (Hetzner), Traefik config, Authentik blueprints
 - **Prism framework source**: `/home/lassethomsen/code/prism/` - The framework itself
+
+### Current Models
+
+| Model | Purpose | Key Features |
+|-------|---------|-------------|
+| **User** | User accounts | email, password_hash, MFA, authentik_id, roles (JSON), subdomain_limit (default 10), soft delete |
+| **Subdomain** | Managed `*.madewithpris.me` subdomains | name (DNS-compliant), owner_id (FK→User), ip_address, status enum (reserved/active/suspended/released), dns_record_id, port, cooldown_until |
+| **APIKey** | Programmatic access tokens | user_id (FK→User), key_hash (SHA256), key_prefix, expires_at, is_active |
+| **AllowedEmailDomain** | Signup email whitelist | domain (unique), is_active, description |
+
+### Custom Services (non-generated)
+
+- `services/hetzner_dns.py` - Hetzner DNS API integration for A record management
+- `services/route_manager.py` - Traefik dynamic routing config generation
+- `auth/` - OIDC (Authentik), API key auth, webhooks, dependencies
+- `middleware/` - Auth and API key middleware
+
+### Deployment Environments
+
+| Environment | Server | Volume | Floating IP |
+|-------------|--------|--------|-------------|
+| Staging | cx23 (1 vCPU, 2GB) | 10GB | No |
+| Production | cpx21 (2 vCPU, 4GB) | 20GB | Yes |
+
+### Required Environment Variables
+
+```
+DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/prisme_api
+PRISME_ADMIN_API_KEY=prisme_live_sk_...
+HETZNER_DNS_API_TOKEN=...
+HETZNER_DNS_ZONE_ID=...
+SSL_EMAIL=admin@prisme.dev
+DEBUG=true
+```
 
 ## Core Principle: Spec-First Development
 
 Prisme follows a **spec-driven development** approach:
 1. **Define** - Write models in Python using Pydantic in `specs/models.py`
-2. **Generate** - Run `prism generate` to create all code
+2. **Generate** - Run `uv run prism generate` to create all code
 3. **Customize** - Extend generated base classes (never edit `_generated/` files)
 4. **Regenerate** - Update spec and regenerate without losing customizations
 
@@ -81,17 +125,17 @@ ModelSpec(
 
 2. Generate and migrate:
 ```bash
-prism generate --dry-run  # Preview first
-prism generate
-prism db migrate -m "add new_entity table"
+uv run prism generate --dry-run  # Preview first
+uv run prism generate
+uv run prism db migrate -m "add new_entity table"
 ```
 
 ### Adding a Field to Existing Model
 
 1. Find model in `specs/models.py`
 2. Add `FieldSpec` to the `fields` list
-3. Run `prism generate`
-4. Run `prism db migrate -m "add field_name to model"`
+3. Run `uv run prism generate`
+4. Run `uv run prism db migrate -m "add field_name to model"`
 
 ### Adding Custom Business Logic
 
@@ -135,10 +179,10 @@ async def activate_customer(
 When you customize a generated file:
 
 ```bash
-prism review list           # See all overrides
-prism review diff <file>    # See differences
-prism review mark-reviewed <file>  # Acknowledge
-prism review restore <file> # Undo customizations
+uv run prism review list           # See all overrides
+uv run prism review diff <file>    # See differences
+uv run prism review mark-reviewed <file>  # Acknowledge
+uv run prism review restore <file> # Undo customizations
 ```
 
 ## Field Types Reference
@@ -229,8 +273,8 @@ Creates a new Prism project with full template scaffolding.
 
 **Basic Usage:**
 ```bash
-prism create my-project
-prism create my-project --template saas --docker --full-dx
+uv run prism create my-project
+uv run prism create my-project --template saas --docker --full-dx
 ```
 
 **Template Options:**
@@ -286,7 +330,7 @@ prism create my-project --template saas --docker --full-dx
 
 **Full Example:**
 ```bash
-prism create my-crm \
+uv run prism create my-crm \
   --template saas \
   --database postgresql \
   --package-manager pnpm \
@@ -298,61 +342,73 @@ prism create my-crm \
 
 ### Code Generation
 ```bash
-prism generate                # Generate from spec
-prism generate --dry-run      # Preview changes
-prism generate --only graphql # Specific layer only
-prism generate --only rest    # REST API only
-prism generate --only frontend # Frontend only
-prism generate --only services # Services only
-prism generate --only models  # Models only
-prism generate --only tests   # Tests only
-prism generate --force --diff # Force with diff view
-prism install                 # Install all deps
-prism validate specs/models.py # Validate spec
+uv run prism generate                # Generate from spec
+uv run prism generate --dry-run      # Preview changes
+uv run prism generate --only graphql # Specific layer only
+uv run prism generate --only rest    # REST API only
+uv run prism generate --only frontend # Frontend only
+uv run prism generate --only services # Services only
+uv run prism generate --only models  # Models only
+uv run prism generate --only tests   # Tests only
+uv run prism generate --force --diff # Force with diff view
+uv run prism install                 # Install all deps
+uv run prism validate specs/models.py # Validate spec
 ```
 
 ### Development
 ```bash
-prism dev                     # Start all servers
-prism dev --docker            # Run in Docker
-prism dev --watch             # Auto-regenerate on spec change
-prism test                    # Run all tests
-prism test --coverage         # With coverage
-prism test --backend-only     # Python only
-prism test --frontend-only    # JS/TS only
+uv run prism dev                     # Start all servers
+uv run prism dev --docker            # Run in Docker
+uv run prism dev --watch             # Auto-regenerate on spec change
+uv run prism test                    # Run all tests
+uv run prism test --coverage         # With coverage
+uv run prism test --backend-only     # Python only
+uv run prism test --frontend-only    # JS/TS only
 ```
 
 ### Database
 ```bash
-prism db migrate              # Auto-generate migration
-prism db migrate -m "message" # Named migration
-prism db reset -y             # Reset database
-prism db seed                 # Run seed script
+uv run prism db migrate              # Auto-generate migration
+uv run prism db migrate -m "message" # Named migration
+uv run prism db reset -y             # Reset database
+uv run prism db seed                 # Run seed script
 ```
 
 ### Docker
 ```bash
-prism docker init             # Generate docker-compose.dev.yml
-prism docker init --redis     # Include Redis
-prism docker logs -f backend  # Follow logs
-prism docker shell backend    # Shell access
-prism docker down             # Stop all
-prism docker reset-db         # Reset DB in Docker
+uv run prism docker init             # Generate docker-compose.dev.yml
+uv run prism docker init --redis     # Include Redis
+uv run prism docker logs -f backend  # Follow logs
+uv run prism docker shell backend    # Shell access
+uv run prism docker down             # Stop all
+uv run prism docker reset-db         # Reset DB in Docker
+```
+
+### Dev Containers
+```bash
+uv run prism devcontainer up              # Start/create workspace container
+uv run prism devcontainer down            # Stop workspace (preserves data)
+uv run prism devcontainer shell           # Open interactive shell in container
+uv run prism devcontainer logs [service]  # View container logs
+uv run prism devcontainer status          # Show service status
+uv run prism devcontainer list            # List all workspaces
+uv run prism devcontainer generate        # Generate .devcontainer config
+uv run prism devcontainer exec COMMAND    # Run command in container
 ```
 
 ### Deployment (Hetzner Cloud)
 ```bash
-prism deploy init --domain example.com
-prism deploy plan -e staging
-prism deploy apply -e production
-prism deploy logs production -f
-prism deploy ssh production
+uv run prism deploy init --domain example.com
+uv run prism deploy plan -e staging
+uv run prism deploy apply -e production
+uv run prism deploy logs production -f
+uv run prism deploy ssh production
 ```
 
 ### CI/CD
 ```bash
-prism ci init                 # Generate GitHub Actions
-prism ci validate             # Validate workflows locally
+uv run prism ci init                 # Generate GitHub Actions
+uv run prism ci validate             # Validate workflows locally
 ```
 
 ## Directory Structure
@@ -360,45 +416,58 @@ prism ci validate             # Validate workflows locally
 ```
 prisme-saas/
 ├── specs/
-│   └── models.py             # YOUR SPEC - Single source of truth
-├── prism.config.py           # Prisme configuration
+│   └── models.py                 # YOUR SPEC - Single source of truth
+├── prism.config.py               # Prisme configuration
+├── pyproject.toml                # Python project config (hatchling, ruff, pytest)
+├── docker-compose.dev.yml        # Dev environment (backend, frontend, postgres)
 ├── packages/
 │   ├── backend/
-│   │   └── src/<package>/
-│   │       ├── models/       # SQLAlchemy models
-│   │       ├── schemas/      # Pydantic (generated)
+│   │   └── src/prisme_api/       # Package name: prisme_api
+│   │       ├── main.py           # FastAPI app entrypoint
+│   │       ├── config.py         # Pydantic settings
+│   │       ├── database.py       # Async SQLAlchemy setup
+│   │       ├── models/           # SQLAlchemy models (User, Subdomain, APIKey, AllowedEmailDomain)
+│   │       ├── schemas/          # Pydantic schemas (generated)
 │   │       ├── services/
-│   │       │   ├── _generated/  # DO NOT EDIT
-│   │       │   └── *.py         # Your customizations
+│   │       │   ├── _generated/   # DO NOT EDIT - base CRUD services
+│   │       │   ├── hetzner_dns.py    # Custom: Hetzner DNS API
+│   │       │   ├── route_manager.py  # Custom: Traefik dynamic routing
+│   │       │   └── *.py              # Custom service extensions
 │   │       ├── api/
-│   │       │   ├── rest/     # FastAPI routes
-│   │       │   └── graphql/  # Strawberry types
-│   │       └── mcp_server/   # MCP tools
+│   │       │   ├── rest/         # FastAPI routes (custom + generated)
+│   │       │   └── graphql/      # Strawberry types/queries/mutations
+│   │       ├── auth/             # OIDC, API key auth, webhooks
+│   │       ├── middleware/       # Auth & API key middleware
+│   │       └── mcp_server/       # FastMCP tools
 │   └── frontend/
 │       └── src/
-│           ├── types/        # TypeScript (generated)
-│           ├── components/
-│           │   ├── _generated/  # DO NOT EDIT
-│           │   └── *.tsx        # Your customizations
-│           ├── hooks/        # React hooks
-│           ├── pages/        # Page components
-│           └── graphql/      # Operations
-└── deploy/                   # Terraform (if enabled)
+│           ├── types/            # TypeScript types (generated)
+│           ├── components/       # React components (custom extend _generated/ bases)
+│           ├── contexts/         # AuthContext (Authentik OIDC)
+│           ├── hooks/            # Data & state hooks per model
+│           ├── pages/            # CRUD pages per model + auth pages
+│           ├── graphql/          # urql client, queries, mutations, fragments
+│           └── prism/widgets/    # Headless form widgets
+├── deploy/
+│   ├── terraform/                # Hetzner Cloud IaC (staging + production)
+│   ├── authentik/                # SSO blueprints, branding, email templates
+│   └── traefik/                  # Reverse proxy config + dynamic subdomain routing
+└── .github/workflows/            # CI (lint/test/docs/e2e), deploy, terraform, release
 ```
 
 ## Debugging Tips
 
-1. **Code not updating?** Run `prism generate` after spec changes
-2. **Database errors?** Run `prism db migrate`
+1. **Code not updating?** Run `uv run prism generate` after spec changes
+2. **Database errors?** Run `uv run prism db migrate`
 3. **Type errors?** Check generated schemas match your spec
 4. **Custom code lost?** Check you're editing the right file (not `_generated/`)
-5. **Generation conflicts?** Use `prism review diff <file>` to see changes
+5. **Generation conflicts?** Use `uv run prism review diff <file>` to see changes
 
 ## Spec Validation
 
 Always validate before generating:
 ```bash
-prism validate specs/models.py
+uv run prism validate specs/models.py
 ```
 
 Common issues:
@@ -409,13 +478,13 @@ Common issues:
 
 ## Best Practices
 
-1. **Always preview first**: `prism generate --dry-run`
+1. **Always preview first**: `uv run prism generate --dry-run`
 2. **Commit before regenerating**: Easier to see changes
 3. **Follow extension pattern**: Extend base classes, don't modify generated code
 4. **Use timestamps**: `timestamps=True` for audit trails
 5. **Plan relationships**: Define both sides of relationships
 6. **Configure exposure**: Not every field needs REST/GraphQL exposure
-7. **Test after changes**: `prism test` catches issues early
+7. **Test after changes**: `uv run prism test` catches issues early
 
 ## Authentication (Authentik)
 
@@ -443,13 +512,51 @@ Prisme generates MCP tools automatically. Each model gets:
 
 Tools are in `mcp_server/tools/`.
 
+## Dev Container Workspaces
+
+Prism supports two devcontainer modes:
+
+### VS Code Dev Container (`--devcontainer` flag)
+Generate a `.devcontainer/` configuration for VS Code Remote Containers:
+```bash
+uv run prism create my-project --devcontainer
+# or for existing projects:
+uv run prism devcontainer generate
+```
+This creates config files that VS Code uses to open the project in a container.
+
+### Full Workspace Mode (`prism devcontainer` commands)
+Run complete development environments as isolated workspaces:
+```bash
+uv run prism devcontainer up    # Start workspace
+uv run prism devcontainer shell # Get a shell inside
+```
+
+**Workspace naming**: `{project}-{branch}` (e.g., `prisme-saas-main`)
+
+**What's included**:
+- Claude Code and Prism CLI pre-installed
+- Python with uv, Node.js with configured package manager
+- PostgreSQL database (isolated per workspace)
+- All project dependencies
+
+**Traefik routing**: Each workspace is accessible at `http://{workspace}.localhost`
+- Frontend: `http://prisme-saas-main.localhost`
+- Backend API: `http://prisme-saas-main.localhost/api`
+
+**Persistence**: Volumes preserve your work between restarts:
+- Source code (bind mount)
+- Python/Node dependencies (named volumes)
+- Database data (named volume)
+
 ## Quick Fixes
 
 | Problem | Solution |
 |---------|----------|
-| Import errors | `prism generate` |
-| Missing types | `prism generate` |
-| Schema mismatch | `prism db migrate` |
+| Import errors | `uv run prism generate` |
+| Missing types | `uv run prism generate` |
+| Schema mismatch | `uv run prism db migrate` |
 | Lost customizations | You edited `_generated/` - restore from git |
-| Docker not starting | `prism docker down && prism dev --docker` |
-| Tests failing | `prism test` after `prism generate` |
+| Docker not starting | `uv run prism docker down && uv run prism dev --docker` |
+| Tests failing | `uv run prism test` after `uv run prism generate` |
+| Devcontainer not connecting | `uv run prism devcontainer down && uv run prism devcontainer up` |

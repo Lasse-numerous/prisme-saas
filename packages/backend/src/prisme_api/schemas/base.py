@@ -5,8 +5,6 @@
 
 from __future__ import annotations
 
-from typing import Generic, TypeVar
-
 from pydantic import BaseModel, ConfigDict
 
 
@@ -21,10 +19,7 @@ class SchemaBase(BaseModel):
     )
 
 
-T = TypeVar("T")
-
-
-class PaginatedResponse(BaseModel, Generic[T]):
+class PaginatedResponse[T](BaseModel):
     """Paginated response wrapper."""
 
     items: list[T]

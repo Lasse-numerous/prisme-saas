@@ -1,15 +1,15 @@
 {
-  "last_updated": "2026-01-26T17:05:43.545156",
+  "last_updated": "2026-01-28T18:58:10.254619",
   "overrides": [
     {
       "path": "packages/backend/src/prisme_api/services/subdomain.py",
       "strategy": "generate_once",
-      "timestamp": "2026-01-26T17:05:43.517851",
+      "timestamp": "2026-01-28T18:58:09.546894",
       "generated_hash": "016540a92fa7559150db284329aabc6378e80abff53d11dabf09ef37710d5d08",
-      "user_hash": "e39f12f255617f38cb4eccdb8c63e6e0984d26bf9b2b4681bee24e44852c5ce2",
+      "user_hash": "3a6109cd0df0dfc973e3f82e5ec74156288952668477081f9baea83560a48b3e",
       "reviewed": false,
       "diff_summary": {
-        "lines_added": 3,
+        "lines_added": 4,
         "lines_removed": 0,
         "lines_changed": 20
       }
@@ -17,14 +17,66 @@
     {
       "path": "packages/backend/src/prisme_api/api/rest/subdomain.py",
       "strategy": "generate_once",
-      "timestamp": "2026-01-26T17:05:43.545140",
+      "timestamp": "2026-01-28T18:58:09.621469",
       "generated_hash": "d24cbccb9f97b79688822c128d6a4590ecc599a0fa4beaaa7a83bb51793088ee",
-      "user_hash": "731622637810a79e4e62500b84b5319826d8d82363814ed1a337614fd8a1f3e8",
+      "user_hash": "776fe7b028407f440b32cc57e5e79a497c47010301d1ed25c82b057a8b5e5719",
       "reviewed": false,
       "diff_summary": {
         "lines_added": 0,
         "lines_removed": 0,
-        "lines_changed": 259
+        "lines_changed": 559
+      }
+    },
+    {
+      "path": "packages/backend/src/prisme_api/api/rest/auth.py",
+      "strategy": "generate_once",
+      "timestamp": "2026-01-28T18:58:09.579756",
+      "generated_hash": "ab81563862627984f65c4c5251928f6dc2a8050e28df8d83e8bc7cba90400d83",
+      "user_hash": "6fd79c7df34feea4c05d38b5382f390d588e5250014ea1842aacf071305c259c",
+      "reviewed": false,
+      "diff_summary": {
+        "lines_added": 20,
+        "lines_removed": 0,
+        "lines_changed": 38
+      }
+    },
+    {
+      "path": "packages/backend/src/prisme_api/api/rest/user.py",
+      "strategy": "generate_once",
+      "timestamp": "2026-01-28T18:58:09.611618",
+      "generated_hash": "45cb16390c8d02245c8a2a0270be89def50838d8bcd3f2baef29bad8400abc72",
+      "user_hash": "4ed3b9d6787ad4650582914e3d4217b1c7c3dfddef9c133eb942888356c86a76",
+      "reviewed": false,
+      "diff_summary": {
+        "lines_added": 0,
+        "lines_removed": 0,
+        "lines_changed": 8
+      }
+    },
+    {
+      "path": "packages/backend/src/prisme_api/api/rest/api_key.py",
+      "strategy": "generate_once",
+      "timestamp": "2026-01-28T18:58:09.616627",
+      "generated_hash": "cf21d7f1e4d6cc53f761ac7fe1f5a967034c7f055d85325da73ada93c0891808",
+      "user_hash": "6de5564890a50e485021623b343cfec5e244a88dd03f694912e20fc7cd85d004",
+      "reviewed": false,
+      "diff_summary": {
+        "lines_added": 4,
+        "lines_removed": 0,
+        "lines_changed": 178
+      }
+    },
+    {
+      "path": "packages/frontend/src/router.tsx",
+      "strategy": "merge",
+      "timestamp": "2026-01-28T18:58:10.254594",
+      "generated_hash": "3b3bb0b5c7db72501129abdf0b13519047ef284420e8b4ce9ed7e39f851551c7",
+      "user_hash": "59388fa77e72575faaec35b0ec03be492b13c2b4fc759d5202c1f08e61c6e048",
+      "reviewed": false,
+      "diff_summary": {
+        "lines_added": 6,
+        "lines_removed": 4,
+        "lines_changed": 63
       }
     }
   ]

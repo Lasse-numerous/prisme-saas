@@ -1,5 +1,12 @@
 """Pydantic schemas for API validation."""
 
+from .allowed_email_domain import (
+    AllowedEmailDomainBase,
+    AllowedEmailDomainCreate,
+    AllowedEmailDomainFilter,
+    AllowedEmailDomainRead,
+    AllowedEmailDomainUpdate,
+)
 from .api_key import APIKeyBase, APIKeyCreate, APIKeyFilter, APIKeyRead, APIKeyUpdate
 from .subdomain import (
     SubdomainBase,
@@ -16,6 +23,11 @@ __all__ = [
     "APIKeyFilter",
     "APIKeyRead",
     "APIKeyUpdate",
+    "AllowedEmailDomainBase",
+    "AllowedEmailDomainCreate",
+    "AllowedEmailDomainFilter",
+    "AllowedEmailDomainRead",
+    "AllowedEmailDomainUpdate",
     "SubdomainBase",
     "SubdomainCreate",
     "SubdomainFilter",

@@ -7,20 +7,27 @@ from __future__ import annotations
 
 from abc import ABC
 from collections.abc import Sequence
-from datetime import UTC
-from typing import Generic, TypeVar
+from datetime import UTC, datetime
+from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
 
 from pydantic import BaseModel
-from sqlalchemy import func, select
+from sqlalchemy import delete, func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-ModelT = TypeVar("ModelT")
-CreateSchemaT = TypeVar("CreateSchemaT", bound=BaseModel)
-UpdateSchemaT = TypeVar("UpdateSchemaT", bound=BaseModel)
+if TYPE_CHECKING:
+    pass
 
 
-class ServiceBase(ABC, Generic[ModelT, CreateSchemaT, UpdateSchemaT]):
+@runtime_checkable
+class ModelProtocol(Protocol):
+    """Protocol for SQLAlchemy models used in services."""
+
+    id: Any
+    __table__: Any
+
+
+class ServiceBase[ModelT: ModelProtocol, CreateSchemaT: BaseModel, UpdateSchemaT: BaseModel](ABC):
     """Abstract base class for all services.
 
     Provides generic CRUD operations that can be extended
@@ -54,11 +61,11 @@ class ServiceBase(ABC, Generic[ModelT, CreateSchemaT, UpdateSchemaT]):
         Returns:
             The record or None if not found.
         """
-        query = select(self.model).where(self.model.id == id)
+        query = select(self.model).where(self.model.id == id)  # type: ignore[attr-defined]
 
         # Handle soft delete
         if hasattr(self.model, "deleted_at") and not include_deleted:
-            query = query.where(self.model.deleted_at.is_(None))
+            query = query.where(self.model.deleted_at.is_(None))  # type: ignore[attr-defined]
 
         # Eagerly load specified relationships
         if load_relationships:
@@ -92,7 +99,7 @@ class ServiceBase(ABC, Generic[ModelT, CreateSchemaT, UpdateSchemaT]):
 
         # Handle soft delete
         if hasattr(self.model, "deleted_at") and not include_deleted:
-            query = query.where(self.model.deleted_at.is_(None))
+            query = query.where(self.model.deleted_at.is_(None))  # type: ignore[attr-defined]
 
         # Eagerly load specified relationships
         if load_relationships:
@@ -120,7 +127,7 @@ class ServiceBase(ABC, Generic[ModelT, CreateSchemaT, UpdateSchemaT]):
         query = select(func.count()).select_from(self.model)
 
         if hasattr(self.model, "deleted_at") and not include_deleted:
-            query = query.where(self.model.deleted_at.is_(None))
+            query = query.where(self.model.deleted_at.is_(None))  # type: ignore[attr-defined]
 
         result = await self.db.execute(query)
         return result.scalar_one()
@@ -216,9 +223,7 @@ class ServiceBase(ABC, Generic[ModelT, CreateSchemaT, UpdateSchemaT]):
         await self.before_delete(db_obj)
 
         if soft and hasattr(db_obj, "deleted_at"):
-            from datetime import datetime
-
-            db_obj.deleted_at = datetime.now(UTC)
+            db_obj.deleted_at = datetime.now(UTC)  # type: ignore[attr-defined]
             await self.db.commit()
         else:
             await self.db.delete(db_obj)
@@ -284,8 +289,6 @@ class ServiceBase(ABC, Generic[ModelT, CreateSchemaT, UpdateSchemaT]):
         if not ids:
             return 0
 
-        from sqlalchemy import update
-
         # Filter out fields that don't exist on the model (e.g., relationship IDs)
         model_columns = {c.key for c in self.model.__table__.columns}
         update_data = {
@@ -294,11 +297,15 @@ class ServiceBase(ABC, Generic[ModelT, CreateSchemaT, UpdateSchemaT]):
         if not update_data:
             return 0
 
-        query = update(self.model).where(self.model.id.in_(ids)).values(**update_data)
+        query = (
+            update(self.model)
+            .where(self.model.id.in_(ids))  # type: ignore[attr-defined]
+            .values(**update_data)
+        )
 
         # Handle soft delete filter
         if hasattr(self.model, "deleted_at"):
-            query = query.where(self.model.deleted_at.is_(None))
+            query = query.where(self.model.deleted_at.is_(None))  # type: ignore[attr-defined]
 
         result = await self.db.execute(query)
         await self.db.commit()
@@ -323,21 +330,17 @@ class ServiceBase(ABC, Generic[ModelT, CreateSchemaT, UpdateSchemaT]):
         if not ids:
             return 0
 
-        from datetime import datetime
-
-        from sqlalchemy import delete, update
-
         if soft and hasattr(self.model, "deleted_at"):
             # Soft delete: update deleted_at
             query = (
                 update(self.model)
-                .where(self.model.id.in_(ids))
-                .where(self.model.deleted_at.is_(None))
+                .where(self.model.id.in_(ids))  # type: ignore[attr-defined]
+                .where(self.model.deleted_at.is_(None))  # type: ignore[attr-defined]
                 .values(deleted_at=datetime.now(UTC))
             )
         else:
             # Hard delete
-            query = delete(self.model).where(self.model.id.in_(ids))
+            query = delete(self.model).where(self.model.id.in_(ids))  # type: ignore[attr-defined]
 
         result = await self.db.execute(query)
         await self.db.commit()
@@ -345,29 +348,23 @@ class ServiceBase(ABC, Generic[ModelT, CreateSchemaT, UpdateSchemaT]):
         return result.rowcount
 
     # Lifecycle hooks - override in subclasses
-    async def before_create(self, data: CreateSchemaT) -> None:
+    async def before_create(self, data: CreateSchemaT) -> None:  # noqa: B027
         """Hook called before creating a record."""
-        pass
 
-    async def after_create(self, obj: ModelT) -> None:
+    async def after_create(self, obj: ModelT) -> None:  # noqa: B027
         """Hook called after creating a record."""
-        pass
 
-    async def before_update(self, obj: ModelT, data: UpdateSchemaT) -> None:
+    async def before_update(self, obj: ModelT, data: UpdateSchemaT) -> None:  # noqa: B027
         """Hook called before updating a record."""
-        pass
 
-    async def after_update(self, obj: ModelT) -> None:
+    async def after_update(self, obj: ModelT) -> None:  # noqa: B027
         """Hook called after updating a record."""
-        pass
 
-    async def before_delete(self, obj: ModelT) -> None:
+    async def before_delete(self, obj: ModelT) -> None:  # noqa: B027
         """Hook called before deleting a record."""
-        pass
 
-    async def after_delete(self, obj: ModelT) -> None:
+    async def after_delete(self, obj: ModelT) -> None:  # noqa: B027
         """Hook called after deleting a record."""
-        pass
 
 
-__all__ = ["ServiceBase"]
+__all__ = ["ModelProtocol", "ServiceBase"]

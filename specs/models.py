@@ -20,7 +20,7 @@ from prism import (
 from prism.spec.auth import AuthConfig, AuthentikConfig, AuthentikMFAConfig, Role
 
 spec = StackSpec(
-    name="madewithprisme",
+    name="prisme_api",
     title="MadeWithPris.me API",
     version="1.0.0",
     description="Managed subdomain service for madewithpris.me",
@@ -109,7 +109,7 @@ spec = StackSpec(
                 FieldSpec(
                     name="subdomain_limit",
                     type=FieldType.INTEGER,
-                    default=5,
+                    default=10,
                     required=True,
                     description="Maximum number of subdomains allowed",
                 ),
@@ -294,6 +294,26 @@ spec = StackSpec(
                     max_length=50,
                     description="Hetzner DNS record ID",
                 ),
+                FieldSpec(
+                    name="port",
+                    type=FieldType.INTEGER,
+                    default=80,
+                    required=True,
+                    description="Target port for routing (default: 80)",
+                ),
+                FieldSpec(
+                    name="released_at",
+                    type=FieldType.DATETIME,
+                    required=False,
+                    description="When the subdomain was released",
+                ),
+                FieldSpec(
+                    name="cooldown_until",
+                    type=FieldType.DATETIME,
+                    required=False,
+                    indexed=True,
+                    description="Cooldown period end (30 days after release)",
+                ),
             ],
             relationships=[
                 RelationshipSpec(
@@ -306,6 +326,44 @@ spec = StackSpec(
             rest=RESTExposure(
                 enabled=True,
                 tags=["subdomains"],
+            ),
+        ),
+        # Allowed email domains for signup whitelist
+        ModelSpec(
+            name="AllowedEmailDomain",
+            table_name="allowed_email_domains",
+            description="Whitelisted email domains for user signup",
+            timestamps=True,
+            soft_delete=False,
+            fields=[
+                FieldSpec(
+                    name="domain",
+                    type=FieldType.STRING,
+                    required=True,
+                    unique=True,
+                    max_length=255,
+                    description="Email domain (e.g., 'example.com')",
+                    indexed=True,
+                    filter_operators=[FilterOperator.EQ, FilterOperator.LIKE],
+                ),
+                FieldSpec(
+                    name="is_active",
+                    type=FieldType.BOOLEAN,
+                    default=True,
+                    required=True,
+                    description="Whether this domain is currently allowed",
+                ),
+                FieldSpec(
+                    name="description",
+                    type=FieldType.STRING,
+                    required=False,
+                    max_length=500,
+                    description="Optional description/notes about this domain",
+                ),
+            ],
+            rest=RESTExposure(
+                enabled=True,
+                tags=["allowed-email-domains"],
             ),
         ),
     ],

@@ -18,6 +18,7 @@ from alembic import context
 
 # Import all models to ensure they're registered with Base.metadata
 from prisme_api.models import (
+    AllowedEmailDomain,  # noqa: F401
     APIKey,  # noqa: F401
     Base,
     Subdomain,  # noqa: F401

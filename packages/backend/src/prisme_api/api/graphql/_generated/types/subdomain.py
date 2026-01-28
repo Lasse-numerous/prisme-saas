@@ -4,10 +4,13 @@
 """
 
 import datetime
-from typing import Annotated, Any
+from typing import TYPE_CHECKING, Annotated, Any
 
 import strawberry
 from strawberry.types import Info
+
+if TYPE_CHECKING:
+    from .user import UserType
 
 
 @strawberry.type(description="A managed madewithpris.me subdomain")
@@ -20,6 +23,13 @@ class SubdomainType:
     ipAddress: str | None = strawberry.field(description="IPv4 address for the A record")
     status: str = strawberry.field(description="Current status of the subdomain")
     dnsRecordId: str | None = strawberry.field(description="Hetzner DNS record ID")
+    port: int = strawberry.field(description="Target port for routing (default: 80)")
+    releasedAt: datetime.datetime | None = strawberry.field(
+        description="When the subdomain was released"
+    )
+    cooldownUntil: datetime.datetime | None = strawberry.field(
+        description="Cooldown period end (30 days after release)"
+    )
     createdAt: datetime.datetime
     updatedAt: datetime.datetime
 
@@ -29,12 +39,7 @@ class SubdomainType:
     # Relationship resolvers
 
     @strawberry.field
-    async def owner(
-        self, info: Info
-    ) -> (
-        Annotated["UserType", strawberry.lazy("prisme_api.api.graphql._generated.types.user")]
-        | None
-    ):
+    async def owner(self, info: Info) -> Annotated["UserType", strawberry.lazy(".user")] | None:
         """Fetch related User entities."""
         from .user import user_from_model
 
@@ -52,6 +57,9 @@ class SubdomainInput:
     ipAddress: str | None = None
     status: str = "reserved"
     dnsRecordId: str | None = None
+    port: int = 80
+    releasedAt: datetime.datetime | None = None
+    cooldownUntil: datetime.datetime | None = None
 
 
 @strawberry.input(description="Input for updating a Subdomain")
@@ -63,6 +71,9 @@ class SubdomainUpdateInput:
     ipAddress: str | None = None
     status: str | None = None
     dnsRecordId: str | None = None
+    port: int | None = None
+    releasedAt: datetime.datetime | None = None
+    cooldownUntil: datetime.datetime | None = None
 
 
 def subdomain_from_model(obj: Any) -> SubdomainType:
@@ -74,6 +85,9 @@ def subdomain_from_model(obj: Any) -> SubdomainType:
         ipAddress=obj.ip_address,
         status=obj.status,
         dnsRecordId=obj.dns_record_id,
+        port=obj.port,
+        releasedAt=obj.released_at,
+        cooldownUntil=obj.cooldown_until,
         createdAt=obj.created_at,
         updatedAt=obj.updated_at,
         _db_owner=obj.__dict__.get("owner"),

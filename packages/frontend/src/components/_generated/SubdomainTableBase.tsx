@@ -21,7 +21,10 @@ export const SUBDOMAIN_COLUMNS: Column<Subdomain>[] = [
   { key: 'ownerId', label: 'Owner Id', tooltip: 'The user who owns this subdomain' },
   { key: 'ipAddress', label: 'Ip Address', tooltip: 'IPv4 address for the A record' },
   { key: 'status', label: 'Status', tooltip: 'Current status of the subdomain' },
-  { key: 'dnsRecordId', label: 'Dns Record Id', tooltip: 'Hetzner DNS record ID' }
+  { key: 'dnsRecordId', label: 'Dns Record Id', tooltip: 'Hetzner DNS record ID' },
+  { key: 'port', label: 'Port', tooltip: 'Target port for routing (default: 80)' },
+  { key: 'releasedAt', label: 'Released At', tooltip: 'When the subdomain was released' },
+  { key: 'cooldownUntil', label: 'Cooldown Until', tooltip: 'Cooldown period end (30 days after release)' }
 ];
 
 export interface SubdomainTableBaseProps {

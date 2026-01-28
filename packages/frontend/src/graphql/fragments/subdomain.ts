@@ -14,6 +14,9 @@ export const SubdomainFragment = graphql(`
     ipAddress
     status
     dnsRecordId
+    port
+    releasedAt
+    cooldownUntil
     createdAt
     updatedAt
     owner {
@@ -29,6 +32,9 @@ export const SubdomainFields = `
     ipAddress
     status
     dnsRecordId
+    port
+    releasedAt
+    cooldownUntil
     createdAt
     updatedAt
     owner {

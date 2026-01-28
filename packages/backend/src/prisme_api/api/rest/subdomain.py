@@ -10,11 +10,15 @@ This file extends the base routes with:
 from __future__ import annotations
 
 import logging
+import os
 import re
+from datetime import UTC, datetime, timedelta
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from pydantic import BaseModel
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 
 from prisme_api.auth.dependencies import CurrentActiveUser, get_current_active_user
 from prisme_api.schemas.base import PaginatedResponse
@@ -34,6 +38,18 @@ from prisme_api.services.subdomain import SubdomainService
 from ._generated.deps import DbSession, Pagination, Sorting
 
 logger = logging.getLogger(__name__)
+
+
+# Rate limiter - keyed by user ID from request state
+def get_user_key(request: Request) -> str:
+    """Get rate limit key from authenticated user."""
+    user = getattr(request.state, "user", None)
+    if user:
+        return f"user:{user.id}"
+    return get_remote_address(request)
+
+
+limiter = Limiter(key_func=get_user_key, enabled="sqlite" not in os.environ.get("DATABASE_URL", ""))
 
 # Subdomain validation pattern
 SUBDOMAIN_PATTERN = re.compile(r"^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$")
@@ -72,6 +88,19 @@ def validate_ip_address(ip: str) -> str | None:
     return None
 
 
+def validate_port(port: int) -> str | None:
+    """Validate port number.
+
+    Returns error message if invalid, None if valid.
+    Blocks privileged ports except 80 and 443.
+    """
+    if port < 1 or port > 65535:
+        return "Port must be between 1 and 65535"
+    if port < 1024 and port not in (80, 443):
+        return f"Privileged port {port} not allowed. Use port 80, 443, or ports 1024-65535"
+    return None
+
+
 # Create a new router with authentication required
 router = APIRouter(
     prefix="/subdomains",
@@ -100,6 +129,7 @@ class SubdomainActivateRequest(BaseModel):
     """Request to activate a subdomain with an IP address."""
 
     ip_address: str
+    port: int = 80
 
 
 def get_dns_service() -> HetznerDNSService | None:
@@ -194,9 +224,11 @@ async def get_subdomain(
     status_code=status.HTTP_201_CREATED,
     summary="Claim a subdomain",
 )
+@limiter.limit("5/minute")
 async def claim_subdomain(
+    request: Request,
     db: DbSession,
-    request: SubdomainClaimRequest,
+    claim_request: SubdomainClaimRequest,
     current_user: CurrentActiveUser,
 ) -> SubdomainRead:
     """Claim a subdomain name (reserve it without IP).
@@ -204,7 +236,14 @@ async def claim_subdomain(
     This reserves the subdomain name for later activation. The subdomain
     won't have a DNS record until activated with an IP address.
     """
-    name = request.name.lower().strip()
+    # Require verified email
+    if not current_user.email_verified:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Email verification required before claiming subdomains",
+        )
+
+    name = claim_request.name.lower().strip()
 
     # Validate subdomain name format
     validation_error = validate_subdomain_name(name)
@@ -221,13 +260,34 @@ async def claim_subdomain(
             detail=f"Subdomain '{name}' is reserved and cannot be claimed",
         )
 
-    # Check if already exists
+    # Check if subdomain exists but is in cooldown period
     service = SubdomainService(db)
     existing = await service.get_by_name(name)
     if existing:
+        if existing.cooldown_until and existing.cooldown_until > datetime.now(UTC):
+            days_remaining = (existing.cooldown_until - datetime.now(UTC)).days
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=f"Subdomain '{name}' is in cooldown period. Available in {days_remaining} days.",
+            )
+        # If past cooldown, subdomain can be claimed
+        if existing.status == "released":
+            # Delete the released record so it can be re-claimed
+            await service.delete(id=existing.id, soft=False)
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=f"Subdomain '{name}' is already claimed",
+            )
+
+    # Check user's subdomain limit
+    user_subdomains = await service.count_filtered(
+        filters=SubdomainFilter(owner_id=current_user.id)
+    )
+    if user_subdomains >= current_user.subdomain_limit:
         raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail=f"Subdomain '{name}' is already claimed",
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"Subdomain limit reached ({current_user.subdomain_limit})",
         )
 
     # Create subdomain in reserved state, owned by current user
@@ -243,10 +303,12 @@ async def claim_subdomain(
     response_model=SubdomainRead,
     summary="Activate a subdomain with IP address",
 )
+@limiter.limit("10/hour")
 async def activate_subdomain(
+    request: Request,
     db: DbSession,
     name: str,
-    request: SubdomainActivateRequest,
+    activate_request: SubdomainActivateRequest,
     current_user: CurrentActiveUser,
 ) -> SubdomainRead:
     """Activate a subdomain by setting its IP address and creating DNS record.
@@ -255,11 +317,19 @@ async def activate_subdomain(
     Users can only activate their own subdomains.
     """
     # Validate IP address format first
-    ip_error = validate_ip_address(request.ip_address)
+    ip_error = validate_ip_address(activate_request.ip_address)
     if ip_error:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=ip_error,
+        )
+
+    # Validate port
+    port_error = validate_port(activate_request.port)
+    if port_error:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=port_error,
         )
 
     service = SubdomainService(db)
@@ -293,12 +363,14 @@ async def activate_subdomain(
         try:
             if dns_record_id:
                 # Update existing record
-                await dns_service.update_a_record(dns_record_id, request.ip_address)
-                logger.info(f"DNS record updated for {name}: {request.ip_address}")
+                await dns_service.update_a_record(dns_record_id, activate_request.ip_address)
+                logger.info(f"DNS record updated for {name}: {activate_request.ip_address}")
             else:
                 # Create new record
-                dns_record_id = await dns_service.create_a_record(name.lower(), request.ip_address)
-                logger.info(f"DNS record created for {name}: {request.ip_address}")
+                dns_record_id = await dns_service.create_a_record(
+                    name.lower(), activate_request.ip_address
+                )
+                logger.info(f"DNS record created for {name}: {activate_request.ip_address}")
         except HetznerDNSError as e:
             logger.error(f"DNS error for {name}: {e}")
             raise HTTPException(
@@ -310,11 +382,27 @@ async def activate_subdomain(
 
     # Update subdomain
     update_data = SubdomainUpdate(
-        ip_address=request.ip_address,
+        ip_address=activate_request.ip_address,
+        port=activate_request.port,
         status="active",
         dns_record_id=dns_record_id,
     )
     result = await service.update(id=subdomain.id, data=update_data)
+
+    # Create Traefik route
+    from prisme_api.services.route_manager import get_route_manager
+
+    route_manager = get_route_manager()
+    if route_manager:
+        try:
+            await route_manager.create_route(
+                name.lower(),
+                activate_request.ip_address,
+                activate_request.port,
+            )
+        except Exception as e:
+            logger.error(f"Failed to create route for {name}: {e}")
+            # Continue - DNS is primary, route is secondary
 
     return SubdomainRead.model_validate(result)
 
@@ -397,6 +485,16 @@ async def release_subdomain(
             detail="Access denied",
         )
 
+    # Delete Traefik route first
+    from prisme_api.services.route_manager import get_route_manager
+
+    route_manager = get_route_manager()
+    if route_manager:
+        try:
+            await route_manager.delete_route(name.lower())
+        except Exception as e:
+            logger.error(f"Failed to delete route for {name}: {e}")
+
     # Delete DNS record if exists
     if subdomain.dns_record_id:
         dns_service = get_dns_service()
@@ -410,8 +508,18 @@ async def release_subdomain(
             finally:
                 await dns_service.close()
 
-    # Delete subdomain from database
-    await service.delete(id=subdomain.id, soft=False)
+    # Instead of deleting, update to released status with cooldown
+    cooldown_days = 30
+    now = datetime.now(UTC)
+    update_data = SubdomainUpdate(
+        status="released",
+        ip_address=None,
+        dns_record_id=None,
+        owner_id=None,
+        released_at=now,
+        cooldown_until=now + timedelta(days=cooldown_days),
+    )
+    await service.update(id=subdomain.id, data=update_data)
     logger.info(f"Subdomain released: {name}")
 
 

@@ -1,4 +1,4 @@
---- generated+++ user@@ -1,32 +1,36 @@ """Service for Subdomain.
+--- generated+++ user@@ -1,10 +1,13 @@ """Service for Subdomain.
 
 -✅ YOUR CODE - Safe to modify, will not be overwritten.
 -This file was generated once by Prism and is yours to customize.
@@ -6,14 +6,14 @@
  """
 
  from __future__ import annotations
-
++
 +from sqlalchemy import select
 +
- from ._generated.subdomain_base import SubdomainServiceBase
 +from prisme_api.models.subdomain import Subdomain
 
+ from ._generated.subdomain_base import SubdomainServiceBase
 
- class SubdomainService(SubdomainServiceBase):
+@@ -12,21 +15,23 @@ class SubdomainService(SubdomainServiceBase):
      """Custom service logic for Subdomain.
 
 -    Add your custom methods and override base methods here.

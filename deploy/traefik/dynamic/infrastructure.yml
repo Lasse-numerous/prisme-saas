@@ -1,0 +1,75 @@
+# Infrastructure routes for core services
+# These are NOT user subdomains - they route to our backend/frontend
+
+http:
+  routers:
+    # Main website - frontend
+    main-web:
+      rule: "Host(`madewithpris.me`) || Host(`www.madewithpris.me`)"
+      service: frontend
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: letsencrypt-dns
+      middlewares:
+        - security-headers
+        - gzip
+
+    # API routes
+    api:
+      rule: "Host(`api.madewithpris.me`) || (Host(`madewithpris.me`) && PathPrefix(`/api`))"
+      service: backend
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: letsencrypt-dns
+      middlewares:
+        - security-headers
+        - api-rate-limit
+
+    # GraphQL endpoint
+    graphql:
+      rule: "Host(`madewithpris.me`) && PathPrefix(`/graphql`)"
+      service: backend
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: letsencrypt-dns
+      middlewares:
+        - security-headers
+        - api-rate-limit
+
+    # Auth subdomain (Authentik)
+    auth:
+      rule: "Host(`auth.madewithpris.me`)"
+      service: authentik
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: letsencrypt-dns
+      middlewares:
+        - security-headers
+
+  services:
+    frontend:
+      loadBalancer:
+        servers:
+          - url: "http://frontend:3000"
+        healthCheck:
+          path: /healthz
+          interval: 30s
+          timeout: 5s
+
+    backend:
+      loadBalancer:
+        servers:
+          - url: "http://backend:8000"
+        healthCheck:
+          path: /health
+          interval: 30s
+          timeout: 5s
+
+    authentik:
+      loadBalancer:
+        servers:
+          - url: "http://authentik-server:9000"

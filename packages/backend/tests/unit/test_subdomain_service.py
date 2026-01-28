@@ -24,7 +24,7 @@ class TestSubdomainService:
     async def test_create(self, service, db):
         """Test creating a subdomain."""
         data = SubdomainCreate(
-            name="testcreate",  # Valid subdomain name (no underscores)
+            name="testcreate",
         )
 
         result = await service.create(data=data)

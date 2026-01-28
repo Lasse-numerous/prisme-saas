@@ -2,6 +2,33 @@
 # Variables are read from .env file
 
 services:
+  traefik:
+    image: traefik:v3.0
+    container_name: ${PROJECT_NAME}_traefik
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      - HETZNER_API_KEY=${HETZNER_DNS_API_TOKEN}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./deploy/traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./deploy/traefik/dynamic:/etc/traefik/dynamic:ro
+      - traefik_letsencrypt:/letsencrypt
+      - traefik_logs:/var/log/traefik
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - app
+    labels:
+      - "traefik.enable=true"
+
   backend:
     image: ${DOCKER_REGISTRY}/${GITHUB_REPOSITORY}-backend:${IMAGE_TAG}
     container_name: ${PROJECT_NAME}_backend
@@ -13,6 +40,7 @@ services:
       - BASE_DOMAIN=${DOMAIN}
       - REDIS_URL=${REDIS_URL}
       - PYTHONPATH=/app/packages/backend/src
+      - TRAEFIK_ROUTES_DIR=/etc/traefik/dynamic/subdomains
       # Authentik OIDC
       - AUTHENTIK_CLIENT_ID=${AUTHENTIK_CLIENT_ID}
       - AUTHENTIK_CLIENT_SECRET=${AUTHENTIK_CLIENT_SECRET}
@@ -23,6 +51,8 @@ services:
       # MCP Server
       - MCP_ADMIN_API_KEY=${MCP_ADMIN_API_KEY}
     depends_on:
+      traefik:
+        condition: service_healthy
       db:
         condition: service_healthy
       redis:
@@ -33,10 +63,13 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-    ports:
-      - "127.0.0.1:8000:8000"
+    volumes:
+      - traefik_routes:/etc/traefik/dynamic/subdomains
     networks:
       - app
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.backend.loadbalancer.server.port=8000"
 
   frontend:
     image: ${DOCKER_REGISTRY}/${GITHUB_REPOSITORY}-frontend:${IMAGE_TAG}
@@ -47,10 +80,11 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-    ports:
-      - "127.0.0.1:3000:3000"
     networks:
       - app
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
 
   db:
     image: postgres:16-alpine
@@ -193,6 +227,9 @@ services:
 
 volumes:
   redis_data:
+  traefik_letsencrypt:
+  traefik_logs:
+  traefik_routes:
   # Authentik volumes (uncomment when enabling Authentik)
   # authentik_db_data:
   # authentik_redis_data:

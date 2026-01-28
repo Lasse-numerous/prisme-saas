@@ -16,6 +16,9 @@ export const CreateSubdomainMutation = graphql(`
       ipAddress
       status
       dnsRecordId
+      port
+      releasedAt
+      cooldownUntil
       createdAt
       updatedAt
       owner {
@@ -35,6 +38,9 @@ export const UpdateSubdomainMutation = graphql(`
       ipAddress
       status
       dnsRecordId
+      port
+      releasedAt
+      cooldownUntil
       createdAt
       updatedAt
       owner {

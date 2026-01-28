@@ -19,13 +19,16 @@ class SubdomainFactory(SQLAlchemyModelFactory):
         # Disable auto-commit for async SQLAlchemy - tests call await db.commit()
         sqlalchemy_session_persistence = None
 
-    name = factory.Sequence(lambda n: f"subdomain{n}")  # Matches pattern ^[a-z0-9]...
+    name = factory.Sequence(lambda n: f"item{n}")
     owner_id = factory.Faker("random_int", min=1, max=100)
     ip_address = factory.Faker("ipv4")
     status = factory.Faker(
         "random_element", elements=["reserved", "active", "suspended", "released"]
     )
     dns_record_id = factory.Faker("pystr", max_chars=50)
+    port = factory.Faker("random_int", min=1, max=1000)
+    released_at = factory.Faker("date_time")
+    cooldown_until = factory.Faker("date_time")
 
 
 # Convenience function

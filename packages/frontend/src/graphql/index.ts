@@ -21,3 +21,8 @@ export * from './mutations/api_key';
 export * from './fragments/subdomain';
 export * from './queries/subdomain';
 export * from './mutations/subdomain';
+
+// AllowedEmailDomain
+export * from './fragments/allowed_email_domain';
+export * from './queries/allowed_email_domain';
+export * from './mutations/allowed_email_domain';

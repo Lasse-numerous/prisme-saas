@@ -4,10 +4,14 @@
 """
 
 import datetime
-from typing import Annotated, Any
+from typing import TYPE_CHECKING, Annotated, Any
 
 import strawberry
 from strawberry.types import Info
+
+if TYPE_CHECKING:
+    from .api_key import APIKeyType
+    from .subdomain import SubdomainType
 
 
 @strawberry.type(description="User account for madewithpris.me")
@@ -25,6 +29,10 @@ class UserType:
     mfaSecret: str | None = strawberry.field(description="TOTP MFA secret")
     subdomainLimit: int = strawberry.field(description="Maximum number of subdomains allowed")
     isAdmin: bool = strawberry.field(description="Whether user has admin privileges")
+    authentikId: str | None = strawberry.field(description="Authentik user ID for SSO")
+    username: str | None = strawberry.field(description="Username (optional, email is primary)")
+    roles: strawberry.scalars.JSON = strawberry.field(description="User roles for authorization")
+    isActive: bool = strawberry.field(description="Whether user account is active")
     createdAt: datetime.datetime
     updatedAt: datetime.datetime
     deletedAt: datetime.datetime | None = None
@@ -38,9 +46,7 @@ class UserType:
     @strawberry.field
     async def apiKeys(
         self, info: Info
-    ) -> list[
-        Annotated["APIKeyType", strawberry.lazy("prisme_api.api.graphql._generated.types.api_key")]
-    ]:
+    ) -> list[Annotated["APIKeyType", strawberry.lazy(".api_key")]]:
         """Fetch related APIKey entities."""
         from .api_key import api_key_from_model
 
@@ -51,11 +57,7 @@ class UserType:
     @strawberry.field
     async def subdomains(
         self, info: Info
-    ) -> list[
-        Annotated[
-            "SubdomainType", strawberry.lazy("prisme_api.api.graphql._generated.types.subdomain")
-        ]
-    ]:
+    ) -> list[Annotated["SubdomainType", strawberry.lazy(".subdomain")]]:
         """Fetch related Subdomain entities."""
         from .subdomain import subdomain_from_model
 
@@ -74,8 +76,12 @@ class UserInput:
     emailVerificationToken: str | None = None
     mfaEnabled: bool = False
     mfaSecret: str | None = None
-    subdomainLimit: int = 5
+    subdomainLimit: int = 10
     isAdmin: bool = False
+    authentikId: str | None = None
+    username: str | None = None
+    roles: strawberry.scalars.JSON = strawberry.field(default_factory=lambda: ["user"])
+    isActive: bool = True
     apiKeysIds: list[int] | None = None
     subdomainsIds: list[int] | None = None
 
@@ -92,6 +98,10 @@ class UserUpdateInput:
     mfaSecret: str | None = None
     subdomainLimit: int | None = None
     isAdmin: bool | None = None
+    authentikId: str | None = None
+    username: str | None = None
+    roles: strawberry.scalars.JSON | None = None
+    isActive: bool | None = None
     apiKeysIds: list[int] | None = None
     subdomainsIds: list[int] | None = None
 
@@ -108,6 +118,10 @@ def user_from_model(obj: Any) -> UserType:
         mfaSecret=obj.mfa_secret,
         subdomainLimit=obj.subdomain_limit,
         isAdmin=obj.is_admin,
+        authentikId=obj.authentik_id,
+        username=obj.username,
+        roles=obj.roles,
+        isActive=obj.is_active,
         createdAt=obj.created_at,
         updatedAt=obj.updated_at,
         deletedAt=obj.deleted_at,

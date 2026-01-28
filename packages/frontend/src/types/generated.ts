@@ -269,6 +269,12 @@ export interface Subdomain {
   status: 'reserved' | 'active' | 'suspended' | 'released';
   /** Hetzner DNS record ID */
   dnsRecordId?: string | null;
+  /** Target port for routing (default: 80) */
+  port: number;
+  /** When the subdomain was released */
+  releasedAt?: string | null;
+  /** Cooldown period end (30 days after release) */
+  cooldownUntil?: string | null;
   /** Related User entity */
   owner?: User | null;
   createdAt: string;
@@ -287,6 +293,12 @@ export interface SubdomainCreate {
   status: 'reserved' | 'active' | 'suspended' | 'released';
   /** Hetzner DNS record ID */
   dnsRecordId?: string | null;
+  /** Target port for routing (default: 80) */
+  port: number;
+  /** When the subdomain was released */
+  releasedAt?: string | null;
+  /** Cooldown period end (30 days after release) */
+  cooldownUntil?: string | null;
 }
 
 /** Input for updating a Subdomain */
@@ -301,6 +313,12 @@ export interface SubdomainUpdate {
   status?: 'reserved' | 'active' | 'suspended' | 'released';
   /** Hetzner DNS record ID */
   dnsRecordId?: string;
+  /** Target port for routing (default: 80) */
+  port?: number;
+  /** When the subdomain was released */
+  releasedAt?: string;
+  /** Cooldown period end (30 days after release) */
+  cooldownUntil?: string;
 }
 
 /** Filter options for listing Subdomains */
@@ -311,6 +329,55 @@ export interface SubdomainFilter {
   ipAddress?: string;
   status?: 'reserved' | 'active' | 'suspended' | 'released';
   dnsRecordId?: string;
+  port?: number;
+  releasedAt?: string;
+  cooldownUntil?: string;
+  createdAfter?: string;
+  createdBefore?: string;
+}
+
+
+// ============================================
+// AllowedEmailDomain Types
+// ============================================/** Whitelisted email domains for user signup */
+export interface AllowedEmailDomain {
+  id: number;
+  /** Email domain (e.g., 'example.com') */
+  domain: string;
+  /** Whether this domain is currently allowed */
+  isActive: boolean;
+  /** Optional description/notes about this domain */
+  description?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** Input for creating a AllowedEmailDomain */
+export interface AllowedEmailDomainCreate {
+  /** Email domain (e.g., 'example.com') */
+  domain: string;
+  /** Whether this domain is currently allowed */
+  isActive: boolean;
+  /** Optional description/notes about this domain */
+  description?: string | null;
+}
+
+/** Input for updating a AllowedEmailDomain */
+export interface AllowedEmailDomainUpdate {
+  /** Email domain (e.g., 'example.com') */
+  domain?: string;
+  /** Whether this domain is currently allowed */
+  isActive?: boolean;
+  /** Optional description/notes about this domain */
+  description?: string;
+}
+
+/** Filter options for listing AllowedEmailDomains */
+export interface AllowedEmailDomainFilter {
+  domain?: string;
+  domainLike?: string;
+  isActive?: boolean;
+  description?: string;
   createdAfter?: string;
   createdBefore?: string;
 }

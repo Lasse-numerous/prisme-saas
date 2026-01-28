@@ -5,9 +5,6 @@
 This server exposes your application's data via the Model Context Protocol (MCP),
 allowing AI assistants to interact with your data.
 
-SECURITY: All MCP tools require admin API key authentication.
-Set MCP_ADMIN_API_KEY environment variable.
-
 Usage:
     # Run with SSE transport (HTTP server on port 8765)
     python -m prisme_api.mcp.server --sse
@@ -23,6 +20,7 @@ from __future__ import annotations
 
 from fastmcp import FastMCP
 
+from .allowed_email_domain_tools import register_allowed_email_domain_tools
 from .api_key_tools import register_api_key_tools
 from .subdomain_tools import register_subdomain_tools
 from .user_tools import register_user_tools
@@ -30,7 +28,7 @@ from .user_tools import register_user_tools
 # Create the MCP server
 mcp = FastMCP(
     name="MadeWithPris.me API",
-    instructions="Managed subdomain service for madewithpris.me. All tools require admin API key (_api_key parameter).",
+    instructions="Managed subdomain service for madewithpris.me",
 )
 
 
@@ -39,6 +37,7 @@ def register_all_tools() -> None:
     register_user_tools(mcp)
     register_api_key_tools(mcp)
     register_subdomain_tools(mcp)
+    register_allowed_email_domain_tools(mcp)
 
 
 # Register tools on module load
