@@ -269,7 +269,7 @@ jobs:
               echo "Authentik already initialized."
             fi
 
-      - name: Setup SSL certificate
+      - name: Setup SSL certificates
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ steps.host.outputs.ip }}
@@ -277,17 +277,48 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             DOMAIN="${{ vars.STAGING_DOMAIN || 'staging.madewithpris.me' }}"
+            AUTH_DOMAIN="auth-staging.madewithpris.me"
 
-            # Check if SSL is already configured
+            # Setup main domain SSL
             if sudo test -f "/etc/letsencrypt/live/$DOMAIN/fullchain.pem"; then
               echo "SSL certificate already exists for $DOMAIN"
             else
               echo "Setting up SSL certificate for $DOMAIN..."
-              # Update nginx server_name if needed
               sudo sed -i "s/server_name .*;/server_name $DOMAIN;/" /etc/nginx/sites-available/prisme-saas
               sudo nginx -t && sudo systemctl reload nginx
-              # Get certificate
               sudo certbot --nginx -d "$DOMAIN" --non-interactive --agree-tos -m deploy@madewithpris.me
+            fi
+
+            # Setup Authentik subdomain nginx config if not exists
+            if [ ! -f /etc/nginx/sites-available/authentik ]; then
+              echo "Creating nginx config for Authentik..."
+              sudo tee /etc/nginx/sites-available/authentik > /dev/null << 'AUTHEOF'
+            server {
+                listen 80;
+                server_name auth-staging.madewithpris.me;
+
+                location / {
+                    proxy_pass http://127.0.0.1:9000;
+                    proxy_set_header Host $host;
+                    proxy_set_header X-Real-IP $remote_addr;
+                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                    proxy_set_header X-Forwarded-Proto $scheme;
+                    proxy_http_version 1.1;
+                    proxy_set_header Upgrade $http_upgrade;
+                    proxy_set_header Connection "upgrade";
+                }
+            }
+            AUTHEOF
+              sudo ln -sf /etc/nginx/sites-available/authentik /etc/nginx/sites-enabled/
+              sudo nginx -t && sudo systemctl reload nginx
+            fi
+
+            # Setup Authentik SSL
+            if sudo test -f "/etc/letsencrypt/live/$AUTH_DOMAIN/fullchain.pem"; then
+              echo "SSL certificate already exists for $AUTH_DOMAIN"
+            else
+              echo "Setting up SSL certificate for $AUTH_DOMAIN..."
+              sudo certbot --nginx -d "$AUTH_DOMAIN" --non-interactive --agree-tos -m deploy@madewithpris.me
             fi
 
       - name: Verify deployment
@@ -421,7 +452,7 @@ jobs:
             # Cleanup old images
             docker image prune -f
 
-      - name: Setup SSL certificate
+      - name: Setup SSL certificates
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ steps.host.outputs.ip }}
@@ -429,17 +460,48 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             DOMAIN="${{ vars.PRODUCTION_DOMAIN || 'madewithpris.me' }}"
+            AUTH_DOMAIN="auth.madewithpris.me"
 
-            # Check if SSL is already configured
+            # Setup main domain SSL
             if sudo test -f "/etc/letsencrypt/live/$DOMAIN/fullchain.pem"; then
               echo "SSL certificate already exists for $DOMAIN"
             else
               echo "Setting up SSL certificate for $DOMAIN..."
-              # Update nginx server_name if needed
               sudo sed -i "s/server_name .*;/server_name $DOMAIN;/" /etc/nginx/sites-available/prisme-saas
               sudo nginx -t && sudo systemctl reload nginx
-              # Get certificate
               sudo certbot --nginx -d "$DOMAIN" --non-interactive --agree-tos -m deploy@madewithpris.me
+            fi
+
+            # Setup Authentik subdomain nginx config if not exists
+            if [ ! -f /etc/nginx/sites-available/authentik ]; then
+              echo "Creating nginx config for Authentik..."
+              sudo tee /etc/nginx/sites-available/authentik > /dev/null << 'AUTHEOF'
+            server {
+                listen 80;
+                server_name auth.madewithpris.me;
+
+                location / {
+                    proxy_pass http://127.0.0.1:9000;
+                    proxy_set_header Host $host;
+                    proxy_set_header X-Real-IP $remote_addr;
+                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                    proxy_set_header X-Forwarded-Proto $scheme;
+                    proxy_http_version 1.1;
+                    proxy_set_header Upgrade $http_upgrade;
+                    proxy_set_header Connection "upgrade";
+                }
+            }
+            AUTHEOF
+              sudo ln -sf /etc/nginx/sites-available/authentik /etc/nginx/sites-enabled/
+              sudo nginx -t && sudo systemctl reload nginx
+            fi
+
+            # Setup Authentik SSL
+            if sudo test -f "/etc/letsencrypt/live/$AUTH_DOMAIN/fullchain.pem"; then
+              echo "SSL certificate already exists for $AUTH_DOMAIN"
+            else
+              echo "Setting up SSL certificate for $AUTH_DOMAIN..."
+              sudo certbot --nginx -d "$AUTH_DOMAIN" --non-interactive --agree-tos -m deploy@madewithpris.me
             fi
 
       - name: Verify deployment
