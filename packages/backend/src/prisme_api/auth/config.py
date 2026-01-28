@@ -43,6 +43,8 @@ class AuthentikSettings(BaseSettings):
         "AUTHENTIK_ENROLLMENT_FLOW_SLUG", "madewithprisme-enrollment"
     )
 
+    recovery_flow_slug: str = os.getenv("AUTHENTIK_RECOVERY_FLOW_SLUG", "madewithprisme-recovery")
+
     # GitHub OAuth (direct, bypassing Authentik UI)
     github_client_id: str = os.getenv("GITHUB_CLIENT_ID", "")
     github_client_secret: str = os.getenv("GITHUB_CLIENT_SECRET", "")

@@ -5,7 +5,7 @@
  * Wrapper component for routes that require authentication.
  */
 
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import type { ReactNode } from 'react';
 
@@ -89,9 +89,15 @@ export function ProtectedRoute({
           <p className="text-gray-600 mb-4">
             You don't have permission to access this page.
           </p>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-500 mb-4">
             Required roles: {roles.join(', ')}
           </p>
+          <Link
+            to="/"
+            className="inline-block py-2 px-4 bg-nordic-600 text-white rounded-md hover:bg-nordic-700 transition-colors text-sm font-medium"
+          >
+            Go to homepage
+          </Link>
         </div>
       </div>
     );

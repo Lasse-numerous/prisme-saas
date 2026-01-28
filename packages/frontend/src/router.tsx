@@ -11,6 +11,8 @@ import { createBrowserRouter, Link, NavLink, Outlet, useLocation } from 'react-r
 import { ThemeToggle } from './ui/ThemeToggle';
 import { Login } from './pages/Login';
 import { Signup } from './pages/Signup';
+import { ForgotPassword } from './pages/ForgotPassword';
+import { AuthCallback } from './components/auth/AuthCallback';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import UsersListPage from './pages/users';
 import UserDetailPage from './pages/users/[id]';
@@ -236,6 +238,8 @@ export const router = createBrowserRouter([
       // Public routes
       { path: '/login', element: <Login /> },
       { path: '/signup', element: <Signup /> },
+      { path: '/forgot-password', element: <ForgotPassword /> },
+      { path: '/auth/callback', element: <AuthCallback /> },
       // Admin-only routes (Users management)
       { path: '/users', element: <ProtectedRoute roles={['admin']}><UsersListPage /></ProtectedRoute> },
       { path: '/users/:id', element: <ProtectedRoute roles={['admin']}><UserDetailPage /></ProtectedRoute> },

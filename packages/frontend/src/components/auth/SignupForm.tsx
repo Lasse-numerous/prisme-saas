@@ -34,15 +34,18 @@ export function SignupForm({ onSuccess, onLoginClick }: SignupFormProps): JSX.El
   const [loading, setLoading] = useState(false);
   const [initializing, setInitializing] = useState(true);
   const [challenge, setChallenge] = useState<FlowChallenge | null>(null);
+  const [initError, setInitError] = useState(false);
 
   const initFlow = useCallback(async () => {
     setInitializing(true);
+    setInitError(false);
     try {
       const result = await startSignupFlow();
       setFlowToken(result.flow_token);
       setChallenge(result.challenge);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to initialize signup');
+      setInitError(true);
     } finally {
       setInitializing(false);
     }
@@ -136,6 +139,30 @@ export function SignupForm({ onSuccess, onLoginClick }: SignupFormProps): JSX.El
         <div className="bg-white rounded-lg shadow-lg p-8 text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-nordic-600 mx-auto mb-4" />
           <p className="text-nordic-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (initError) {
+    return (
+      <div className="w-full max-w-md mx-auto">
+        <div className="bg-white rounded-lg shadow-lg p-8 text-center">
+          <p className="text-red-600 mb-4">{error}</p>
+          <button
+            onClick={initFlow}
+            className="bg-nordic-600 text-white py-2 px-4 rounded-md hover:bg-nordic-700 transition-colors"
+          >
+            Try again
+          </button>
+          {onLoginClick && (
+            <button
+              onClick={onLoginClick}
+              className="block mx-auto mt-3 text-sm text-nordic-600 hover:text-nordic-800 underline"
+            >
+              Back to login
+            </button>
+          )}
         </div>
       </div>
     );

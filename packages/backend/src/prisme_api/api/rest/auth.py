@@ -55,6 +55,12 @@ async def get_flow_executor() -> FlowExecutorClient:
     return FlowExecutorClient(r)
 
 
+def _is_secure_context() -> bool:
+    """Check if we should use secure cookies (disabled in DEBUG mode)."""
+    debug = os.getenv("DEBUG", "false").lower() in ("true", "1", "yes")
+    return not debug
+
+
 def _set_session_cookie(response: Response, token: str) -> None:
     """Set the JWT session cookie on a response."""
     response.set_cookie(
@@ -62,7 +68,7 @@ def _set_session_cookie(response: Response, token: str) -> None:
         value=token,
         max_age=authentik_settings.session_max_age,
         httponly=True,
-        secure=True,
+        secure=_is_secure_context(),
         samesite="lax",
     )
 
@@ -72,7 +78,7 @@ def _clear_session_cookie(response: Response) -> None:
     response.delete_cookie(
         key=authentik_settings.session_cookie_name,
         httponly=True,
-        secure=True,
+        secure=_is_secure_context(),
         samesite="lax",
     )
 
@@ -260,6 +266,73 @@ async def flow_signup_resend_email(
         raise HTTPException(status_code=502, detail=str(e)) from e
 
 
+# ── Recovery (forgot password) flow endpoints ──────────────────
+
+
+@router.post("/flow/recovery/start", response_model=FlowStartResponse)
+async def flow_recovery_start(
+    executor: Annotated[FlowExecutorClient, Depends(get_flow_executor)],
+) -> FlowStartResponse:
+    """Start the password recovery flow."""
+    try:
+        flow_token, challenge = await executor.start_flow(
+            authentik_settings.recovery_flow_slug,
+        )
+        return FlowStartResponse(
+            flow_token=flow_token,
+            challenge=FlowChallenge(**challenge),
+        )
+    except FlowExecutorError as e:
+        raise HTTPException(status_code=502, detail=str(e)) from e
+
+
+@router.post("/flow/recovery/submit", response_model=FlowStepResponse)
+async def flow_recovery_submit(
+    body: FlowSubmitRequest,
+    response: Response,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    executor: Annotated[FlowExecutorClient, Depends(get_flow_executor)],
+) -> FlowStepResponse:
+    """Submit data to the recovery flow. On completion, issues a JWT session cookie."""
+    try:
+        result = await executor.submit_flow(
+            body.flow_token,
+            authentik_settings.recovery_flow_slug,
+            body.data,
+        )
+    except FlowExecutorError as e:
+        raise HTTPException(status_code=502, detail=str(e)) from e
+
+    if result.get("error"):
+        return FlowStepResponse(
+            completed=False,
+            error=result["error"],
+            challenge=FlowChallenge(**result["challenge"]) if result.get("challenge") else None,
+        )
+
+    if result.get("completed"):
+        # Recovery complete — find user and issue JWT for auto-login
+        email = body.data.get("uid_field", body.data.get("email", ""))
+        if email:
+            try:
+                user = await _find_or_create_user(db, email=email)
+                token = create_session_jwt(user)
+                _set_session_cookie(response, token)
+                return FlowStepResponse(
+                    completed=True,
+                    user=UserResponse.model_validate(user).model_dump(),
+                )
+            except Exception:
+                logger.exception("Failed to auto-login after recovery")
+        return FlowStepResponse(completed=True)
+
+    # Next challenge
+    return FlowStepResponse(
+        completed=False,
+        challenge=FlowChallenge(**result["challenge"]) if result.get("challenge") else None,
+    )
+
+
 # ── GitHub OAuth (direct, bypassing Authentik UI) ──────────────
 
 GITHUB_AUTHORIZE_URL = "https://github.com/login/oauth/authorize"
@@ -309,14 +382,16 @@ async def github_callback(
 
     if not code or not state:
         return RedirectResponse(
-            url="/login?error=missing_params", status_code=status.HTTP_302_FOUND
+            url="/auth/callback?error=missing_params", status_code=status.HTTP_302_FOUND
         )
 
     # Validate CSRF state
     r = await get_redis()
     stored = await r.get(f"github_oauth_state:{state}")
     if not stored:
-        return RedirectResponse(url="/login?error=invalid_state", status_code=status.HTTP_302_FOUND)
+        return RedirectResponse(
+            url="/auth/callback?error=invalid_state", status_code=status.HTTP_302_FOUND
+        )
     await r.delete(f"github_oauth_state:{state}")
 
     async with httpx.AsyncClient() as client:
@@ -334,7 +409,7 @@ async def github_callback(
         if token_resp.status_code != 200:
             logger.error("GitHub token exchange failed: %s", token_resp.text)
             return RedirectResponse(
-                url="/login?error=token_exchange_failed", status_code=status.HTTP_302_FOUND
+                url="/auth/callback?error=token_exchange_failed", status_code=status.HTTP_302_FOUND
             )
 
         token_data = token_resp.json()
@@ -342,7 +417,7 @@ async def github_callback(
         if not access_token:
             logger.error("No access_token in GitHub response: %s", token_data)
             return RedirectResponse(
-                url="/login?error=no_access_token", status_code=status.HTTP_302_FOUND
+                url="/auth/callback?error=no_access_token", status_code=status.HTTP_302_FOUND
             )
 
         auth_headers = {"Authorization": f"Bearer {access_token}"}
@@ -352,7 +427,7 @@ async def github_callback(
         if user_resp.status_code != 200:
             logger.error("GitHub user API failed: %s", user_resp.text)
             return RedirectResponse(
-                url="/login?error=github_user_failed", status_code=status.HTTP_302_FOUND
+                url="/auth/callback?error=github_user_failed", status_code=status.HTTP_302_FOUND
             )
         gh_user = user_resp.json()
 
@@ -367,7 +442,9 @@ async def github_callback(
                         break
 
         if not email:
-            return RedirectResponse(url="/login?error=no_email", status_code=status.HTTP_302_FOUND)
+            return RedirectResponse(
+                url="/auth/callback?error=no_email", status_code=status.HTTP_302_FOUND
+            )
 
     # Find or create local user
     username = gh_user.get("login", email.split("@")[0])
@@ -382,7 +459,7 @@ async def github_callback(
 
     # Issue JWT session cookie
     token = create_session_jwt(user)
-    redirect = RedirectResponse(url="/?auth=github", status_code=status.HTTP_302_FOUND)
+    redirect = RedirectResponse(url="/auth/callback", status_code=status.HTTP_302_FOUND)
     _set_session_cookie(redirect, token)
     return redirect
 
@@ -423,7 +500,7 @@ async def logout_get(
     redirect.delete_cookie(
         key=authentik_settings.session_cookie_name,
         httponly=True,
-        secure=True,
+        secure=_is_secure_context(),
         samesite="lax",
     )
     return redirect

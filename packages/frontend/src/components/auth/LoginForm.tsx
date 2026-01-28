@@ -19,28 +19,34 @@ import { TOTPVerify } from './TOTPVerify';
 export interface LoginFormProps {
   onSuccess?: () => void;
   onSignupClick?: () => void;
+  onForgotPasswordClick?: () => void;
+  /** Error message to display (e.g. from OAuth redirect) */
+  externalError?: string | null;
 }
 
 type LoginStep = 'credentials' | 'totp' | 'error';
 
-export function LoginForm({ onSuccess, onSignupClick }: LoginFormProps): JSX.Element {
+export function LoginForm({ onSuccess, onSignupClick, onForgotPasswordClick, externalError }: LoginFormProps): JSX.Element {
   const { refreshUser } = useAuth();
   const [flowToken, setFlowToken] = useState<string | null>(null);
   const [step, setStep] = useState<LoginStep>('credentials');
   const [formData, setFormData] = useState({ email: '', password: '' });
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(externalError ?? null);
   const [loading, setLoading] = useState(false);
   const [initializing, setInitializing] = useState(true);
+  const [initError, setInitError] = useState(false);
   const [challenge, setChallenge] = useState<FlowChallenge | null>(null);
 
   const initFlow = useCallback(async () => {
     setInitializing(true);
+    setInitError(false);
     try {
       const result = await startLoginFlow();
       setFlowToken(result.flow_token);
       setChallenge(result.challenge);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to initialize login');
+      setInitError(true);
     } finally {
       setInitializing(false);
     }
@@ -150,6 +156,22 @@ export function LoginForm({ onSuccess, onSignupClick }: LoginFormProps): JSX.Ele
     );
   }
 
+  if (initError) {
+    return (
+      <div className="w-full max-w-md mx-auto">
+        <div className="bg-white rounded-lg shadow-lg p-8 text-center">
+          <p className="text-red-600 mb-4">{error}</p>
+          <button
+            onClick={initFlow}
+            className="bg-nordic-600 text-white py-2 px-4 rounded-md hover:bg-nordic-700 transition-colors"
+          >
+            Try again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (step === 'totp') {
     return <TOTPVerify onSubmit={handleTOTPSubmit} error={error} loading={loading} />;
   }
@@ -199,6 +221,18 @@ export function LoginForm({ onSuccess, onSignupClick }: LoginFormProps): JSX.Ele
               placeholder="Enter your password"
             />
           </div>
+
+          {onForgotPasswordClick && (
+            <div className="text-right">
+              <button
+                type="button"
+                onClick={onForgotPasswordClick}
+                className="text-sm text-nordic-600 hover:text-nordic-800 underline"
+              >
+                Forgot password?
+              </button>
+            </div>
+          )}
 
           <button
             type="submit"

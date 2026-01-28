@@ -86,6 +86,20 @@ export async function resendVerificationEmail(
   });
 }
 
+export async function startRecoveryFlow(): Promise<FlowStartResponse> {
+  return apiPost('/api/auth/flow/recovery/start', {});
+}
+
+export async function submitRecoveryFlow(
+  flowToken: string,
+  data: Record<string, unknown>
+): Promise<FlowStepResponse> {
+  return apiPost('/api/auth/flow/recovery/submit', {
+    flow_token: flowToken,
+    data,
+  });
+}
+
 export function getGitHubLoginUrl(): string {
   return `${API_BASE_URL}/api/auth/github/login`;
 }
