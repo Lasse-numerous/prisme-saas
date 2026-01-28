@@ -348,29 +348,23 @@ class ServiceBase[ModelT: ModelProtocol, CreateSchemaT: BaseModel, UpdateSchemaT
         return result.rowcount
 
     # Lifecycle hooks - override in subclasses
-    async def before_create(self, data: CreateSchemaT) -> None:
+    async def before_create(self, data: CreateSchemaT) -> None:  # noqa: B027
         """Hook called before creating a record."""
-        pass
 
-    async def after_create(self, obj: ModelT) -> None:
+    async def after_create(self, obj: ModelT) -> None:  # noqa: B027
         """Hook called after creating a record."""
-        pass
 
-    async def before_update(self, obj: ModelT, data: UpdateSchemaT) -> None:
+    async def before_update(self, obj: ModelT, data: UpdateSchemaT) -> None:  # noqa: B027
         """Hook called before updating a record."""
-        pass
 
-    async def after_update(self, obj: ModelT) -> None:
+    async def after_update(self, obj: ModelT) -> None:  # noqa: B027
         """Hook called after updating a record."""
-        pass
 
-    async def before_delete(self, obj: ModelT) -> None:
+    async def before_delete(self, obj: ModelT) -> None:  # noqa: B027
         """Hook called before deleting a record."""
-        pass
 
-    async def after_delete(self, obj: ModelT) -> None:
+    async def after_delete(self, obj: ModelT) -> None:  # noqa: B027
         """Hook called after deleting a record."""
-        pass
 
 
 __all__ = ["ModelProtocol", "ServiceBase"]

@@ -78,7 +78,7 @@ async def get_current_user(
             raise credentials_exception
 
     except OIDCError:
-        raise credentials_exception
+        raise credentials_exception from None
 
     # Fetch user from database by Authentik ID
     result = await db.execute(select(User).where(User.authentik_id == authentik_id))

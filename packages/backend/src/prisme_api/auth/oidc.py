@@ -205,11 +205,11 @@ class OIDCClient:
             return dict(claims)
 
         except ExpiredTokenError:
-            raise OIDCError("ID token has expired")
+            raise OIDCError("ID token has expired") from None
         except BadSignatureError:
-            raise OIDCError("ID token signature verification failed")
+            raise OIDCError("ID token signature verification failed") from None
         except DecodeError as e:
-            raise OIDCError(f"Failed to decode ID token: {e}")
+            raise OIDCError(f"Failed to decode ID token: {e}") from e
 
     def get_logout_url(self, id_token_hint: str | None = None) -> str:
         """Generate the logout URL for ending the session.

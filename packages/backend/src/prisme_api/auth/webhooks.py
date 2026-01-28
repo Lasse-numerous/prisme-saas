@@ -213,7 +213,7 @@ async def authentik_webhook(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid JSON payload",
-        )
+        ) from None
 
     event_type = payload.get("event")
     if not event_type:
@@ -237,6 +237,6 @@ async def authentik_webhook(
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Error processing webhook: {e}",
-            )
+            ) from e
 
     return {"status": "processed", "event": event_type}

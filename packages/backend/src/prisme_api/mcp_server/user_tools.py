@@ -103,7 +103,7 @@ def register_user_tools(mcp: FastMCP) -> None:
         is_admin: bool | None = False,  # Whether user has admin privileges
         authentik_id: str | None = None,  # Authentik user ID for SSO
         username: str | None = None,  # Username (optional, email is primary)
-        roles: dict | list | None = ["user"],  # User roles for authorization
+        roles: dict | list | None = None,  # User roles for authorization (default: ["user"])
         is_active: bool | None = True,  # Whether user account is active
         api_keys_ids: list[int] | None = None,  # IDs of related APIKey entities
         subdomains_ids: list[int] | None = None,  # IDs of related Subdomain entities
@@ -141,7 +141,7 @@ def register_user_tools(mcp: FastMCP) -> None:
                 is_admin=is_admin,
                 authentik_id=authentik_id,
                 username=username,
-                roles=roles,
+                roles=roles if roles is not None else ["user"],
                 is_active=is_active,
             )
             result = await service.create(data=data)
