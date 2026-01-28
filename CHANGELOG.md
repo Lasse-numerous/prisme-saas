@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.3.0 (2026-01-28)
+
+### Features
+
+- Automate SSL certificate setup in deploy workflow
+  ([`e2eed80`](https://github.com/Lasse-numerous/prisme-saas/commit/e2eed8076ed46df056da2d8ab0b56fa653c17924))
+
+
 ## v0.2.4 (2026-01-28)
 
 ### Bug Fixes
