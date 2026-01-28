@@ -162,58 +162,29 @@ jobs:
             # Create clean .env from secrets (overwrite to prevent duplicate accumulation)
             mv .env.secrets .env
 
-            # Debug: verify env vars are set and check actual value lengths
-            echo "=== Environment Check ==="
-            echo "POSTGRES_PASSWORD length: ${#POSTGRES_PASSWORD} chars"
-            echo "AUTHENTIK_DB_PASSWORD length: ${#AUTHENTIK_DB_PASSWORD} chars"
-            echo "=== .env file: checking actual values ==="
-            # Show the line with value length (not the actual value)
-            grep -E '^POSTGRES_PASSWORD=' .env | awk -F= '{print $1 "= (length: " length($2) " chars)"}' || echo "POSTGRES_PASSWORD not in .env!"
-            grep -E '^AUTHENTIK_DB_PASSWORD=' .env | awk -F= '{print $1 "= (length: " length($2) " chars)"}' || echo "AUTHENTIK_DB_PASSWORD not in .env!"
-            echo "=== First 3 chars of POSTGRES_PASSWORD in .env ==="
-            grep -E '^POSTGRES_PASSWORD=' .env | cut -d= -f2 | cut -c1-3 || echo "empty"
-            echo "========================="
-
             # Pull new images
             docker compose -f docker-compose.staging.yml pull
 
-            # Debug: Show what docker compose sees for postgres config
-            echo "=== Docker Compose Config (db services) ==="
-            docker compose -f docker-compose.staging.yml config | grep -A 15 "authentik-db:" | head -20
-            docker compose -f docker-compose.staging.yml config | grep -A 15 "^  db:" | head -20
-            echo "========================="
+            # Deploy with rolling update
+            docker compose -f docker-compose.staging.yml up -d --remove-orphans
 
-            # Stop and remove old containers first to ensure clean state
-            docker compose -f docker-compose.staging.yml down --remove-orphans || true
+            # Wait for all services to become healthy (up to 90 seconds)
+            echo "Waiting for services to become healthy..."
+            for i in {1..18}; do
+              if docker compose -f docker-compose.staging.yml ps | grep -q "unhealthy\|starting"; then
+                echo "Still waiting... ($i/18)"
+                sleep 5
+              else
+                echo "All services healthy!"
+                break
+              fi
+            done
 
-            # Delete postgres data volumes to start fresh (required when password wasn't set initially)
-            echo "=== Removing old postgres volumes to allow fresh initialization ==="
-            docker volume ls
-            docker volume rm -f prisme-saas_authentik_db_data prisme-saas_postgres_data 2>/dev/null || echo "Volumes not found or in use"
-
-            # Deploy with fresh containers
-            docker compose -f docker-compose.staging.yml up -d
-
-            # Debug: Check authentik-db container status and logs
-            echo "=== Container Status ==="
+            # Show final container status
             docker compose -f docker-compose.staging.yml ps
-            echo "=== Authentik DB Logs ==="
-            docker compose -f docker-compose.staging.yml logs --tail=50 authentik-db || echo "No authentik-db logs"
-            echo "========================="
-
-            # Wait for services to be ready (longer wait for first-time DB init)
-            sleep 30
-
-            # Check if backend is running
-            if ! docker compose -f docker-compose.staging.yml ps backend | grep -q "running"; then
-              echo "Backend not running. Checking logs..."
-              docker compose -f docker-compose.staging.yml logs --tail=30 backend
-              docker compose -f docker-compose.staging.yml logs --tail=30 db
-              exit 1
-            fi
 
             # Run database migrations
-            docker compose -f docker-compose.staging.yml exec -T backend alembic upgrade head
+            docker compose -f docker-compose.staging.yml exec -T -w /app/packages/backend/src backend alembic upgrade head
 
             # Health check
             curl -f http://localhost:8000/health || exit 1
@@ -356,14 +327,26 @@ jobs:
             # Pull new images
             docker compose -f docker-compose.prod.yml pull
 
-            # Deploy (force recreate to clear any unhealthy container state)
-            docker compose -f docker-compose.prod.yml up -d --remove-orphans --force-recreate
+            # Deploy with rolling update
+            docker compose -f docker-compose.prod.yml up -d --remove-orphans
 
-            # Wait for services to be ready
-            sleep 15
+            # Wait for all services to become healthy (up to 90 seconds)
+            echo "Waiting for services to become healthy..."
+            for i in {1..18}; do
+              if docker compose -f docker-compose.prod.yml ps | grep -q "unhealthy\|starting"; then
+                echo "Still waiting... ($i/18)"
+                sleep 5
+              else
+                echo "All services healthy!"
+                break
+              fi
+            done
+
+            # Show final container status
+            docker compose -f docker-compose.prod.yml ps
 
             # Run database migrations
-            docker compose -f docker-compose.prod.yml exec -T backend alembic upgrade head
+            docker compose -f docker-compose.prod.yml exec -T -w /app/packages/backend/src backend alembic upgrade head
 
             # Health check
             curl -f http://localhost:8000/health || exit 1
