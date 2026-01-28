@@ -1,6 +1,29 @@
 # CHANGELOG
 
 
+## v0.8.0 (2026-01-28)
+
+### Chores
+
+- Update uv.lock
+  ([`7ab6332`](https://github.com/Lasse-numerous/prisme-saas/commit/7ab6332024ccfbb8e016b329a6398525c5f4fbc0))
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+### Features
+
+- **auth**: Comprehensive Authentik branding with Nordic theme
+  ([`707f260`](https://github.com/Lasse-numerous/prisme-saas/commit/707f260b53795e47ef8508d095a077f4bdc31dee))
+
+- Add modular blueprint structure (00-08) for better organization - Implement comprehensive CSS
+  theme with PatternFly variable overrides - Create branded email templates (verification, password
+  reset) - Add prism logo SVG and 64x64 favicon PNG - Add local Authentik dev environment with
+  docker-compose overlay - Add bootstrap script for dev Authentik setup - Update staging compose
+  with templates volume mount
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+
 ## v0.7.2 (2026-01-28)
 
 ### Bug Fixes
