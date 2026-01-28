@@ -121,16 +121,16 @@ jobs:
       - name: Save deploy config artifact
         if: (github.event.inputs.action == 'apply' || github.event_name == 'workflow_run') && steps.outputs.outputs.server_ip != ''
         run: |
-          mkdir -p deploy-config
-          echo "${{ steps.outputs.outputs.server_ip }}" > deploy-config/server_ip
-          echo "${{ steps.outputs.outputs.environment }}" > deploy-config/environment
+          mkdir -p ${{ github.workspace }}/deploy-config
+          echo "${{ steps.outputs.outputs.server_ip }}" > ${{ github.workspace }}/deploy-config/server_ip
+          echo "${{ steps.outputs.outputs.environment }}" > ${{ github.workspace }}/deploy-config/environment
 
       - name: Upload deploy config
         if: (github.event.inputs.action == 'apply' || github.event_name == 'workflow_run') && steps.outputs.outputs.server_ip != ''
         uses: actions/upload-artifact@v4
         with:
           name: deploy-config
-          path: deploy-config/
+          path: ${{ github.workspace }}/deploy-config/
           retention-days: 1
 
       - name: Terraform Destroy
