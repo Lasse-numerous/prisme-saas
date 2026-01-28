@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.2.4 (2026-01-28)
+
+### Bug Fixes
+
+- Use absolute path for deploy-config artifact
+  ([`79ea838`](https://github.com/Lasse-numerous/prisme-saas/commit/79ea83861d9867815a9152430f5452c9f20336da))
+
+
 ## v0.2.3 (2026-01-28)
 
 ### Bug Fixes
