@@ -44,16 +44,18 @@ class AuthentikSettings(BaseSettings):
         """Derive URLs from issuer_url if not explicitly set."""
         if self.issuer_url:
             base = self.issuer_url.rstrip("/")
+            # Authentik uses shared OAuth endpoints, not per-application paths
+            # e.g., issuer: https://auth.example.com/application/o/myapp/
+            # but authorize is at: https://auth.example.com/application/o/authorize/
+            oauth_base = "/".join(base.split("/")[:-1])  # Remove app slug
             if not self.authorize_url:
-                self.authorize_url = f"{base}/authorize/"
+                self.authorize_url = f"{oauth_base}/authorize/"
             if not self.token_url:
-                self.token_url = f"{base}/token/"
+                self.token_url = f"{oauth_base}/token/"
             if not self.userinfo_url:
-                self.userinfo_url = f"{base}/userinfo/"
+                self.userinfo_url = f"{oauth_base}/userinfo/"
             if not self.jwks_url:
-                # JWKS is typically at the root of the provider
-                provider_base = "/".join(base.split("/")[:-2])
-                self.jwks_url = f"{provider_base}/jwks/"
+                self.jwks_url = f"{oauth_base}/jwks/"
             if not self.logout_url:
                 self.logout_url = f"{base}/end-session/"
 
