@@ -80,7 +80,7 @@ class UserInput:
     isAdmin: bool = False
     authentikId: str | None = None
     username: str | None = None
-    roles: strawberry.scalars.JSON = ["user"]
+    roles: strawberry.scalars.JSON = strawberry.field(default_factory=lambda: ["user"])
     isActive: bool = True
     apiKeysIds: list[int] | None = None
     subdomainsIds: list[int] | None = None

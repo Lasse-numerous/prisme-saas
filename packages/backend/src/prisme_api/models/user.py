@@ -35,7 +35,7 @@ class User(Base, TimestampMixin, SoftDeleteMixin):
         String(255), unique=True, index=True, nullable=True
     )
     username: Mapped[str | None] = mapped_column(String(100), nullable=True)
-    roles: Mapped[dict | list] = mapped_column(JSON, default=["user"])
+    roles: Mapped[dict | list] = mapped_column(JSON, default=lambda: ["user"])
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
     # Relationships
