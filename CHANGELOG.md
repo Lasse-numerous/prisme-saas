@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.2.3 (2026-01-28)
+
+### Bug Fixes
+
+- Use artifact to pass server IP from terraform to deploy
+  ([`d524468`](https://github.com/Lasse-numerous/prisme-saas/commit/d52446838d56e644c5f102e138ff23aed1d663ee))
+
+
 ## v0.2.2 (2026-01-28)
 
 ### Bug Fixes
