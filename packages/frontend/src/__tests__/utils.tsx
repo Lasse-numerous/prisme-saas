@@ -6,7 +6,16 @@
 
 import React, { type ReactElement } from 'react';
 import { render, type RenderOptions } from '@testing-library/react';
+import { Provider, createClient, cacheExchange, fetchExchange } from 'urql';
 import { WidgetProvider } from '../prism/widgets';
+
+// Create a mock urql client for testing
+const mockClient = createClient({
+  url: 'http://localhost:8000/graphql',
+  exchanges: [cacheExchange, fetchExchange],
+  // Disable suspense to prevent test hangs
+  suspense: false,
+});
 
 // Add providers for testing
 interface WrapperProps {
@@ -15,9 +24,11 @@ interface WrapperProps {
 
 function AllTheProviders({ children }: WrapperProps): ReactElement {
   return (
-    <WidgetProvider>
-      {children}
-    </WidgetProvider>
+    <Provider value={mockClient}>
+      <WidgetProvider>
+        {children}
+      </WidgetProvider>
+    </Provider>
   );
 }
 
@@ -36,6 +47,9 @@ export * from '@testing-library/react';
 
 // Override render with custom render
 export { customRender as render };
+
+// Export mock client for advanced test cases
+export { mockClient };
 
 /**
  * Create mock data for testing.

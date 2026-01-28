@@ -29,7 +29,7 @@ class User(Base, TimestampMixin, SoftDeleteMixin):
     email_verification_token: Mapped[str | None] = mapped_column(String(255), nullable=True)
     mfa_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
     mfa_secret: Mapped[str | None] = mapped_column(String(255), nullable=True)
-    subdomain_limit: Mapped[int] = mapped_column(Integer, default=5)
+    subdomain_limit: Mapped[int] = mapped_column(Integer, default=10)
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
     authentik_id: Mapped[str | None] = mapped_column(
         String(255), unique=True, index=True, nullable=True

@@ -19,6 +19,9 @@ const mockSubdomain: Subdomain = {
   ipAddress: 'test string',
   status: 'reserved',
   dnsRecordId: 'test string',
+  port: 42,
+  releasedAt: '2024-01-01T00:00:00Z',
+  cooldownUntil: '2024-01-01T00:00:00Z',
   createdAt: '2024-01-01T00:00:00Z',
   updatedAt: '2024-01-01T00:00:00Z',
 };

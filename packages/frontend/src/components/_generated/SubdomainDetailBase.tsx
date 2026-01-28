@@ -105,6 +105,18 @@ export function SubdomainDetailBase({
             <dd className="text-nordic-900">{String(data.dnsRecordId ?? '-')}</dd>
           </div>
           <div>
+            <dt className="text-sm font-medium text-nordic-500 mb-1" title="Target port for routing (default: 80)">Port</dt>
+            <dd className="text-nordic-900">{String(data.port ?? '-')}</dd>
+          </div>
+          <div>
+            <dt className="text-sm font-medium text-nordic-500 mb-1" title="When the subdomain was released">Released At</dt>
+            <dd className="text-nordic-900">{String(data.releasedAt ?? '-')}</dd>
+          </div>
+          <div>
+            <dt className="text-sm font-medium text-nordic-500 mb-1" title="Cooldown period end (30 days after release)">Cooldown Until</dt>
+            <dd className="text-nordic-900">{String(data.cooldownUntil ?? '-')}</dd>
+          </div>
+          <div>
             <dt className="text-sm font-medium text-nordic-500 mb-1">Created</dt>
             <dd className="text-nordic-900">{new Date(data.createdAt).toLocaleString()}</dd>
           </div>

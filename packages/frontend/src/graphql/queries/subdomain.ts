@@ -16,6 +16,9 @@ export const GetSubdomainQuery = graphql(`
       ipAddress
       status
       dnsRecordId
+      port
+      releasedAt
+      cooldownUntil
       createdAt
       updatedAt
       owner {
@@ -37,6 +40,9 @@ export const ListSubdomainsQuery = graphql(`
           ipAddress
           status
           dnsRecordId
+          port
+          releasedAt
+          cooldownUntil
           createdAt
           updatedAt
           owner {

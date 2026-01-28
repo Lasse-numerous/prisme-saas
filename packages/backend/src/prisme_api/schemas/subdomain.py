@@ -35,7 +35,7 @@ class SubdomainBase(SchemaBase):
     dns_record_id: str | None = Field(
         default=None, max_length=50, description="Hetzner DNS record ID"
     )
-    port: int = Field(default=80, description="Target port for routing (default: 80)")
+    port: int = Field(description="Target port for routing (default: 80)")
     released_at: datetime | None = Field(
         default=None, description="When the subdomain was released"
     )
@@ -50,6 +50,7 @@ class SubdomainCreate(SubdomainBase):
     status: Literal["reserved", "active", "suspended", "released"] | None = Field(
         default="reserved", description="Current status of the subdomain"
     )
+    port: int | None = Field(default=80, description="Target port for routing (default: 80)")
 
 
 class SubdomainUpdate(SchemaBase):
@@ -103,5 +104,8 @@ class SubdomainFilter(SchemaBase):
     ip_address: str | None = None
     status: str | None = None
     dns_record_id: str | None = None
+    port: int | None = None
+    released_at: datetime | None = None
+    cooldown_until: datetime | None = None
     created_after: datetime | None = None
     created_before: datetime | None = None

@@ -16,7 +16,10 @@ export const SUBDOMAIN_FIELD_SPECS: FieldSpec[] = [
   { name: 'ownerId', type: 'foreign_key', required: false, displayName: 'Owner Id', description: 'The user who owns this subdomain', references: 'User' },
   { name: 'ipAddress', type: 'string', required: false, displayName: 'Ip Address', description: 'IPv4 address for the A record' },
   { name: 'status', type: 'enum', required: false, displayName: 'Status', description: 'Current status of the subdomain', enumValues: ['reserved', 'active', 'suspended', 'released'] },
-  { name: 'dnsRecordId', type: 'string', required: false, displayName: 'Dns Record Id', description: 'Hetzner DNS record ID' }
+  { name: 'dnsRecordId', type: 'string', required: false, displayName: 'Dns Record Id', description: 'Hetzner DNS record ID' },
+  { name: 'port', type: 'integer', required: false, displayName: 'Port', description: 'Target port for routing (default: 80)' },
+  { name: 'releasedAt', type: 'datetime', required: false, displayName: 'Released At', description: 'When the subdomain was released' },
+  { name: 'cooldownUntil', type: 'datetime', required: false, displayName: 'Cooldown Until', description: 'Cooldown period end (30 days after release)' }
 ];
 
 export interface SubdomainFormBaseProps {

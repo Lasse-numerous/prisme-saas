@@ -9,27 +9,42 @@ import strawberry
 from strawberry.fastapi import GraphQLRouter
 
 from ._generated.context import get_context
-from ._generated.mutations import APIKeyMutations, SubdomainMutations, UserMutations
-from ._generated.queries import APIKeyQueries, SubdomainQueries, UserQueries
+from ._generated.mutations import (
+    AllowedEmailDomainMutations,
+    APIKeyMutations,
+    SubdomainMutations,
+    UserMutations,
+)
+from ._generated.queries import (
+    AllowedEmailDomainQueries,
+    APIKeyQueries,
+    SubdomainQueries,
+    UserQueries,
+)
+from ._generated.types import AllowedEmailDomainType, APIKeyType, SubdomainType, UserType
 
 
 @strawberry.type(description="MadeWithPris.me API - GraphQL API")
-class Query(UserQueries, APIKeyQueries, SubdomainQueries):
+class Query(UserQueries, APIKeyQueries, SubdomainQueries, AllowedEmailDomainQueries):
     """Managed subdomain service for madewithpris.me"""
 
     pass
 
 
-@strawberry.type(description="Prisme.dev API - GraphQL mutations")
-class Mutation(UserMutations, APIKeyMutations, SubdomainMutations):
-    """Prisme.dev API GraphQL mutations."""
+@strawberry.type(description="MadeWithPris.me API - GraphQL mutations")
+class Mutation(UserMutations, APIKeyMutations, SubdomainMutations, AllowedEmailDomainMutations):
+    """MadeWithPris.me API GraphQL mutations."""
 
     pass
 
 
+# All types must be explicitly listed to ensure proper resolution of forward references
+_all_types: list[type] = [UserType, APIKeyType, SubdomainType, AllowedEmailDomainType]
+
 schema = strawberry.Schema(
     query=Query,
     mutation=Mutation,
+    types=_all_types,
 )
 
 

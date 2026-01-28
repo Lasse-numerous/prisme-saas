@@ -5,7 +5,7 @@
  */
 
 import { createClient, cacheExchange, fetchExchange, subscriptionExchange } from 'urql';
-import { createClient as createWSClient, type SubscribePayload } from 'graphql-ws';
+import { createClient as createWSClient } from 'graphql-ws';
 
 // Configure based on your environment
 // Uses relative URLs by default for Vite proxy support, with env var overrides for Docker/Traefik
@@ -26,7 +26,10 @@ export const client = createClient({
     subscriptionExchange({
       forwardSubscription: (request) => ({
         subscribe: (sink) => ({
-          unsubscribe: wsClient.subscribe(request as SubscribePayload, sink),
+          unsubscribe: wsClient.subscribe(
+            request as { query: string; variables?: Record<string, unknown> },
+            sink
+          ),
         }),
       }),
     }),

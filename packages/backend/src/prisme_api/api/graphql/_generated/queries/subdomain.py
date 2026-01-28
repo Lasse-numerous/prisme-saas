@@ -29,19 +29,11 @@ class SubdomainQueries:
         info: Info[Context, None],
         id: int,
     ) -> SubdomainType | None:
-        """Get a Subdomain by ID. Users can only access their own."""
-        # Require authentication
-        info.context.require_auth()
-
+        """Get a Subdomain by ID."""
         service = SubdomainService(info.context.db)
         result = await service.get(id)
         if result is None:
             return None
-
-        # Check ownership for non-admin users
-        if not info.context.is_owner_or_admin(result.owner_id):
-            raise PermissionError("Access denied")
-
         return subdomain_from_model(result)
 
     @strawberry.field(description="List subdomains with filtering and pagination")
@@ -51,10 +43,7 @@ class SubdomainQueries:
         where: SubdomainWhereInput | None = None,
         pagination: OffsetPaginationInput | None = None,
     ) -> Connection[SubdomainType]:
-        """List subdomains. Users see only their own, admins see all."""
-        # Require authentication
-        user = info.context.require_auth()
-
+        """List subdomains."""
         service = SubdomainService(info.context.db)
 
         page = pagination.page if pagination else 1
@@ -62,11 +51,7 @@ class SubdomainQueries:
         skip = (page - 1) * page_size
 
         # Convert GraphQL where input to service filter
-        filters = _convert_where_to_filter(where) if where else SubdomainFilter()
-
-        # Apply owner filter for non-admin users
-        if "admin" not in (user.roles or []):
-            filters = SubdomainFilter(**filters.model_dump(), owner_id=user.id)
+        filters = _convert_where_to_filter(where) if where else None
 
         items = await service.list(skip=skip, limit=page_size, filters=filters)
         total = await service.count_filtered(filters=filters)

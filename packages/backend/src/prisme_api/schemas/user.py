@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Any
 
 from pydantic import ConfigDict, Field
 
@@ -27,6 +28,14 @@ class UserBase(SchemaBase):
     mfa_secret: str | None = Field(default=None, max_length=255, description="TOTP MFA secret")
     subdomain_limit: int = Field(description="Maximum number of subdomains allowed")
     is_admin: bool = Field(description="Whether user has admin privileges")
+    authentik_id: str | None = Field(
+        default=None, max_length=255, description="Authentik user ID for SSO"
+    )
+    username: str | None = Field(
+        default=None, max_length=100, description="Username (optional, email is primary)"
+    )
+    roles: dict[str, Any] | list[Any] = Field(description="User roles for authorization")
+    is_active: bool = Field(description="Whether user account is active")
 
 
 class UserCreate(UserBase):
@@ -37,9 +46,13 @@ class UserCreate(UserBase):
     )
     mfa_enabled: bool | None = Field(default=False, description="Whether MFA is enabled")
     subdomain_limit: int | None = Field(
-        default=5, description="Maximum number of subdomains allowed"
+        default=10, description="Maximum number of subdomains allowed"
     )
     is_admin: bool | None = Field(default=False, description="Whether user has admin privileges")
+    roles: dict[str, Any] | list[Any] | None = Field(
+        default=["user"], description="User roles for authorization"
+    )
+    is_active: bool | None = Field(default=True, description="Whether user account is active")
 
 
 class UserUpdate(SchemaBase):
@@ -58,9 +71,19 @@ class UserUpdate(SchemaBase):
     mfa_enabled: bool | None = Field(default=False, description="Whether MFA is enabled")
     mfa_secret: str | None = Field(default=None, max_length=255, description="TOTP MFA secret")
     subdomain_limit: int | None = Field(
-        default=5, description="Maximum number of subdomains allowed"
+        default=10, description="Maximum number of subdomains allowed"
     )
     is_admin: bool | None = Field(default=False, description="Whether user has admin privileges")
+    authentik_id: str | None = Field(
+        default=None, max_length=255, description="Authentik user ID for SSO"
+    )
+    username: str | None = Field(
+        default=None, max_length=100, description="Username (optional, email is primary)"
+    )
+    roles: dict[str, Any] | list[Any] | None = Field(
+        default=["user"], description="User roles for authorization"
+    )
+    is_active: bool | None = Field(default=True, description="Whether user account is active")
 
 
 class UserRead(UserBase):
@@ -86,6 +109,10 @@ class UserFilter(SchemaBase):
     mfa_secret: str | None = None
     subdomain_limit: int | None = None
     is_admin: bool | None = None
+    authentik_id: str | None = None
+    username: str | None = None
+    roles: dict[str, Any] | list[Any] | None = None
+    is_active: bool | None = None
 
     # Relationship filters
     api_keys_id: int | None = None

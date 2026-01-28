@@ -37,7 +37,7 @@ class Subdomain(Base, TimestampMixin):
     port: Mapped[int] = mapped_column(Integer, default=80)
     released_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     cooldown_until: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True, index=True
+        DateTime(timezone=True), index=True, nullable=True
     )
 
     # Relationships

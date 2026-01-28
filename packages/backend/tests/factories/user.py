@@ -27,7 +27,7 @@ class UserFactory(SQLAlchemyModelFactory):
     mfa_secret = factory.Faker("pystr", max_chars=255)
     subdomain_limit = factory.Faker("random_int", min=1, max=1000)
     is_admin = factory.Faker("boolean")
-    authentik_id = factory.Sequence(lambda n: f"authentik_id_{n}")
+    authentik_id = factory.Sequence(lambda n: f"authentik_id{n}")
     username = factory.Faker("name")
     roles = factory.LazyFunction(lambda: {"key": "value"})
     is_active = factory.Faker("boolean")
