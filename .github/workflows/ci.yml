@@ -92,7 +92,7 @@ jobs:
         run: uv run mkdocs build --strict
 
   e2e:
-    name: End-to-End Tests
+    name: Integration Tests
     needs: lint
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -123,9 +123,9 @@ jobs:
       - name: Install dependencies
         run: uv sync --all-extras
 
-      - name: Run E2E tests
+      - name: Run integration tests
         env:
           DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/prisme_api_e2e
           ENVIRONMENT: test
           PRISME_ADMIN_API_KEY: test_api_key_for_ci
-        run: uv run pytest -m "e2e and not docker" -v --timeout=300
+        run: uv run pytest packages/backend/tests/integration -v --timeout=300
