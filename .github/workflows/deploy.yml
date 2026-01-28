@@ -142,7 +142,7 @@ jobs:
           target: ${{ env.APP_DIR }}
 
       - name: Setup Authentik directories
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ steps.host.outputs.ip }}
           username: deploy
@@ -155,7 +155,7 @@ jobs:
             ls -la deploy/authentik/media/branding/ 2>/dev/null || echo "Branding directory not found"
 
       - name: Configure environment and deploy
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.5
         env:
           # Core settings
           IMAGE_TAG: ${{ github.sha }}
@@ -260,7 +260,7 @@ jobs:
             docker image prune -f
 
       - name: Initialize Authentik (if needed)
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ steps.host.outputs.ip }}
           username: deploy
@@ -295,7 +295,7 @@ jobs:
             fi
 
       - name: Setup SSL certificates
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ steps.host.outputs.ip }}
           username: deploy
@@ -347,7 +347,7 @@ jobs:
             fi
 
       - name: Verify deployment
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ steps.host.outputs.ip }}
           username: deploy
@@ -382,7 +382,7 @@ jobs:
           target: ${{ env.APP_DIR }}
 
       - name: Configure environment and deploy
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.5
         env:
           # Core settings
           IMAGE_TAG: ${{ github.sha }}
@@ -478,7 +478,7 @@ jobs:
             docker image prune -f
 
       - name: Setup SSL certificates
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ steps.host.outputs.ip }}
           username: deploy
@@ -530,7 +530,7 @@ jobs:
             fi
 
       - name: Verify deployment
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ steps.host.outputs.ip }}
           username: deploy
