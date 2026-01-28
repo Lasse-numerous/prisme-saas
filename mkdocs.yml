@@ -1,6 +1,7 @@
 site_name: MadeWithPris.me
 site_description: "Managed subdomain service for madewithpris.me"
 site_url: https://docs.madewithpris.me/
+dev_addr: 127.0.0.1:8009
 repo_url: https://github.com/Lasse-numerous/prisme-saas
 repo_name: Lasse-numerous/prisme-saas
 edit_uri: edit/main/docs/
@@ -49,8 +50,10 @@ nav:
       - Quick Start: getting-started/quickstart.md
   - API Reference:
       - api/index.md
-      - Subdomains: api/subdomains.md
       - Authentication: api/authentication.md
+      - Subdomains: api/subdomains.md
+      - API Keys: api/api-keys.md
+      - Users: api/users.md
   - CLI Reference:
       - cli/index.md
       - prism auth: cli/auth.md

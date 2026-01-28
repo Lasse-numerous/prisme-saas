@@ -1,10 +1,64 @@
 # Authentication
 
-All API requests require authentication using an API key.
+MadeWithPris.me supports two authentication methods:
 
-## API Keys
+1. **SSO Authentication** - For web-based access via Authentik
+2. **API Key Authentication** - For programmatic/CLI access
 
-API keys are bearer tokens prefixed with `prisme_live_sk_` (production) or `prisme_test_sk_` (testing).
+## SSO Authentication (Authentik)
+
+The web interface and API support Single Sign-On via [Authentik](https://goauthentik.io/), an open-source identity provider.
+
+### Auth Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/auth/login` | Initiate OIDC login flow |
+| `GET` | `/auth/callback` | OIDC callback handler |
+| `GET` | `/auth/logout` | Logout (GET) |
+| `POST` | `/auth/logout` | Logout (POST) |
+| `GET` | `/auth/me` | Get current user info |
+| `POST` | `/auth/refresh` | Refresh session |
+
+### Login Flow
+
+1. Redirect user to `/auth/login`
+2. User authenticates with Authentik (supports MFA via TOTP or email)
+3. Callback redirects to `/auth/callback` with authorization code
+4. Session cookie is set for subsequent requests
+
+### Get Current User
+
+```http
+GET /auth/me
+```
+
+**Response:**
+
+```json
+{
+  "id": 1,
+  "email": "user@example.com",
+  "role": "user",
+  "email_verified": true,
+  "mfa_enabled": true,
+  "subdomain_limit": 5,
+  "created_at": "2026-01-26T12:00:00Z"
+}
+```
+
+---
+
+## API Key Authentication
+
+API keys provide programmatic access for CLI tools and scripts.
+
+### API Key Format
+
+API keys are bearer tokens with the following prefixes:
+
+- `prisme_live_sk_` - Production keys
+- `prisme_test_sk_` - Testing keys
 
 ### Using API Keys
 
@@ -15,6 +69,37 @@ curl -H "Authorization: Bearer prisme_live_sk_xxxxx" \
      https://api.madewithpris.me/subdomains
 ```
 
+### Creating API Keys
+
+Create API keys via the API (requires authentication):
+
+```http
+POST /api-keys
+```
+
+```json
+{
+  "name": "My CLI Key",
+  "expires_at": "2027-01-26T00:00:00Z"
+}
+```
+
+**Response:**
+
+```json
+{
+  "id": 1,
+  "name": "My CLI Key",
+  "key_prefix": "prisme_live_sk_abc",
+  "key": "prisme_live_sk_abc123...",
+  "expires_at": "2027-01-26T00:00:00Z",
+  "created_at": "2026-01-26T12:00:00Z"
+}
+```
+
+!!! warning "Save Your Key"
+    The full API key is only shown once at creation time. Store it securely.
+
 ### Key Security
 
 !!! danger "Keep Your API Keys Secret"
@@ -22,22 +107,28 @@ curl -H "Authorization: Bearer prisme_live_sk_xxxxx" \
     - Never expose keys in client-side code
     - Use environment variables for storage
     - Rotate keys if compromised
+    - Set expiration dates for production keys
 
-## Rate Limiting
+---
 
-| Tier | Requests/minute | Subdomains |
-|------|-----------------|------------|
-| Free | 60 | 5 |
-| Pro | 300 | 25 |
-| Enterprise | Custom | Unlimited |
+## Access Control
 
-When rate limited, you'll receive a `429 Too Many Requests` response with headers:
+MadeWithPris.me uses role-based access control with owner-based filtering.
 
-```
-X-RateLimit-Limit: 60
-X-RateLimit-Remaining: 0
-X-RateLimit-Reset: 1706270400
-```
+### Roles
+
+| Role | Permissions |
+|------|-------------|
+| `admin` | Full access to all resources |
+| `user` | Access to own resources only |
+
+### Owner-Based Access
+
+- **Subdomains**: Users can only see and manage their own subdomains
+- **API Keys**: Users can only see and manage their own API keys
+- **Users**: Only admins can access user management endpoints
+
+---
 
 ## Error Responses
 
@@ -45,7 +136,7 @@ All errors follow a consistent format:
 
 ```json
 {
-  "detail": "Invalid or missing API key"
+  "detail": "Error message here"
 }
 ```
 
@@ -53,6 +144,32 @@ All errors follow a consistent format:
 
 | Status | Description |
 |--------|-------------|
-| `401` | Missing or invalid API key |
-| `403` | API key valid but insufficient permissions |
-| `429` | Rate limit exceeded |
+| `401` | Missing or invalid authentication |
+| `403` | Valid auth but insufficient permissions |
+| `404` | Resource not found or not accessible |
+
+### Authentication Errors
+
+**Missing Authentication:**
+
+```json
+{
+  "detail": "Not authenticated"
+}
+```
+
+**Invalid API Key:**
+
+```json
+{
+  "detail": "Invalid or expired API key"
+}
+```
+
+**Insufficient Permissions:**
+
+```json
+{
+  "detail": "You do not have permission to access this resource"
+}
+```

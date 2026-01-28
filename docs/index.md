@@ -6,30 +6,40 @@ Get a production-ready subdomain at `https://yourapp.madewithpris.me` in minutes
 
 ## What is MadeWithPris.me?
 
-MadeWithPris.me provides managed `*.madewithpris.me` subdomains with automatic HTTPS for Prism projects deployed to Hetzner. This is **not** managed hosting—you bring your own Hetzner server, and MadeWithPris.me provides DNS + SSL convenience.
+MadeWithPris.me provides managed `*.madewithpris.me` subdomains with automatic HTTPS for Prism projects. Sign up, claim a subdomain, and we handle the rest—wildcard DNS and SSL are already configured.
 
 ## Key Features
 
-- **Quick Setup**: Spin up `https://myapp.madewithpris.me` in under 5 minutes
-- **Automatic DNS**: We manage the DNS A records pointing to your server
-- **Let's Encrypt SSL**: Your Traefik instance handles certificate provisioning
+- **Quick Setup**: Get `https://myapp.madewithpris.me` in under 5 minutes
+- **Wildcard DNS**: All `*.madewithpris.me` subdomains route through our proxy
+- **Automatic HTTPS**: Wildcard SSL certificate handles all subdomains
 - **CLI Integration**: Seamless `prism subdomain` commands
 
 ## How It Works
 
 ```mermaid
 flowchart LR
-    CLI[prism CLI] -->|1. claim| API[MadeWithPris.me API]
-    API -->|2. DNS record| DNS[GoDaddy DNS]
-    CLI -->|3. deploy| Server[Your Hetzner Server]
-    Server -->|4. SSL cert| LE[Let's Encrypt]
-    Browser[Users] -->|myapp.madewithpris.me| Server
+    User[You] -->|1. Sign up| Web[madewithpris.me]
+    User -->|2. Claim subdomain| API[MadeWithPris.me API]
+    User -->|3. Activate with IP| API
+    API -->|4. Configure route| Proxy[MadeWithPris.me Proxy]
+
+    Browser[Users] -->|myapp.madewithpris.me| DNS[GoDaddy Wildcard DNS]
+    DNS -->|*.madewithpris.me| Proxy
+    Proxy -->|HTTPS terminated| Server[Your Server]
 ```
 
-1. **Claim** a subdomain with `prism subdomain claim myapp`
-2. **Activate** with your server IP: `prism subdomain activate myapp --ip 1.2.3.4`
-3. **Deploy** your Prism app to your Hetzner server
-4. Your **Traefik** instance automatically provisions SSL certificates
+1. **Sign up** at madewithpris.me and get your API key
+2. **Claim** a subdomain: `prism subdomain claim myapp`
+3. **Activate** with your server IP: `prism subdomain activate myapp --ip 1.2.3.4`
+4. Our **proxy** routes `myapp.madewithpris.me` to your server with HTTPS
+
+### Architecture
+
+- **Wildcard DNS**: `*.madewithpris.me` points to our proxy (GoDaddy)
+- **Wildcard SSL**: Single certificate covers all subdomains
+- **Reverse Proxy**: Terminates HTTPS, forwards requests to your server IP
+- **Your Server**: Receives plain HTTP traffic from our proxy
 
 ## Quick Start
 
@@ -40,9 +50,8 @@ prism auth login
 # Claim a subdomain
 prism subdomain claim myapp
 
-# Deploy and activate
-prism deploy apply
-prism subdomain activate myapp --ip $(prism deploy ip)
+# Activate with your server's IP
+prism subdomain activate myapp --ip 1.2.3.4
 
 # Your app is now live at https://myapp.madewithpris.me!
 ```

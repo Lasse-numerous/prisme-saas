@@ -50,6 +50,7 @@ prism subdomain claim myapp
 ```
 
 Subdomain names must be:
+
 - 3-63 characters long
 - Start and end with alphanumeric characters
 - Contain only lowercase letters, numbers, and hyphens
@@ -61,18 +62,32 @@ Subdomain names must be:
 prism subdomain activate myapp --ip 1.2.3.4
 ```
 
-This creates a DNS A record pointing `myapp.madewithpris.me` to your server.
+This configures our proxy to route `myapp.madewithpris.me` to your server.
 
-### 6. Configure Traefik
+!!! tip "Server Requirements"
+    Your server should listen on **HTTP port 80**. Our proxy handles HTTPS termination with a wildcard SSL certificate—you don't need to configure SSL on your server.
 
-Your Traefik should be configured to handle Let's Encrypt certificates. The standard Prism deployment template includes this automatically.
+### 6. Verify
 
-### 7. Verify
-
-Check propagation status:
+Check that routing is configured:
 
 ```bash
 prism subdomain status myapp
 ```
 
-Once propagated, visit `https://myapp.madewithpris.me`!
+Once active, visit `https://myapp.madewithpris.me`!
+
+## Architecture Overview
+
+```
+┌─────────┐    HTTPS    ┌─────────────────┐    HTTP    ┌─────────────┐
+│  Users  │ ──────────► │ MadeWithPris.me │ ─────────► │ Your Server │
+│         │             │     Proxy       │            │  (port 80)  │
+└─────────┘             └─────────────────┘            └─────────────┘
+                         Wildcard SSL cert
+                         *.madewithpris.me
+```
+
+- **Wildcard DNS**: All `*.madewithpris.me` subdomains point to our proxy
+- **SSL Termination**: Our proxy handles HTTPS with a wildcard certificate
+- **HTTP Forwarding**: Your server receives plain HTTP from our proxy

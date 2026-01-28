@@ -70,7 +70,7 @@ prism subdomain claim my_app
 
 ## prism subdomain activate
 
-Activate a subdomain by setting its IP address.
+Activate a subdomain by setting its IP address. This configures our proxy to route traffic to your server.
 
 ```bash
 prism subdomain activate NAME --ip IP_ADDRESS
@@ -96,7 +96,7 @@ prism subdomain activate myapp --ip 1.2.3.4
   URL: https://myapp.madewithpris.me
   IP: 1.2.3.4
 
-DNS propagation may take a few minutes.
+Your subdomain is now routing to your server.
 Check status with: prism subdomain status myapp
 ```
 
@@ -104,7 +104,7 @@ Check status with: prism subdomain status myapp
 
 ## prism subdomain status
 
-Check DNS propagation status.
+Check subdomain status and connectivity.
 
 ```bash
 prism subdomain status NAME
@@ -122,34 +122,26 @@ prism subdomain status NAME
 prism subdomain status myapp
 ```
 
-### Output (Propagated)
+### Output (Active)
 
 ```
 Subdomain: myapp.madewithpris.me
 Status: active
 IP Address: 1.2.3.4
 
-DNS Propagation:
-  ✓ Google DNS (8.8.8.8)
-  ✓ Cloudflare (1.1.1.1)
-  ✓ Quad9 (9.9.9.9)
-
-✓ DNS fully propagated! Your site should be accessible.
+✓ Proxy route configured
+✓ Your subdomain is live at https://myapp.madewithpris.me
 ```
 
-### Output (Propagating)
+### Output (Reserved)
 
 ```
 Subdomain: myapp.madewithpris.me
-Status: active
-IP Address: 1.2.3.4
+Status: reserved
+IP Address: -
 
-DNS Propagation:
-  ✓ Google DNS (8.8.8.8)
-  ✗ Cloudflare (1.1.1.1)
-  ✓ Quad9 (9.9.9.9)
-
-⏳ DNS is still propagating. This usually takes 1-5 minutes.
+⚠️  Subdomain is reserved but not yet activated.
+To activate, run: prism subdomain activate myapp --ip <your-server-ip>
 ```
 
 ---
@@ -178,7 +170,7 @@ prism subdomain release myapp
 
 ```
 ⚠️  This will permanently release 'myapp.madewithpris.me'
-   The DNS record will be deleted and the subdomain will become available for others.
+   The proxy route will be removed and the subdomain will become available for others.
 
 Are you sure? [y/N]: y
 
