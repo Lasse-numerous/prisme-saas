@@ -1,6 +1,21 @@
 # CHANGELOG
 
 
+## v0.5.2 (2026-01-28)
+
+### Bug Fixes
+
+- Use Redis for OAuth state storage
+  ([`5f0f835`](https://github.com/Lasse-numerous/prisme-saas/commit/5f0f835eed49807cf15964d0ac8644525ce21382))
+
+The backend runs multiple workers, so in-memory state storage doesn't work. State stored in one
+  worker isn't visible to others.
+
+Use Redis for distributed state storage with TTL.
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+
 ## v0.5.1 (2026-01-28)
 
 ### Bug Fixes
