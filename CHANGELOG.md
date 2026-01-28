@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.2.1 (2026-01-28)
+
+### Bug Fixes
+
+- Correct S3 bucket name for terraform state
+  ([`86ce345`](https://github.com/Lasse-numerous/prisme-saas/commit/86ce3451a70f6c8002950a95ab4f3329dad485fd))
+
+
 ## v0.2.0 (2026-01-28)
 
 ### Features
