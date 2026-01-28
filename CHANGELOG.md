@@ -1,6 +1,31 @@
 # CHANGELOG
 
 
+## v0.14.0 (2026-01-28)
+
+### Chores
+
+- Update uv.lock
+  ([`fc545b5`](https://github.com/Lasse-numerous/prisme-saas/commit/fc545b555639641c91728e43dc7886df4e8b6a3b))
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+### Features
+
+- **auth**: Keep password reset and email verification in project UX
+  ([`8a80c35`](https://github.com/Lasse-numerous/prisme-saas/commit/8a80c35e4c2447dae39551d950471cb8b50d54bd))
+
+Redirect email links to the frontend instead of Authentik's UI so users stay in the project's own UX
+  for password reset and email verification.
+
+- Email templates now link to /reset-password?token= and /verify-email?token= - New backend
+  endpoints verify tokens against Authentik flow executor - New ResetPassword and VerifyEmail
+  frontend pages consume those endpoints - Added frontend_url config setting and authApi client
+  functions
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+
 ## v0.13.0 (2026-01-28)
 
 ### Chores
