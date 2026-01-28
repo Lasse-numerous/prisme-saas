@@ -46,6 +46,7 @@ dev = [
     "factory-boy>=3.3",
     "ruff>=0.9",
     "mypy>=1.14",
+    "types-PyYAML>=6.0",
     "pre-commit>=4.0",
     "python-semantic-release>=9.0",
 ]
