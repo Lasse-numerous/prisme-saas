@@ -6,9 +6,12 @@ Endpoints for OIDC authentication flow with Authentik.
 
 from __future__ import annotations
 
+import json
+import os
 import secrets
 from typing import Annotated
 
+import redis.asyncio as redis
 from fastapi import APIRouter, Cookie, Depends, HTTPException, Response, status
 from fastapi.responses import RedirectResponse
 from sqlalchemy import select
@@ -23,8 +26,35 @@ from prisme_api.schemas.auth import UserResponse
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
 
-# In-memory state store (use Redis in production for distributed systems)
-_state_store: dict[str, dict] = {}
+# Redis client for distributed state storage
+REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
+_redis_client: redis.Redis | None = None
+STATE_TTL = 600  # State expires after 10 minutes
+
+
+async def get_redis() -> redis.Redis:
+    """Get or create Redis client."""
+    global _redis_client
+    if _redis_client is None:
+        _redis_client = redis.from_url(REDIS_URL, decode_responses=True)
+    return _redis_client
+
+
+async def store_state(state: str, data: dict) -> None:
+    """Store state in Redis with TTL."""
+    client = await get_redis()
+    await client.setex(f"oauth_state:{state}", STATE_TTL, json.dumps(data))
+
+
+async def get_and_delete_state(state: str) -> dict | None:
+    """Get and delete state from Redis."""
+    client = await get_redis()
+    key = f"oauth_state:{state}"
+    data = await client.get(key)
+    if data:
+        await client.delete(key)
+        return json.loads(data)
+    return None
 
 
 @router.get("/login")
@@ -40,8 +70,8 @@ async def login() -> RedirectResponse:
     state = secrets.token_urlsafe(32)
     nonce = secrets.token_urlsafe(32)
 
-    # Store state and nonce for verification on callback
-    _state_store[state] = {"nonce": nonce}
+    # Store state and nonce in Redis for verification on callback
+    await store_state(state, {"nonce": nonce})
 
     authorization_url = oidc_client.get_authorization_url(
         state=state,
@@ -73,8 +103,8 @@ async def callback(
     Raises:
         HTTPException: If state is invalid or token exchange fails
     """
-    # Verify state
-    stored = _state_store.pop(state, None)
+    # Verify state from Redis
+    stored = await get_and_delete_state(state)
     if not stored:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
