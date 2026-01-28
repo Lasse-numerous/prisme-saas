@@ -1,0 +1,71 @@
+# Authentik Blueprint for Authentication Configuration
+# Configures email/password login with GitHub OAuth
+version: 1
+metadata:
+  name: Authentication Setup
+  labels:
+    blueprints.goauthentik.io/instantiate: "true"
+
+entries:
+  # GitHub OAuth Source (conditional - only if credentials provided)
+  - model: authentik_sources_oauth.oauthsource
+    id: github-oauth-source
+    identifiers:
+      slug: github
+    attrs:
+      name: GitHub
+      slug: github
+      enabled: true
+      authentication_flow: !Find [authentik_flows.flow, [slug, default-source-authentication]]
+      enrollment_flow: !Find [authentik_flows.flow, [slug, default-source-enrollment]]
+      user_matching_mode: email_link
+      provider_type: github
+      consumer_key: !Env [GITHUB_CLIENT_ID, ""]
+      consumer_secret: !Env [GITHUB_CLIENT_SECRET, ""]
+      additional_scopes: "read:user user:email"
+    conditions:
+      - !Condition
+        conditions:
+          - !Env [GITHUB_CLIENT_ID, ""]
+        match: "!="
+        value: ""
+
+  # Identification stage - with GitHub source (when GitHub is configured)
+  - model: authentik_stages_identification.identificationstage
+    id: identification-with-github
+    identifiers:
+      name: default-authentication-identification
+    attrs:
+      user_fields:
+        - email
+        - username
+      show_source_labels: true
+      enrollment_flow: !Find [authentik_flows.flow, [slug, default-enrollment-flow]]
+      recovery_flow: !Find [authentik_flows.flow, [slug, default-recovery-flow]]
+      sources:
+        - !Find [authentik_sources_oauth.oauthsource, [slug, github]]
+    conditions:
+      - !Condition
+        conditions:
+          - !Env [GITHUB_CLIENT_ID, ""]
+        match: "!="
+        value: ""
+
+  # Identification stage - without GitHub source (fallback when GitHub not configured)
+  - model: authentik_stages_identification.identificationstage
+    id: identification-without-github
+    identifiers:
+      name: default-authentication-identification
+    attrs:
+      user_fields:
+        - email
+        - username
+      show_source_labels: true
+      enrollment_flow: !Find [authentik_flows.flow, [slug, default-enrollment-flow]]
+      recovery_flow: !Find [authentik_flows.flow, [slug, default-recovery-flow]]
+    conditions:
+      - !Condition
+        conditions:
+          - !Env [GITHUB_CLIENT_ID, ""]
+        match: "=="
+        value: ""
