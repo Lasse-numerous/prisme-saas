@@ -113,6 +113,13 @@ services:
       # GitHub OAuth (optional)
       - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID:-}
       - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET:-}
+      # Email (Resend SMTP)
+      - AUTHENTIK_EMAIL__HOST=smtp.resend.com
+      - AUTHENTIK_EMAIL__PORT=465
+      - AUTHENTIK_EMAIL__USERNAME=resend
+      - AUTHENTIK_EMAIL__PASSWORD=${RESEND_API_KEY:-}
+      - AUTHENTIK_EMAIL__FROM=noreply@madewithpris.me
+      - AUTHENTIK_EMAIL__USE_SSL=true
     volumes:
       - authentik_media:/media
       - authentik_templates:/templates
@@ -149,6 +156,13 @@ services:
       # GitHub OAuth (optional)
       - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID:-}
       - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET:-}
+      # Email (Resend SMTP)
+      - AUTHENTIK_EMAIL__HOST=smtp.resend.com
+      - AUTHENTIK_EMAIL__PORT=465
+      - AUTHENTIK_EMAIL__USERNAME=resend
+      - AUTHENTIK_EMAIL__PASSWORD=${RESEND_API_KEY:-}
+      - AUTHENTIK_EMAIL__FROM=noreply@madewithpris.me
+      - AUTHENTIK_EMAIL__USE_SSL=true
     volumes:
       - authentik_media:/media
       - authentik_certs:/certs
