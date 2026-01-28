@@ -1,6 +1,44 @@
 # CHANGELOG
 
 
+## v0.6.0 (2026-01-28)
+
+### Documentation
+
+- Comprehensive documentation overhaul
+  ([`4ae36bf`](https://github.com/Lasse-numerous/prisme-saas/commit/4ae36bf0235b65a79792beb54bf3605765d11189))
+
+- Fix architecture docs to reflect proxy model with wildcard DNS/SSL - Add API Keys documentation
+  (docs/api/api-keys.md) - Add Users API documentation (docs/api/users.md) - Update authentication
+  docs with Authentik/OIDC flow, remove fictional rate limiting - Add pagination, sorting, and
+  filtering documentation - Document all REST endpoints (was 5, now 25+) - Update CLI docs to
+  reflect proxy routing instead of DNS records - Add CLAUDE.md for AI assistant context - Update
+  mkdocs.yml navigation with new pages
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+- Update existing documentation for proxy architecture
+  ([`194e3ec`](https://github.com/Lasse-numerous/prisme-saas/commit/194e3ec96f42f3c846715e554535c63e187b6aea))
+
+- Update API index with all endpoints and common patterns - Fix subdomains docs to reference proxy
+  routes instead of DNS records - Update CLI subdomain docs for proxy model - Fix getting started
+  guides to explain wildcard DNS/SSL - Update home page with correct architecture diagram - Add
+  dev_addr to mkdocs.yml for port 8009
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+### Features
+
+- Add GitHub OAuth for social login
+  ([`559d16a`](https://github.com/Lasse-numerous/prisme-saas/commit/559d16af48d21f20de26920a224b60a11916e373))
+
+- Add GitHub OAuth blueprint for Authentik - Replace Google OAuth with GitHub OAuth in
+  docker-compose and deploy workflow - Configure GH_OAUTH_CLIENT_ID and GH_OAUTH_CLIENT_SECRET
+  secrets
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+
 ## v0.5.4 (2026-01-28)
 
 ### Bug Fixes
