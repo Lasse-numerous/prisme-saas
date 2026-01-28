@@ -1,6 +1,18 @@
 # CHANGELOG
 
 
+## v0.5.4 (2026-01-28)
+
+### Bug Fixes
+
+- Preserve trailing slash in issuer URL validation
+  ([`65077c5`](https://github.com/Lasse-numerous/prisme-saas/commit/65077c5a7876a4a0e18cbd9034c0f5f75e00b12a))
+
+Authentik includes a trailing slash in the issuer claim, so we must not strip it when validating.
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+
 ## v0.5.3 (2026-01-28)
 
 ### Bug Fixes
