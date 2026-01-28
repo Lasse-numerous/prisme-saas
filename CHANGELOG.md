@@ -1,6 +1,19 @@
 # CHANGELOG
 
 
+## v0.10.1 (2026-01-28)
+
+### Bug Fixes
+
+- **frontend**: Resolve TypeScript errors in generated form components
+  ([`7f6982a`](https://github.com/Lasse-numerous/prisme-saas/commit/7f6982a4cfa931fe6a7ba29d60732caff4e57082))
+
+Fix TS2322 in FormBase components by casting error message to string. Fix TS2367 in
+  useAPIKeyFormState by removing invalid string comparison on number field.
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+
 ## v0.10.0 (2026-01-28)
 
 ### Chores
