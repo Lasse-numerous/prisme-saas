@@ -162,15 +162,16 @@ jobs:
             # Create clean .env from secrets (overwrite to prevent duplicate accumulation)
             mv .env.secrets .env
 
-            # Debug: verify env vars are set (show presence, not values)
+            # Debug: verify env vars are set and check actual value lengths
             echo "=== Environment Check ==="
-            echo "POSTGRES_PASSWORD is set: $([ -n \"$POSTGRES_PASSWORD\" ] && echo 'yes' || echo 'NO - MISSING!')"
-            echo "AUTHENTIK_DB_PASSWORD is set: $([ -n \"$AUTHENTIK_DB_PASSWORD\" ] && echo 'yes' || echo 'NO - MISSING!')"
-            echo "=== .env file contents (sensitive values redacted) ==="
-            grep -E '^POSTGRES_PASSWORD=' .env | sed 's/=.*/=<redacted>/' || echo "POSTGRES_PASSWORD not in .env!"
-            grep -E '^AUTHENTIK_DB_PASSWORD=' .env | sed 's/=.*/=<redacted>/' || echo "AUTHENTIK_DB_PASSWORD not in .env!"
-            echo "=== Full .env keys (no values) ==="
-            cut -d= -f1 .env | head -20
+            echo "POSTGRES_PASSWORD length: ${#POSTGRES_PASSWORD} chars"
+            echo "AUTHENTIK_DB_PASSWORD length: ${#AUTHENTIK_DB_PASSWORD} chars"
+            echo "=== .env file: checking actual values ==="
+            # Show the line with value length (not the actual value)
+            grep -E '^POSTGRES_PASSWORD=' .env | awk -F= '{print $1 "= (length: " length($2) " chars)"}' || echo "POSTGRES_PASSWORD not in .env!"
+            grep -E '^AUTHENTIK_DB_PASSWORD=' .env | awk -F= '{print $1 "= (length: " length($2) " chars)"}' || echo "AUTHENTIK_DB_PASSWORD not in .env!"
+            echo "=== First 3 chars of POSTGRES_PASSWORD in .env ==="
+            grep -E '^POSTGRES_PASSWORD=' .env | cut -d= -f2 | cut -c1-3 || echo "empty"
             echo "========================="
 
             # Pull new images
