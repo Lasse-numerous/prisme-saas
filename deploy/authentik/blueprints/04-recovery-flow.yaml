@@ -1,0 +1,115 @@
+# Authentik Blueprint: Recovery Flow
+# Password reset flow with email verification
+version: 1
+metadata:
+  name: Recovery Flow
+  labels:
+    blueprints.goauthentik.io/instantiate: "true"
+
+entries:
+  # Recovery Flow
+  - model: authentik_flows.flow
+    id: recovery-flow
+    identifiers:
+      slug: madewithprisme-recovery
+    attrs:
+      name: MadeWithPris.me Password Recovery
+      title: Reset your password
+      slug: madewithprisme-recovery
+      designation: recovery
+      authentication: require_unauthenticated
+
+  # Identification Stage - find user by email
+  - model: authentik_stages_identification.identificationstage
+    id: recovery-identification-stage
+    identifiers:
+      name: madewithprisme-recovery-identification
+    attrs:
+      name: madewithprisme-recovery-identification
+      user_fields:
+        - email
+      show_matched_user: false
+
+  # Email Stage - send recovery link
+  - model: authentik_stages_email.emailstage
+    id: recovery-email-stage
+    identifiers:
+      name: madewithprisme-recovery-email
+    attrs:
+      name: madewithprisme-recovery-email
+      use_global_settings: true
+      subject: "Reset your MadeWithPris.me password"
+      template: email/password_reset.html
+      token_expiry: 30
+
+  # Prompt Stage - new password
+  - model: authentik_stages_prompt.promptstage
+    id: recovery-password-stage
+    identifiers:
+      name: madewithprisme-recovery-password-prompt
+    attrs:
+      name: madewithprisme-recovery-password-prompt
+      fields:
+        - !Find [authentik_stages_prompt.prompt, [name, enrollment-password]]
+        - !Find [authentik_stages_prompt.prompt, [name, enrollment-password-repeat]]
+      validation_policies:
+        - !Find [authentik_policies_password.passwordpolicy, [name, madewithprisme-password-policy]]
+
+  # User Write Stage - update password
+  - model: authentik_stages_user_write.userwritestage
+    id: recovery-user-write-stage
+    identifiers:
+      name: madewithprisme-recovery-user-write
+    attrs:
+      name: madewithprisme-recovery-user-write
+      user_creation_mode: never_create
+
+  # User Login Stage - auto-login after password reset
+  - model: authentik_stages_user_login.userloginstage
+    id: recovery-login-stage
+    identifiers:
+      name: madewithprisme-recovery-login
+    attrs:
+      name: madewithprisme-recovery-login
+      session_duration: seconds=0
+
+  # Bind stages to recovery flow
+  - model: authentik_flows.flowstagebinding
+    id: recovery-binding-identification
+    identifiers:
+      target: !Find [authentik_flows.flow, [slug, madewithprisme-recovery]]
+      stage: !Find [authentik_stages_identification.identificationstage, [name, madewithprisme-recovery-identification]]
+    attrs:
+      order: 10
+
+  - model: authentik_flows.flowstagebinding
+    id: recovery-binding-email
+    identifiers:
+      target: !Find [authentik_flows.flow, [slug, madewithprisme-recovery]]
+      stage: !Find [authentik_stages_email.emailstage, [name, madewithprisme-recovery-email]]
+    attrs:
+      order: 20
+
+  - model: authentik_flows.flowstagebinding
+    id: recovery-binding-password
+    identifiers:
+      target: !Find [authentik_flows.flow, [slug, madewithprisme-recovery]]
+      stage: !Find [authentik_stages_prompt.promptstage, [name, madewithprisme-recovery-password-prompt]]
+    attrs:
+      order: 30
+
+  - model: authentik_flows.flowstagebinding
+    id: recovery-binding-user-write
+    identifiers:
+      target: !Find [authentik_flows.flow, [slug, madewithprisme-recovery]]
+      stage: !Find [authentik_stages_user_write.userwritestage, [name, madewithprisme-recovery-user-write]]
+    attrs:
+      order: 40
+
+  - model: authentik_flows.flowstagebinding
+    id: recovery-binding-login
+    identifiers:
+      target: !Find [authentik_flows.flow, [slug, madewithprisme-recovery]]
+      stage: !Find [authentik_stages_user_login.userloginstage, [name, madewithprisme-recovery-login]]
+    attrs:
+      order: 50

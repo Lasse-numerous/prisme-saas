@@ -1,0 +1,60 @@
+# Authentik Blueprint: Prompt Fields
+# Reusable prompt fields for enrollment and other flows
+version: 1
+metadata:
+  name: Prompt Fields
+  labels:
+    blueprints.goauthentik.io/instantiate: "true"
+
+entries:
+  # Email field for enrollment
+  - model: authentik_stages_prompt.prompt
+    id: prompt-field-email
+    identifiers:
+      name: enrollment-email
+    attrs:
+      field_key: email
+      label: Email
+      type: email
+      required: true
+      placeholder: "your@email.com"
+      order: 100
+
+  # Username field for enrollment
+  - model: authentik_stages_prompt.prompt
+    id: prompt-field-username
+    identifiers:
+      name: enrollment-username
+    attrs:
+      field_key: username
+      label: Username
+      type: username
+      required: true
+      placeholder: "username"
+      order: 200
+
+  # Password field for enrollment
+  - model: authentik_stages_prompt.prompt
+    id: prompt-field-password
+    identifiers:
+      name: enrollment-password
+    attrs:
+      field_key: password
+      label: Password
+      type: password
+      required: true
+      placeholder: "Password"
+      order: 300
+
+  # Password repeat field for enrollment
+  - model: authentik_stages_prompt.prompt
+    id: prompt-field-password-repeat
+    identifiers:
+      name: enrollment-password-repeat
+    attrs:
+      field_key: password_repeat
+      label: Confirm Password
+      type: password
+      required: true
+      placeholder: "Confirm password"
+      order: 400

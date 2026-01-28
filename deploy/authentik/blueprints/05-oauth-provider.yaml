@@ -1,8 +1,8 @@
-# Authentik Blueprint for MadeWithPris.me OAuth2 Application
-# This is applied idempotently on Authentik startup
+# Authentik Blueprint: OAuth2 Provider
+# OAuth2 provider for MadeWithPris.me application
 version: 1
 metadata:
-  name: MadeWithPris.me OAuth2 Setup
+  name: OAuth2 Provider
   labels:
     blueprints.goauthentik.io/instantiate: "true"
 
@@ -15,7 +15,7 @@ entries:
     attrs:
       name: madewithprisme
       authorization_flow: !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
-      authentication_flow: !Find [authentik_flows.flow, [slug, default-authentication-flow]]
+      authentication_flow: !Find [authentik_flows.flow, [slug, madewithprisme-authentication]]
       client_type: confidential
       client_id: !Env [AUTHENTIK_CLIENT_ID, madewithprisme]
       client_secret: !Env [AUTHENTIK_CLIENT_SECRET, ""]

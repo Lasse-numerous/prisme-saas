@@ -1,0 +1,187 @@
+# Authentik Development Overlay
+# Usage: docker compose -f docker-compose.dev.yml -f docker-compose.authentik-dev.yml up -d
+#
+# This adds Authentik services for local development with OAuth/OIDC testing.
+# Access Authentik admin at: http://auth.localhost:9000
+# Access the app at: http://madewithpris.me.localhost
+
+services:
+  # Override backend to include Authentik environment
+  backend:
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/madewithprisme?ssl=disable
+      - ENVIRONMENT=development
+      - BASE_DOMAIN=madewithpris.me
+      - PYTHONPATH=/app/packages/backend/src
+      - REDIS_URL=redis://redis:6379
+      # Authentik OIDC for local dev
+      - AUTHENTIK_CLIENT_ID=${AUTHENTIK_CLIENT_ID:-madewithprisme-dev}
+      - AUTHENTIK_CLIENT_SECRET=${AUTHENTIK_CLIENT_SECRET:-dev-secret-change-me}
+      - AUTHENTIK_ISSUER_URL=http://authentik-server:9000/application/o/madewithprisme/
+      - AUTHENTIK_REDIRECT_URI=http://madewithpris.me.localhost/api/auth/callback
+      - AUTHENTIK_POST_LOGOUT_REDIRECT_URI=http://madewithpris.me.localhost/
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      authentik-server:
+        condition: service_healthy
+
+  # Override frontend to include Authentik-aware env vars
+  frontend:
+    environment:
+      - VITE_API_URL=http://madewithpris.me.localhost/api
+      - VITE_GRAPHQL_URL=http://madewithpris.me.localhost/graphql
+      - VITE_GRAPHQL_WS_URL=ws://madewithpris.me.localhost/graphql/ws
+      - VITE_AUTH_ENABLED=true
+
+  # Redis for OAuth state management (required for auth flows)
+  redis:
+    image: redis:7-alpine
+    container_name: madewithprisme_redis
+    command: redis-server --appendonly yes
+    volumes:
+      - madewithprisme_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - default
+
+  # Authentik Server
+  authentik-server:
+    image: ghcr.io/goauthentik/server:2024.2
+    container_name: madewithprisme_authentik_server
+    command: server
+    environment:
+      - AUTHENTIK_REDIS__HOST=authentik-redis
+      - AUTHENTIK_POSTGRESQL__HOST=authentik-db
+      - AUTHENTIK_POSTGRESQL__USER=authentik
+      - AUTHENTIK_POSTGRESQL__NAME=authentik
+      - AUTHENTIK_POSTGRESQL__PASSWORD=authentik-dev-password
+      - AUTHENTIK_SECRET_KEY=dev-secret-key-change-in-production
+      - AUTHENTIK_ERROR_REPORTING__ENABLED=false
+      # Blueprint variables
+      - AUTHENTIK_CLIENT_ID=${AUTHENTIK_CLIENT_ID:-madewithprisme-dev}
+      - AUTHENTIK_CLIENT_SECRET=${AUTHENTIK_CLIENT_SECRET:-dev-secret-change-me}
+      - AUTHENTIK_REDIRECT_URI=http://madewithpris.me.localhost/api/auth/callback
+      - APP_NAME=MadeWithPris.me (Dev)
+      - APP_LAUNCH_URL=http://madewithpris.me.localhost/
+      - AUTHENTIK_BRAND_DOMAIN=auth.localhost
+      - BRAND_TITLE=MadeWithPris.me (Dev)
+      # GitHub OAuth (optional for local dev)
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID:-}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET:-}
+      # Disable email for local dev (use console backend)
+      - AUTHENTIK_EMAIL__HOST=localhost
+      - AUTHENTIK_EMAIL__PORT=25
+      - AUTHENTIK_EMAIL__USE_TLS=false
+      - AUTHENTIK_EMAIL__USE_SSL=false
+      - AUTHENTIK_EMAIL__FROM=noreply@localhost
+    volumes:
+      - authentik_media:/media
+      - ./deploy/authentik/templates:/templates:ro
+      - ./deploy/authentik/blueprints:/blueprints/custom:ro
+      - ./deploy/authentik/media/branding:/media/branding:ro
+    depends_on:
+      authentik-db:
+        condition: service_healthy
+      authentik-redis:
+        condition: service_healthy
+    ports:
+      - "9000:9000"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:9000/-/health/live/"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - default
+      - prism_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.madewithprisme-auth.rule=Host(`auth.localhost`)"
+      - "traefik.http.services.madewithprisme-auth.loadbalancer.server.port=9000"
+      - "traefik.docker.network=prism_proxy_network"
+
+  # Authentik Worker
+  authentik-worker:
+    image: ghcr.io/goauthentik/server:2024.2
+    container_name: madewithprisme_authentik_worker
+    command: worker
+    environment:
+      - AUTHENTIK_REDIS__HOST=authentik-redis
+      - AUTHENTIK_POSTGRESQL__HOST=authentik-db
+      - AUTHENTIK_POSTGRESQL__USER=authentik
+      - AUTHENTIK_POSTGRESQL__NAME=authentik
+      - AUTHENTIK_POSTGRESQL__PASSWORD=authentik-dev-password
+      - AUTHENTIK_SECRET_KEY=dev-secret-key-change-in-production
+      - AUTHENTIK_ERROR_REPORTING__ENABLED=false
+      # Blueprint variables
+      - AUTHENTIK_CLIENT_ID=${AUTHENTIK_CLIENT_ID:-madewithprisme-dev}
+      - AUTHENTIK_CLIENT_SECRET=${AUTHENTIK_CLIENT_SECRET:-dev-secret-change-me}
+      - AUTHENTIK_REDIRECT_URI=http://madewithpris.me.localhost/api/auth/callback
+      - APP_NAME=MadeWithPris.me (Dev)
+      - APP_LAUNCH_URL=http://madewithpris.me.localhost/
+      - AUTHENTIK_BRAND_DOMAIN=auth.localhost
+      - BRAND_TITLE=MadeWithPris.me (Dev)
+      # GitHub OAuth (optional for local dev)
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID:-}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET:-}
+    volumes:
+      - authentik_media:/media
+      - authentik_certs:/certs
+      - ./deploy/authentik/templates:/templates:ro
+      - ./deploy/authentik/blueprints:/blueprints/custom:ro
+      - ./deploy/authentik/media/branding:/media/branding:ro
+    depends_on:
+      authentik-db:
+        condition: service_healthy
+      authentik-redis:
+        condition: service_healthy
+    networks:
+      - default
+
+  # Authentik PostgreSQL (separate from app DB)
+  authentik-db:
+    image: postgres:16-alpine
+    container_name: madewithprisme_authentik_db
+    environment:
+      - POSTGRES_USER=authentik
+      - POSTGRES_PASSWORD=authentik-dev-password
+      - POSTGRES_DB=authentik
+    volumes:
+      - authentik_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U authentik"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - default
+
+  # Authentik Redis
+  authentik-redis:
+    image: redis:7-alpine
+    container_name: madewithprisme_authentik_redis
+    command: --save 60 1 --loglevel warning
+    volumes:
+      - authentik_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - default
+
+volumes:
+  madewithprisme_redis_data:
+  authentik_db_data:
+  authentik_redis_data:
+  authentik_media:
+  authentik_certs:

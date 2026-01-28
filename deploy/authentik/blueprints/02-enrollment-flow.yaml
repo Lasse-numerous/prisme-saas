@@ -1,0 +1,101 @@
+# Authentik Blueprint: Enrollment Flow
+# Self-registration flow with email verification
+version: 1
+metadata:
+  name: Enrollment Flow
+  labels:
+    blueprints.goauthentik.io/instantiate: "true"
+
+entries:
+  # Enrollment Flow
+  - model: authentik_flows.flow
+    id: enrollment-flow
+    identifiers:
+      slug: madewithprisme-enrollment
+    attrs:
+      name: MadeWithPris.me Enrollment
+      title: Create your account
+      slug: madewithprisme-enrollment
+      designation: enrollment
+      authentication: require_unauthenticated
+
+  # Prompt Stage - collect user info
+  - model: authentik_stages_prompt.promptstage
+    id: enrollment-prompt-stage
+    identifiers:
+      name: madewithprisme-enrollment-prompt
+    attrs:
+      name: madewithprisme-enrollment-prompt
+      fields:
+        - !Find [authentik_stages_prompt.prompt, [name, enrollment-email]]
+        - !Find [authentik_stages_prompt.prompt, [name, enrollment-username]]
+        - !Find [authentik_stages_prompt.prompt, [name, enrollment-password]]
+        - !Find [authentik_stages_prompt.prompt, [name, enrollment-password-repeat]]
+      validation_policies:
+        - !Find [authentik_policies_password.passwordpolicy, [name, madewithprisme-password-policy]]
+
+  # User Write Stage - create user account (inactive until verified)
+  - model: authentik_stages_user_write.userwritestage
+    id: enrollment-user-write-stage
+    identifiers:
+      name: madewithprisme-enrollment-user-write
+    attrs:
+      name: madewithprisme-enrollment-user-write
+      create_users_as_inactive: true
+      create_users_group: !Find [authentik_core.group, [name, authentik Admins]]
+      user_creation_mode: always_create
+
+  # Email Verification Stage
+  - model: authentik_stages_email.emailstage
+    id: enrollment-email-stage
+    identifiers:
+      name: madewithprisme-enrollment-email-verification
+    attrs:
+      name: madewithprisme-enrollment-email-verification
+      use_global_settings: true
+      subject: "Verify your MadeWithPris.me account"
+      template: email/account_confirmation.html
+      activate_user_on_success: true
+      token_expiry: 30
+
+  # User Login Stage - auto-login after verification
+  - model: authentik_stages_user_login.userloginstage
+    id: enrollment-login-stage
+    identifiers:
+      name: madewithprisme-enrollment-login
+    attrs:
+      name: madewithprisme-enrollment-login
+      session_duration: seconds=0
+
+  # Bind stages to enrollment flow
+  - model: authentik_flows.flowstagebinding
+    id: enrollment-binding-prompt
+    identifiers:
+      target: !Find [authentik_flows.flow, [slug, madewithprisme-enrollment]]
+      stage: !Find [authentik_stages_prompt.promptstage, [name, madewithprisme-enrollment-prompt]]
+    attrs:
+      order: 10
+
+  - model: authentik_flows.flowstagebinding
+    id: enrollment-binding-user-write
+    identifiers:
+      target: !Find [authentik_flows.flow, [slug, madewithprisme-enrollment]]
+      stage: !Find [authentik_stages_user_write.userwritestage, [name, madewithprisme-enrollment-user-write]]
+    attrs:
+      order: 20
+
+  - model: authentik_flows.flowstagebinding
+    id: enrollment-binding-email
+    identifiers:
+      target: !Find [authentik_flows.flow, [slug, madewithprisme-enrollment]]
+      stage: !Find [authentik_stages_email.emailstage, [name, madewithprisme-enrollment-email-verification]]
+    attrs:
+      order: 30
+
+  - model: authentik_flows.flowstagebinding
+    id: enrollment-binding-login
+    identifiers:
+      target: !Find [authentik_flows.flow, [slug, madewithprisme-enrollment]]
+      stage: !Find [authentik_stages_user_login.userloginstage, [name, madewithprisme-enrollment-login]]
+    attrs:
+      order: 40

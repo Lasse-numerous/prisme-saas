@@ -132,16 +132,16 @@ jobs:
         run: |
           echo "ip=${{ needs.setup.outputs.server_ip }}" >> $GITHUB_OUTPUT
 
-      - name: Copy compose files to Staging
+      - name: Copy compose files and Authentik assets to Staging
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ steps.host.outputs.ip }}
           username: deploy
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "docker-compose.staging.yml,deploy/authentik/blueprints/"
+          source: "docker-compose.staging.yml,deploy/authentik/"
           target: ${{ env.APP_DIR }}
 
-      - name: Setup blueprints directory
+      - name: Setup Authentik directories
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ steps.host.outputs.ip }}
@@ -149,9 +149,10 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd ${{ env.APP_DIR }}
-            mkdir -p blueprints
-            cp -r deploy/authentik/blueprints/* blueprints/ 2>/dev/null || true
-            rm -rf deploy
+            # Blueprints and media are now mounted directly from deploy/authentik/
+            # Verify the directory structure
+            ls -la deploy/authentik/blueprints/ 2>/dev/null || echo "Blueprints directory not found"
+            ls -la deploy/authentik/media/branding/ 2>/dev/null || echo "Branding directory not found"
 
       - name: Configure environment and deploy
         uses: appleboy/ssh-action@v1.0.3
@@ -214,6 +215,8 @@ jobs:
             AUTHENTIK_ISSUER_URL=https://auth-staging.madewithpris.me/application/o/madewithprisme/
             AUTHENTIK_REDIRECT_URI=https://${DOMAIN}/api/auth/callback
             AUTHENTIK_POST_LOGOUT_REDIRECT_URI=https://${DOMAIN}/
+            AUTHENTIK_BRAND_DOMAIN=auth-staging.madewithpris.me
+            BRAND_TITLE=MadeWithPris.me Staging
             # GitHub OAuth
             GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
             GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}

@@ -1,0 +1,96 @@
+# Authentik Blueprint: Authentication Flow
+# Custom login flow with signup link and optional GitHub OAuth
+version: 1
+metadata:
+  name: Authentication Flow
+  labels:
+    blueprints.goauthentik.io/instantiate: "true"
+
+entries:
+  # Authentication Flow
+  - model: authentik_flows.flow
+    id: authentication-flow
+    identifiers:
+      slug: madewithprisme-authentication
+    attrs:
+      name: MadeWithPris.me Authentication
+      title: Sign in to MadeWithPris.me
+      slug: madewithprisme-authentication
+      designation: authentication
+      authentication: none
+
+  # Password Stage
+  - model: authentik_stages_password.passwordstage
+    id: authentication-password-stage
+    identifiers:
+      name: madewithprisme-authentication-password
+    attrs:
+      name: madewithprisme-authentication-password
+      backends:
+        - authentik.core.auth.InbuiltBackend
+        - authentik.sources.ldap.auth.LDAPBackend
+
+  # Identification Stage - with enrollment and recovery links
+  - model: authentik_stages_identification.identificationstage
+    id: authentication-identification-stage
+    identifiers:
+      name: madewithprisme-authentication-identification
+    attrs:
+      name: madewithprisme-authentication-identification
+      user_fields:
+        - email
+        - username
+      show_source_labels: true
+      show_matched_user: true
+      enrollment_flow: !Find [authentik_flows.flow, [slug, madewithprisme-enrollment]]
+      recovery_flow: !Find [authentik_flows.flow, [slug, madewithprisme-recovery]]
+      password_stage: !Find [authentik_stages_password.passwordstage, [name, madewithprisme-authentication-password]]
+
+  # MFA Validation Stage (optional - skip if not configured)
+  - model: authentik_stages_authenticator_validate.authenticatorvalidatestage
+    id: authentication-mfa-stage
+    identifiers:
+      name: madewithprisme-authentication-mfa
+    attrs:
+      name: madewithprisme-authentication-mfa
+      device_classes:
+        - totp
+        - webauthn
+        - static
+      not_configured_action: skip
+      last_auth_threshold: seconds=0
+
+  # User Login Stage
+  - model: authentik_stages_user_login.userloginstage
+    id: authentication-login-stage
+    identifiers:
+      name: madewithprisme-authentication-login
+    attrs:
+      name: madewithprisme-authentication-login
+      session_duration: seconds=0
+      remember_me_offset: seconds=2592000
+
+  # Bind stages to authentication flow
+  - model: authentik_flows.flowstagebinding
+    id: authentication-binding-identification
+    identifiers:
+      target: !Find [authentik_flows.flow, [slug, madewithprisme-authentication]]
+      stage: !Find [authentik_stages_identification.identificationstage, [name, madewithprisme-authentication-identification]]
+    attrs:
+      order: 10
+
+  - model: authentik_flows.flowstagebinding
+    id: authentication-binding-mfa
+    identifiers:
+      target: !Find [authentik_flows.flow, [slug, madewithprisme-authentication]]
+      stage: !Find [authentik_stages_authenticator_validate.authenticatorvalidatestage, [name, madewithprisme-authentication-mfa]]
+    attrs:
+      order: 20
+
+  - model: authentik_flows.flowstagebinding
+    id: authentication-binding-login
+    identifiers:
+      target: !Find [authentik_flows.flow, [slug, madewithprisme-authentication]]
+      stage: !Find [authentik_stages_user_login.userloginstage, [name, madewithprisme-authentication-login]]
+    attrs:
+      order: 30

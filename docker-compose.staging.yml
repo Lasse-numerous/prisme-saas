@@ -108,8 +108,10 @@ services:
       - AUTHENTIK_CLIENT_ID=${AUTHENTIK_CLIENT_ID}
       - AUTHENTIK_CLIENT_SECRET=${AUTHENTIK_CLIENT_SECRET}
       - AUTHENTIK_REDIRECT_URI=${AUTHENTIK_REDIRECT_URI}
-      - APP_NAME=MadeWithPris.me Staging
+      - APP_NAME=${BRAND_TITLE:-MadeWithPris.me Staging}
       - APP_LAUNCH_URL=https://${DOMAIN}/
+      - AUTHENTIK_BRAND_DOMAIN=${AUTHENTIK_BRAND_DOMAIN:-auth-staging.madewithpris.me}
+      - BRAND_TITLE=${BRAND_TITLE:-MadeWithPris.me Staging}
       # GitHub OAuth (optional)
       - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID:-}
       - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET:-}
@@ -122,8 +124,15 @@ services:
       - AUTHENTIK_EMAIL__USE_SSL=true
     volumes:
       - authentik_media:/media
-      - authentik_templates:/templates
-      - ./blueprints:/blueprints/custom:ro
+      - ./deploy/authentik/templates:/templates:ro
+      - ./deploy/authentik/blueprints:/blueprints/custom:ro
+      - ./deploy/authentik/media/branding:/media/branding:ro
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:9000/-/health/live/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
     depends_on:
       authentik-db:
         condition: service_healthy
@@ -151,8 +160,10 @@ services:
       - AUTHENTIK_CLIENT_ID=${AUTHENTIK_CLIENT_ID}
       - AUTHENTIK_CLIENT_SECRET=${AUTHENTIK_CLIENT_SECRET}
       - AUTHENTIK_REDIRECT_URI=${AUTHENTIK_REDIRECT_URI}
-      - APP_NAME=MadeWithPris.me Staging
+      - APP_NAME=${BRAND_TITLE:-MadeWithPris.me Staging}
       - APP_LAUNCH_URL=https://${DOMAIN}/
+      - AUTHENTIK_BRAND_DOMAIN=${AUTHENTIK_BRAND_DOMAIN:-auth-staging.madewithpris.me}
+      - BRAND_TITLE=${BRAND_TITLE:-MadeWithPris.me Staging}
       # GitHub OAuth (optional)
       - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID:-}
       - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET:-}
@@ -166,7 +177,9 @@ services:
     volumes:
       - authentik_media:/media
       - authentik_certs:/certs
-      - ./blueprints:/blueprints/custom:ro
+      - ./deploy/authentik/templates:/templates:ro
+      - ./deploy/authentik/blueprints:/blueprints/custom:ro
+      - ./deploy/authentik/media/branding:/media/branding:ro
     depends_on:
       authentik-db:
         condition: service_healthy
@@ -214,7 +227,6 @@ volumes:
   authentik_db_data:
   authentik_redis_data:
   authentik_media:
-  authentik_templates:
   authentik_certs:
 
 networks:
