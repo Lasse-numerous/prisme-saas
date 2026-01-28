@@ -1,6 +1,19 @@
 # CHANGELOG
 
 
+## v0.10.3 (2026-01-28)
+
+### Bug Fixes
+
+- **deploy**: Add AUTHENTIK_BASE_URL and JWT_SECRET to docker-compose env
+  ([`9a11fe7`](https://github.com/Lasse-numerous/prisme-saas/commit/9a11fe7becc843d48368a0bc5d6d673adeb283e4))
+
+The backend container needs these env vars passed through docker-compose, not just in the .env file
+  on the host.
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+
 ## v0.10.2 (2026-01-28)
 
 ### Bug Fixes
