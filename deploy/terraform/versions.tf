@@ -11,12 +11,18 @@ terraform {
     }
   }
 
-  # Uncomment to use remote state (recommended for team usage)
-  # backend "s3" {
-  #   bucket         = "prisme_saas-terraform-state"
-  #   key            = "hetzner/terraform.tfstate"
-  #   region         = "eu-central-1"
-  #   encrypt        = true
-  #   dynamodb_table = "prisme_saas-terraform-locks"
-  # }
+  # Remote state using Hetzner Object Storage (S3-compatible)
+  backend "s3" {
+    bucket                      = "prisme-saas-terraform"
+    key                         = "terraform.tfstate"
+    region                      = "eu-central"
+    skip_credentials_validation = true
+    skip_metadata_api_check     = true
+    skip_region_validation      = true
+    skip_requesting_account_id  = true
+    skip_s3_checksum            = true
+    use_path_style              = true
+    # Endpoint configured via environment: AWS_ENDPOINT_URL_S3
+    # Credentials via: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
+  }
 }
