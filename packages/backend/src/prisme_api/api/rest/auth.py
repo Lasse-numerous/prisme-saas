@@ -164,6 +164,9 @@ async def callback(
         return response
 
     except OIDCError as e:
+        import logging
+
+        logging.error(f"OIDC authentication error: {e}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Authentication failed: {e}",
