@@ -1,6 +1,22 @@
 # CHANGELOG
 
 
+## v0.7.1 (2026-01-28)
+
+### Bug Fixes
+
+- Order blueprints for correct dependency resolution
+  ([`5a3cf97`](https://github.com/Lasse-numerous/prisme-saas/commit/5a3cf97e5e41168ef3cedfe80620b125fabe7eb2))
+
+Rename blueprints with numeric prefixes to ensure: 1. GitHub OAuth source is created first 2.
+  Email/password identification stage can reference it 3. TOTP MFA stages are added last
+
+Also consolidate identification stage config in email-password blueprint to include enrollment_flow,
+  recovery_flow, and sources.
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+
 ## v0.7.0 (2026-01-28)
 
 ### Features
