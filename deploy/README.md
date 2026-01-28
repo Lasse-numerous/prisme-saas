@@ -204,7 +204,6 @@ gh secret set STAGING_HOST --env staging -R Lasse-numerous/prisme-saas <<< "$STA
 
 | Secret | Description |
 |--------|-------------|
-| `STAGING_HOST` / `PRODUCTION_HOST` | Server IP address (optional if using terraform workflow) |
 | `POSTGRES_PASSWORD` | PostgreSQL password |
 | `DATABASE_URL` | Full database connection string |
 | `SECRET_KEY` | Application secret key |
