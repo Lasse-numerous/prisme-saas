@@ -1,6 +1,21 @@
 # CHANGELOG
 
 
+## v0.5.1 (2026-01-28)
+
+### Bug Fixes
+
+- Correct Authentik OAuth2 endpoint URLs
+  ([`136f35f`](https://github.com/Lasse-numerous/prisme-saas/commit/136f35fc71187d59743522740e0df441c8ecfd4b))
+
+Authentik uses shared OAuth endpoints (/application/o/authorize/) not per-application paths
+  (/application/o/{app}/authorize/).
+
+The issuer URL contains the app slug but authorize/token/userinfo endpoints are at the parent path.
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+
 ## v0.5.0 (2026-01-28)
 
 ### Features
