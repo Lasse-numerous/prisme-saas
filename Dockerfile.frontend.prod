@@ -11,7 +11,8 @@ RUN npm ci
 COPY packages/frontend ./
 
 # Build args for environment variables at build time
-ARG VITE_API_URL=/api
+# Note: Routes already include /api prefix, so base URL should be empty
+ARG VITE_API_URL=
 ARG VITE_GRAPHQL_URL=/graphql
 ARG VITE_GRAPHQL_WS_URL=/graphql/ws
 
