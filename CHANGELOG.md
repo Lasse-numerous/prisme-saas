@@ -1,6 +1,22 @@
 # CHANGELOG
 
 
+## v0.12.0 (2026-01-28)
+
+### Features
+
+- **auth**: Fix auth UX flows — forgot password, OAuth errors, retry, secure cookies
+  ([`f520d2f`](https://github.com/Lasse-numerous/prisme-saas/commit/f520d2facbfbd2f54ed59a7da8fd30093f118487))
+
+- Add password recovery flow (backend endpoints + frontend form + page) - Route GitHub OAuth errors
+  to /auth/callback with proper error display - Add retry button when login/signup flow
+  initialization fails - Make secure cookie flag conditional on DEBUG env var for local dev - Add
+  "Forgot password?" link to login form - Add "Go to homepage" link to Access Denied page - Mount
+  AuthCallback component at /auth/callback route
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+
 ## v0.11.0 (2026-01-28)
 
 ### Features
