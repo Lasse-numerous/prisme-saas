@@ -1,0 +1,167 @@
+name: Terraform
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'deploy/terraform/**'
+      - '.github/workflows/terraform.yml'
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Terraform action to perform'
+        required: true
+        default: 'plan'
+        type: choice
+        options:
+          - plan
+          - apply
+          - destroy
+      environment:
+        description: 'Environment to manage'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+env:
+  TF_VERSION: '1.5.0'
+  TF_WORKING_DIR: deploy/terraform
+
+jobs:
+  terraform:
+    name: Terraform ${{ github.event.inputs.action || 'plan' }}
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'staging' }}
+
+    defaults:
+      run:
+        working-directory: ${{ env.TF_WORKING_DIR }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        id: plan
+        env:
+          TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
+          TF_VAR_ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
+        run: |
+          ENV_FILE="${{ github.event.inputs.environment || 'staging' }}.tfvars"
+          terraform plan -var-file="$ENV_FILE" -out=tfplan -no-color
+        continue-on-error: true
+
+      - name: Terraform Plan Status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
+
+      - name: Terraform Apply
+        if: github.event.inputs.action == 'apply' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+        env:
+          TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
+          TF_VAR_ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
+        run: |
+          terraform apply -auto-approve tfplan
+
+      - name: Get Terraform Outputs
+        if: github.event.inputs.action == 'apply' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+        id: outputs
+        env:
+          TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
+          TF_VAR_ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
+        run: |
+          # Get outputs based on environment
+          ENV="${{ github.event.inputs.environment || 'staging' }}"
+
+          if [ "$ENV" = "staging" ]; then
+            SERVER_IP=$(terraform output -raw staging_server_ip 2>/dev/null || echo "")
+            echo "server_ip=$SERVER_IP" >> $GITHUB_OUTPUT
+            echo "host_secret_name=STAGING_HOST" >> $GITHUB_OUTPUT
+          else
+            # Try floating IP first, then regular IP
+            SERVER_IP=$(terraform output -raw production_floating_ip 2>/dev/null || terraform output -raw production_server_ip 2>/dev/null || echo "")
+            echo "server_ip=$SERVER_IP" >> $GITHUB_OUTPUT
+            echo "host_secret_name=PRODUCTION_HOST" >> $GITHUB_OUTPUT
+          fi
+
+          echo "environment=$ENV" >> $GITHUB_OUTPUT
+
+      - name: Update Host Secret
+        if: (github.event.inputs.action == 'apply' || (github.event_name == 'push' && github.ref == 'refs/heads/main')) && steps.outputs.outputs.server_ip != ''
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          SERVER_IP="${{ steps.outputs.outputs.server_ip }}"
+          SECRET_NAME="${{ steps.outputs.outputs.host_secret_name }}"
+          ENV="${{ steps.outputs.outputs.environment }}"
+
+          echo "Setting $SECRET_NAME=$SERVER_IP for environment $ENV"
+
+          # Update the environment secret with the server IP
+          gh secret set "$SECRET_NAME" --env "$ENV" -R "${{ github.repository }}" <<< "$SERVER_IP"
+
+          echo "✓ Updated $SECRET_NAME secret"
+
+      - name: Terraform Destroy
+        if: github.event.inputs.action == 'destroy'
+        env:
+          TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
+          TF_VAR_ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
+        run: |
+          ENV_FILE="${{ github.event.inputs.environment || 'staging' }}.tfvars"
+          terraform destroy -var-file="$ENV_FILE" -auto-approve
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Terraform Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Action**: ${{ github.event.inputs.action || 'plan/apply' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment**: ${{ github.event.inputs.environment || 'staging' }}" >> $GITHUB_STEP_SUMMARY
+          if [ -n "${{ steps.outputs.outputs.server_ip }}" ]; then
+            echo "- **Server IP**: ${{ steps.outputs.outputs.server_ip }}" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  setup-authentik:
+    name: Configure Authentik OAuth
+    runs-on: ubuntu-latest
+    needs: terraform
+    if: (github.event.inputs.action == 'apply' || (github.event_name == 'push' && github.ref == 'refs/heads/main'))
+    environment: ${{ github.event.inputs.environment || 'staging' }}
+
+    steps:
+      - name: Wait for Authentik to be ready
+        env:
+          SERVER_IP: ${{ needs.terraform.outputs.server_ip }}
+        run: |
+          echo "Waiting for Authentik to be ready..."
+          # Give the deploy workflow time to run and start Authentik
+          sleep 120
+
+          # This step is a placeholder - Authentik OAuth app creation requires
+          # manual configuration in the Authentik admin UI, then updating secrets:
+          #   gh secret set AUTHENTIK_CLIENT_ID --env <env> <<< "<client_id>"
+          #   gh secret set AUTHENTIK_CLIENT_SECRET --env <env> <<< "<client_secret>"
+
+          echo "⚠️  Manual step required:"
+          echo "1. Access Authentik admin at https://auth-staging.madewithpris.me"
+          echo "2. Create OAuth2 provider and application"
+          echo "3. Update GitHub secrets:"
+          echo "   gh secret set AUTHENTIK_CLIENT_ID --env ${{ github.event.inputs.environment || 'staging' }} <<< '<client_id>'"
+          echo "   gh secret set AUTHENTIK_CLIENT_SECRET --env ${{ github.event.inputs.environment || 'staging' }} <<< '<client_secret>'"
