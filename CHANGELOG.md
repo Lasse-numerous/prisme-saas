@@ -1,6 +1,20 @@
 # CHANGELOG
 
 
+## v0.2.0 (2026-01-28)
+
+### Features
+
+- Add Hetzner Object Storage backend for terraform state
+  ([`6a3f238`](https://github.com/Lasse-numerous/prisme-saas/commit/6a3f238ce90ee2e0eb2eedb6af3aa2c340e4785f))
+
+Configure S3-compatible backend using Hetzner Object Storage to persist terraform state across CI
+  runs. Requires: - Bucket: prisme-saas-terraform - Secrets: HETZNER_S3_ACCESS_KEY,
+  HETZNER_S3_SECRET_KEY
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+
 ## v0.1.1 (2026-01-28)
 
 ### Bug Fixes
