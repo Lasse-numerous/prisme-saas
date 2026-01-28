@@ -32,6 +32,15 @@ docker-compose -f docker-compose.dev.yml up
 # Or directly at http://localhost:8000
 ```
 
+## Development with Devcontainer
+
+```bash
+prism devcontainer up      # Start the devcontainer environment
+prism devcontainer shell   # Open a shell inside the container
+```
+
+This provides a consistent development environment with all dependencies pre-configured.
+
 ## API Documentation
 
 - OpenAPI docs: http://localhost:8000/docs
