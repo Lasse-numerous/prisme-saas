@@ -1,6 +1,115 @@
 # CHANGELOG
 
 
+## v0.9.0 (2026-01-28)
+
+### Bug Fixes
+
+- Resolve Strawberry GraphQL recursion and add types-PyYAML
+  ([`ea16ef1`](https://github.com/Lasse-numerous/prisme-saas/commit/ea16ef1491cca91503b19427dc446d575758a9dd))
+
+- Remove `from __future__ import annotations` from GraphQL modules (causes infinite recursion in
+  Strawberry's type resolution) - Quote forward references in filter types for lazy loading - Add
+  types-PyYAML dev dependency for mypy
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+- Use default_factory for mutable list defaults (Python 3.14 compat)
+  ([`7f0568a`](https://github.com/Lasse-numerous/prisme-saas/commit/7f0568a82adc6f2805c3ff2b7304ea87c311d186))
+
+Python 3.14 enforces stricter dataclass rules, rejecting mutable list defaults. Use
+  lambda/default_factory for the roles field.
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+- **ci**: Add types-PyYAML to root dev dependencies for mypy
+  ([`17ec84d`](https://github.com/Lasse-numerous/prisme-saas/commit/17ec84d7e97c3d34196a7cade3b171f68140c088))
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+- **deps**: Add slowapi to root dependencies
+  ([`aae6192`](https://github.com/Lasse-numerous/prisme-saas/commit/aae61929cf6067b64ab2da08b9962d7d296930bc))
+
+slowapi was listed in backend pyproject.toml but missing from the root, causing silent ImportError
+  that prevented REST routes from registering.
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+- **lint**: Resolve ruff errors in prism-generated code
+  ([`1cf9885`](https://github.com/Lasse-numerous/prisme-saas/commit/1cf9885bc000d8f0f0e1ff1eb57e4552d6720e89))
+
+- B904: add `from err`/`from None` to re-raised exceptions in auth code - B006: replace mutable
+  default `['user']` with None in MCP user_tools - B027: suppress with noqa for intentional empty
+  lifecycle hooks in ServiceBase
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+- **prism**: Align spec name with package structure
+  ([`b1b0dae`](https://github.com/Lasse-numerous/prisme-saas/commit/b1b0daebb6b7a06b5ecba16f1088647ba2f508ca))
+
+- Change spec name from 'madewithprisme' to 'prisme_api' to match existing package directory - This
+  prevents prism generate from creating duplicate code in a subdirectory - Add .env.authentik* to
+  gitignore pattern - Add devcontainer documentation to CLAUDE.md - Add docker-compose.authentik.yml
+  for Authentik stack
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+- **tests**: Add auth fixtures and fix test data for integration tests
+  ([`bc414b7`](https://github.com/Lasse-numerous/prisme-saas/commit/bc414b756f03f5f6101a011cb96c800fe64b0f52))
+
+- Add unauthenticated_client, client (user auth), admin_client fixtures - Use admin_client for CRUD
+  tests requiring admin access - Fix subdomain names to be DNS-compliant (no underscores) - Use
+  /subdomains/claim instead of non-existent POST /subdomains - Disable rate limiting in test
+  environment (sqlite) - Accept 403 for re-release of already-released subdomains
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+- **types**: Resolve mypy errors in generated and custom code
+  ([`dc9bb9a`](https://github.com/Lasse-numerous/prisme-saas/commit/dc9bb9a4a8fcde92a3a46cb8cb26e09dba317a06))
+
+- Fix AllowedEmailDomainService to extend generated base class - Fix webhooks.py import: use
+  async_session instead of get_async_session - Add types-PyYAML dev dependency for yaml type stubs
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+### Chores
+
+- Regenerate prism code with corrected output paths
+  ([`ded35b7`](https://github.com/Lasse-numerous/prisme-saas/commit/ded35b7708051ae9b5a0a9197b17d1c39ba2971e))
+
+- Fix prism.config.py backend_path and frontend_path to avoid nested subdirectories - Regenerate all
+  prism-managed files with correct prisme_api imports - Add AllowedEmailDomain GraphQL, REST, MCP,
+  frontend, and test scaffolding - Preserve custom: TraefikRouteManager exports, timezone-aware
+  datetimes, SubdomainUpdate port default=None
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+### Documentation
+
+- Prefix all CLI commands with uv run in CLAUDE.md
+  ([`ec2c623`](https://github.com/Lasse-numerous/prisme-saas/commit/ec2c62316bd0196fd52695da1214b622c2810d41))
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+### Features
+
+- **subdomain**: Wildcard DNS routing with Traefik and security enhancements
+  ([`fd4b786`](https://github.com/Lasse-numerous/prisme-saas/commit/fd4b78625b3906c1c86b57114e5285090f104026))
+
+- Add port field to Subdomain model for custom port routing (default: 80) - Add 30-day cooldown
+  period for released subdomains (released_at, cooldown_until fields) - Add AllowedEmailDomain model
+  for email domain whitelist on signup - Add TraefikRouteManager service for dynamic YAML route file
+  generation - Add rate limiting with SlowAPI (5 claims/min, 10 activations/hour per user) - Require
+  email verification before claiming subdomains - Validate port range (1-65535, block privileged
+  ports except 80/443) - Extend reserved subdomains with brand names and typosquat protection (~250
+  entries) - Add email domain whitelist validation in auth callback - Replace Nginx with Traefik in
+  docker-compose.prod.yml - Add Traefik configuration with Let's Encrypt DNS-01 challenge via
+  Hetzner - Update cloud-init to prepare for Traefik instead of Nginx - Update subdomain_limit
+  default from 5 to 10 - Add database migration for new fields and AllowedEmailDomain table
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+
 ## v0.8.1 (2026-01-28)
 
 ### Bug Fixes
