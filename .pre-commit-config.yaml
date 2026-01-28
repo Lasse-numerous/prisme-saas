@@ -12,7 +12,7 @@ repos:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: check-yaml
-        exclude: mkdocs.yml  # Uses custom Python constructors
+        exclude: ^(mkdocs\.yml|deploy/authentik/blueprints/)  # Custom YAML constructors
       - id: check-added-large-files
 
   # Conventional commit message validation (no Node.js required)

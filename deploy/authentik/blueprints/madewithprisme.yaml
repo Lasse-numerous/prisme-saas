@@ -1,0 +1,41 @@
+# Authentik Blueprint for MadeWithPris.me OAuth2 Application
+# This is applied idempotently on Authentik startup
+version: 1
+metadata:
+  name: MadeWithPris.me OAuth2 Setup
+  labels:
+    blueprints.goauthentik.io/instantiate: "true"
+
+entries:
+  # OAuth2 Provider
+  - model: authentik_providers_oauth2.oauth2provider
+    id: madewithprisme-provider
+    identifiers:
+      name: madewithprisme
+    attrs:
+      name: madewithprisme
+      authorization_flow: !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
+      authentication_flow: !Find [authentik_flows.flow, [slug, default-authentication-flow]]
+      client_type: confidential
+      client_id: !Env [AUTHENTIK_CLIENT_ID, madewithprisme]
+      client_secret: !Env [AUTHENTIK_CLIENT_SECRET, ""]
+      redirect_uris: !Env [AUTHENTIK_REDIRECT_URI, "https://staging.madewithpris.me/api/auth/callback"]
+      signing_key: !Find [authentik_crypto.certificatekeypair, [name, authentik Self-signed Certificate]]
+      access_token_validity: hours=1
+      refresh_token_validity: days=30
+      include_claims_in_id_token: true
+      sub_mode: user_id
+      issuer_mode: per_provider
+
+  # Application
+  - model: authentik_core.application
+    id: madewithprisme-app
+    identifiers:
+      slug: madewithprisme
+    attrs:
+      name: !Env [APP_NAME, "MadeWithPris.me"]
+      slug: madewithprisme
+      provider: !KeyOf madewithprisme-provider
+      meta_launch_url: !Env [APP_LAUNCH_URL, "https://staging.madewithpris.me/"]
+      meta_description: "MadeWithPris.me SaaS Application"
+      policy_engine_mode: any

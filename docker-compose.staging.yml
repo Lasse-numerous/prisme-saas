@@ -104,9 +104,16 @@ services:
       - AUTHENTIK_POSTGRESQL__PASSWORD=${AUTHENTIK_DB_PASSWORD}
       - AUTHENTIK_SECRET_KEY=${AUTHENTIK_SECRET_KEY}
       - AUTHENTIK_ERROR_REPORTING__ENABLED=false
+      # Blueprint variables for OAuth2 provider setup
+      - AUTHENTIK_CLIENT_ID=${AUTHENTIK_CLIENT_ID}
+      - AUTHENTIK_CLIENT_SECRET=${AUTHENTIK_CLIENT_SECRET}
+      - AUTHENTIK_REDIRECT_URI=${AUTHENTIK_REDIRECT_URI}
+      - APP_NAME=MadeWithPris.me Staging
+      - APP_LAUNCH_URL=https://${DOMAIN}/
     volumes:
       - authentik_media:/media
       - authentik_templates:/templates
+      - ./blueprints:/blueprints/custom:ro
     depends_on:
       authentik-db:
         condition: service_healthy
@@ -130,9 +137,16 @@ services:
       - AUTHENTIK_POSTGRESQL__PASSWORD=${AUTHENTIK_DB_PASSWORD}
       - AUTHENTIK_SECRET_KEY=${AUTHENTIK_SECRET_KEY}
       - AUTHENTIK_ERROR_REPORTING__ENABLED=false
+      # Blueprint variables for OAuth2 provider setup
+      - AUTHENTIK_CLIENT_ID=${AUTHENTIK_CLIENT_ID}
+      - AUTHENTIK_CLIENT_SECRET=${AUTHENTIK_CLIENT_SECRET}
+      - AUTHENTIK_REDIRECT_URI=${AUTHENTIK_REDIRECT_URI}
+      - APP_NAME=MadeWithPris.me Staging
+      - APP_LAUNCH_URL=https://${DOMAIN}/
     volumes:
       - authentik_media:/media
       - authentik_certs:/certs
+      - ./blueprints:/blueprints/custom:ro
     depends_on:
       authentik-db:
         condition: service_healthy

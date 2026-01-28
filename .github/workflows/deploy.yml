@@ -138,8 +138,20 @@ jobs:
           host: ${{ steps.host.outputs.ip }}
           username: deploy
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "docker-compose.staging.yml"
+          source: "docker-compose.staging.yml,deploy/authentik/blueprints/"
           target: ${{ env.APP_DIR }}
+
+      - name: Setup blueprints directory
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ steps.host.outputs.ip }}
+          username: deploy
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ${{ env.APP_DIR }}
+            mkdir -p blueprints
+            cp -r deploy/authentik/blueprints/* blueprints/ 2>/dev/null || true
+            rm -rf deploy
 
       - name: Configure environment and deploy
         uses: appleboy/ssh-action@v1.0.3
