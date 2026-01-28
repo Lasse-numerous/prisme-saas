@@ -13,7 +13,7 @@ terraform {
 
   # Remote state using Hetzner Object Storage (S3-compatible)
   backend "s3" {
-    bucket                      = "prisme-saas-terraform"
+    bucket                      = "terraform-prism-saas"
     key                         = "terraform.tfstate"
     region                      = "eu-central"
     skip_credentials_validation = true
