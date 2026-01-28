@@ -15,6 +15,10 @@ on:
         options:
           - staging
           - production
+      server_ip:
+        description: 'Server IP (optional, overrides secret)'
+        required: false
+        type: string
 
 env:
   REGISTRY: ghcr.io
@@ -90,10 +94,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Determine host
+        id: host
+        run: |
+          # Use input if provided, otherwise fall back to secret
+          if [ -n "${{ github.event.inputs.server_ip }}" ]; then
+            echo "ip=${{ github.event.inputs.server_ip }}" >> $GITHUB_OUTPUT
+            echo "Using server_ip from workflow input"
+          else
+            echo "ip=${{ secrets.STAGING_HOST }}" >> $GITHUB_OUTPUT
+            echo "Using STAGING_HOST from secrets"
+          fi
+
       - name: Copy compose files to Staging
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: ${{ secrets.STAGING_HOST }}
+          host: ${{ steps.host.outputs.ip }}
           username: deploy
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "docker-compose.staging.yml"
@@ -118,7 +134,7 @@ jobs:
           # MCP
           MCP_ADMIN_API_KEY: ${{ secrets.MCP_ADMIN_API_KEY }}
         with:
-          host: ${{ secrets.STAGING_HOST }}
+          host: ${{ steps.host.outputs.ip }}
           username: deploy
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           envs: IMAGE_TAG,DOMAIN,DATABASE_URL,POSTGRES_PASSWORD,SECRET_KEY,AUTHENTIK_SECRET_KEY,AUTHENTIK_DB_PASSWORD,AUTHENTIK_CLIENT_ID,AUTHENTIK_CLIENT_SECRET,AUTHENTIK_WEBHOOK_SECRET,MCP_ADMIN_API_KEY
@@ -195,7 +211,7 @@ jobs:
       - name: Initialize Authentik (if needed)
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.STAGING_HOST }}
+          host: ${{ steps.host.outputs.ip }}
           username: deploy
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
@@ -230,7 +246,7 @@ jobs:
       - name: Verify deployment
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.STAGING_HOST }}
+          host: ${{ steps.host.outputs.ip }}
           username: deploy
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
@@ -241,7 +257,7 @@ jobs:
     name: Deploy to Production
     runs-on: ubuntu-latest
     needs: build
-    # Production only via manual dispatch (requires PRODUCTION_HOST secret)
+    # Production only via manual dispatch
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production'
     environment: production
 
@@ -249,10 +265,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Determine host
+        id: host
+        run: |
+          # Use input if provided, otherwise fall back to secret
+          if [ -n "${{ github.event.inputs.server_ip }}" ]; then
+            echo "ip=${{ github.event.inputs.server_ip }}" >> $GITHUB_OUTPUT
+            echo "Using server_ip from workflow input"
+          else
+            echo "ip=${{ secrets.PRODUCTION_HOST }}" >> $GITHUB_OUTPUT
+            echo "Using PRODUCTION_HOST from secrets"
+          fi
+
       - name: Copy compose files to Production
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: ${{ secrets.PRODUCTION_HOST }}
+          host: ${{ steps.host.outputs.ip }}
           username: deploy
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "docker-compose.prod.yml"
@@ -277,7 +305,7 @@ jobs:
           # MCP
           MCP_ADMIN_API_KEY: ${{ secrets.MCP_ADMIN_API_KEY }}
         with:
-          host: ${{ secrets.PRODUCTION_HOST }}
+          host: ${{ steps.host.outputs.ip }}
           username: deploy
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           envs: IMAGE_TAG,DOMAIN,DATABASE_URL,POSTGRES_PASSWORD,SECRET_KEY,AUTHENTIK_SECRET_KEY,AUTHENTIK_DB_PASSWORD,AUTHENTIK_CLIENT_ID,AUTHENTIK_CLIENT_SECRET,AUTHENTIK_WEBHOOK_SECRET,MCP_ADMIN_API_KEY
@@ -357,7 +385,7 @@ jobs:
       - name: Verify deployment
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.PRODUCTION_HOST }}
+          host: ${{ steps.host.outputs.ip }}
           username: deploy
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |

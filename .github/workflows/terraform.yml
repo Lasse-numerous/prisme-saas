@@ -102,21 +102,22 @@ jobs:
 
           echo "environment=$ENV" >> $GITHUB_OUTPUT
 
-      - name: Update Host Secret
+      - name: Trigger Deploy with Server IP
         if: (github.event.inputs.action == 'apply' || (github.event_name == 'push' && github.ref == 'refs/heads/main')) && steps.outputs.outputs.server_ip != ''
         env:
-          GH_TOKEN: ${{ secrets.GH_PAT }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           SERVER_IP="${{ steps.outputs.outputs.server_ip }}"
-          SECRET_NAME="${{ steps.outputs.outputs.host_secret_name }}"
           ENV="${{ steps.outputs.outputs.environment }}"
 
-          echo "Setting $SECRET_NAME=$SERVER_IP for environment $ENV"
+          echo "Triggering deploy workflow for $ENV with server IP $SERVER_IP"
 
-          # Update the environment secret with the server IP
-          gh secret set "$SECRET_NAME" --env "$ENV" -R "${{ github.repository }}" <<< "$SERVER_IP"
+          gh workflow run deploy.yml \
+            -R "${{ github.repository }}" \
+            -f environment="$ENV" \
+            -f server_ip="$SERVER_IP"
 
-          echo "✓ Updated $SECRET_NAME secret"
+          echo "✓ Deploy workflow triggered"
 
       - name: Terraform Destroy
         if: github.event.inputs.action == 'destroy'
@@ -136,32 +137,11 @@ jobs:
           echo "- **Environment**: ${{ github.event.inputs.environment || 'staging' }}" >> $GITHUB_STEP_SUMMARY
           if [ -n "${{ steps.outputs.outputs.server_ip }}" ]; then
             echo "- **Server IP**: ${{ steps.outputs.outputs.server_ip }}" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### Next Steps" >> $GITHUB_STEP_SUMMARY
+            echo "1. Deploy workflow triggered automatically with server IP" >> $GITHUB_STEP_SUMMARY
+            echo "2. After Authentik is running, configure OAuth:" >> $GITHUB_STEP_SUMMARY
+            echo "   - Access Authentik admin UI" >> $GITHUB_STEP_SUMMARY
+            echo "   - Create OAuth2 provider and application" >> $GITHUB_STEP_SUMMARY
+            echo "   - Update secrets: \`gh secret set AUTHENTIK_CLIENT_ID --env ${{ github.event.inputs.environment || 'staging' }}\`" >> $GITHUB_STEP_SUMMARY
           fi
-
-  setup-authentik:
-    name: Configure Authentik OAuth
-    runs-on: ubuntu-latest
-    needs: terraform
-    if: (github.event.inputs.action == 'apply' || (github.event_name == 'push' && github.ref == 'refs/heads/main'))
-    environment: ${{ github.event.inputs.environment || 'staging' }}
-
-    steps:
-      - name: Wait for Authentik to be ready
-        env:
-          SERVER_IP: ${{ needs.terraform.outputs.server_ip }}
-        run: |
-          echo "Waiting for Authentik to be ready..."
-          # Give the deploy workflow time to run and start Authentik
-          sleep 120
-
-          # This step is a placeholder - Authentik OAuth app creation requires
-          # manual configuration in the Authentik admin UI, then updating secrets:
-          #   gh secret set AUTHENTIK_CLIENT_ID --env <env> <<< "<client_id>"
-          #   gh secret set AUTHENTIK_CLIENT_SECRET --env <env> <<< "<client_secret>"
-
-          echo "⚠️  Manual step required:"
-          echo "1. Access Authentik admin at https://auth-staging.madewithpris.me"
-          echo "2. Create OAuth2 provider and application"
-          echo "3. Update GitHub secrets:"
-          echo "   gh secret set AUTHENTIK_CLIENT_ID --env ${{ github.event.inputs.environment || 'staging' }} <<< '<client_id>'"
-          echo "   gh secret set AUTHENTIK_CLIENT_SECRET --env ${{ github.event.inputs.environment || 'staging' }} <<< '<client_secret>'"
