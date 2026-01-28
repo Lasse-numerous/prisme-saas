@@ -1,6 +1,26 @@
 # CHANGELOG
 
 
+## v0.13.0 (2026-01-28)
+
+### Chores
+
+- Update uv.lock
+  ([`c06364e`](https://github.com/Lasse-numerous/prisme-saas/commit/c06364ebb039994c4a088ad76826924911e3f387))
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+### Features
+
+- **frontend**: Add landing page and dashboard for home route
+  ([`e2ba548`](https://github.com/Lasse-numerous/prisme-saas/commit/e2ba5480456db81cf9d547e14ee0de6015a814ed))
+
+Unauthenticated users now see a marketing landing page with feature highlights and CTA buttons.
+  Authenticated users see a dashboard with their subdomains listed as status-badged cards.
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+
 ## v0.12.0 (2026-01-28)
 
 ### Features
