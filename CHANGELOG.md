@@ -1,6 +1,21 @@
 # CHANGELOG
 
 
+## v0.7.2 (2026-01-28)
+
+### Bug Fixes
+
+- Combine auth blueprints to avoid attr replacement issues
+  ([`74b8b96`](https://github.com/Lasse-numerous/prisme-saas/commit/74b8b961f79c2cb754fe279937730fe4073f7d17))
+
+Merge email-password and github-oauth into single authentication blueprint with conditional entries:
+  - GitHub source created only when GITHUB_CLIENT_ID is set - Identification stage configured
+  with/without GitHub source based on condition - Both paths include enrollment_flow and
+  recovery_flow for signup/reset
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+
 ## v0.7.1 (2026-01-28)
 
 ### Bug Fixes
