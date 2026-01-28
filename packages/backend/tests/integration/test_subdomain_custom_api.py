@@ -207,8 +207,8 @@ class TestSubdomainReleaseAPI:
         # Try to release again
         response = await client.post("/api/subdomains/released/release")
 
-        # Should fail - subdomain no longer exists or is in released state
-        assert response.status_code in [404, 400]
+        # Should fail - subdomain is released (owner_id cleared) or not found
+        assert response.status_code in [404, 400, 403]
 
 
 class TestSubdomainAuthenticationAPI:

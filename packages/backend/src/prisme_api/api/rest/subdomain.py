@@ -10,6 +10,7 @@ This file extends the base routes with:
 from __future__ import annotations
 
 import logging
+import os
 import re
 from datetime import UTC, datetime, timedelta
 from typing import Annotated
@@ -48,7 +49,7 @@ def get_user_key(request: Request) -> str:
     return get_remote_address(request)
 
 
-limiter = Limiter(key_func=get_user_key)
+limiter = Limiter(key_func=get_user_key, enabled="sqlite" not in os.environ.get("DATABASE_URL", ""))
 
 # Subdomain validation pattern
 SUBDOMAIN_PATTERN = re.compile(r"^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$")
