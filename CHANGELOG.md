@@ -1,6 +1,20 @@
 # CHANGELOG
 
 
+## v0.11.0 (2026-01-28)
+
+### Features
+
+- **auth**: Direct GitHub OAuth bypassing Authentik UI
+  ([`c71459b`](https://github.com/Lasse-numerous/prisme-saas/commit/c71459b43709bba92ee0fbac4b1e97b1f7c885bc))
+
+GitHub sign-in now redirects directly to github.com instead of through Authentik's frontend. The
+  backend exchanges the code, fetches user info from GitHub API, and issues a JWT session cookie.
+  Includes CSRF state validation via Redis.
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+
 ## v0.10.3 (2026-01-28)
 
 ### Bug Fixes
