@@ -55,7 +55,8 @@ class AuthentikSettings(BaseSettings):
             if not self.userinfo_url:
                 self.userinfo_url = f"{oauth_base}/userinfo/"
             if not self.jwks_url:
-                self.jwks_url = f"{oauth_base}/jwks/"
+                # JWKS is at the application level, not shared
+                self.jwks_url = f"{base}/jwks/"
             if not self.logout_url:
                 self.logout_url = f"{base}/end-session/"
 
