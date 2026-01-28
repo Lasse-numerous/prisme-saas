@@ -1,7 +1,11 @@
 name: Terraform
 
 on:
-  push:
+  # Run after CI workflow completes successfully
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
     branches:
       - main
   workflow_dispatch:
@@ -32,6 +36,8 @@ jobs:
   terraform:
     name: Terraform ${{ github.event.inputs.action || 'plan' }}
     runs-on: ubuntu-latest
+    # Only run if CI passed (or manual dispatch)
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     environment: ${{ github.event.inputs.environment || 'staging' }}
 
     defaults:
