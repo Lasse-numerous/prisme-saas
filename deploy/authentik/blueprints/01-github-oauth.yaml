@@ -1,5 +1,5 @@
 # Authentik Blueprint for GitHub OAuth Sign-In
-# This is applied idempotently on Authentik startup
+# Creates the GitHub OAuth source (identification stage is configured in email-password.yaml)
 version: 1
 metadata:
   name: GitHub OAuth Source
@@ -24,24 +24,6 @@ entries:
       consumer_secret: !Env [GITHUB_CLIENT_SECRET, ""]
       # Request user:email scope for email access
       additional_scopes: "read:user user:email"
-    conditions:
-      - !Condition
-        conditions:
-          - !Env [GITHUB_CLIENT_ID, ""]
-        match: "!="
-        value: ""
-
-  # Add GitHub to identification stage (login page)
-  - model: authentik_stages_identification.identificationstage
-    id: default-identification-stage
-    identifiers:
-      name: default-authentication-identification
-    attrs:
-      user_fields:
-        - email
-        - username
-      sources:
-        - !Find [authentik_sources_oauth.oauthsource, [slug, github]]
     conditions:
       - !Condition
         conditions:
