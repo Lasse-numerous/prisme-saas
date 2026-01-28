@@ -24,6 +24,10 @@ services:
       # Flow Executor (custom auth UX)
       - AUTHENTIK_BASE_URL=${AUTHENTIK_BASE_URL}
       - JWT_SECRET=${JWT_SECRET}
+      # GitHub OAuth (direct)
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
+      - GITHUB_REDIRECT_URI=${GITHUB_REDIRECT_URI}
       # MCP Server
       - MCP_ADMIN_API_KEY=${MCP_ADMIN_API_KEY}
     depends_on:

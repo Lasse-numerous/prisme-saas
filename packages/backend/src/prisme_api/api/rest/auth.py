@@ -1,16 +1,20 @@
 """Authentication routes using Authentik Flow Executor API.
 
 Custom auth UX: the frontend drives Authentik flows through these endpoints.
+GitHub OAuth goes directly to GitHub (bypasses Authentik UI).
 """
 
 from __future__ import annotations
 
 import logging
 import os
+import secrets
 from typing import Annotated
+from urllib.parse import urlencode
 
+import httpx
 import redis.asyncio as redis
-from fastapi import APIRouter, Cookie, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Cookie, Depends, HTTPException, Query, Response, status
 from fastapi.responses import RedirectResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -256,37 +260,130 @@ async def flow_signup_resend_email(
         raise HTTPException(status_code=502, detail=str(e)) from e
 
 
-# ── GitHub OAuth (via Authentik source) ─────────────────────────
+# ── GitHub OAuth (direct, bypassing Authentik UI) ──────────────
+
+GITHUB_AUTHORIZE_URL = "https://github.com/login/oauth/authorize"
+GITHUB_TOKEN_URL = "https://github.com/login/oauth/access_token"
+GITHUB_USER_API = "https://api.github.com/user"
+GITHUB_EMAILS_API = "https://api.github.com/user/emails"
 
 
 @router.get("/github/login")
 async def github_login() -> RedirectResponse:
-    """Redirect to Authentik GitHub OAuth source."""
-    base = authentik_settings.authentik_base_url.rstrip("/")
-    url = f"{base}/source/oauth/login/github/"
-    return RedirectResponse(url=url, status_code=status.HTTP_302_FOUND)
+    """Redirect to GitHub OAuth authorization page."""
+    if not authentik_settings.github_client_id:
+        raise HTTPException(
+            status_code=status.HTTP_501_NOT_IMPLEMENTED,
+            detail="GitHub OAuth is not configured",
+        )
+
+    state = secrets.token_urlsafe(32)
+    # Store state in Redis for CSRF validation (5 min TTL)
+    r = await get_redis()
+    await r.set(f"github_oauth_state:{state}", "1", ex=300)
+
+    params = urlencode(
+        {
+            "client_id": authentik_settings.github_client_id,
+            "redirect_uri": authentik_settings.github_redirect_uri,
+            "scope": "user:email",
+            "state": state,
+        }
+    )
+    return RedirectResponse(
+        url=f"{GITHUB_AUTHORIZE_URL}?{params}",
+        status_code=status.HTTP_302_FOUND,
+    )
 
 
 @router.get("/github/callback")
 async def github_callback(
-    response: Response,
     db: Annotated[AsyncSession, Depends(get_db)],
-    code: str | None = None,
-    error: str | None = None,
+    code: str | None = Query(None),
+    state: str | None = Query(None),
+    error: str | None = Query(None),
 ) -> RedirectResponse:
-    """Handle GitHub OAuth callback from Authentik.
-
-    After Authentik processes the GitHub OAuth, it redirects here.
-    We find/create the local user and set a JWT cookie.
-    """
+    """Handle GitHub OAuth callback: exchange code, get user, issue JWT."""
     if error:
         return RedirectResponse(url=f"/login?error={error}", status_code=status.HTTP_302_FOUND)
 
-    # Authentik handles the GitHub OAuth token exchange and creates/links the user.
-    # The callback arrives with Authentik session cookies set.
-    # We need to get user info from Authentik's userinfo endpoint.
-    # For now, redirect to the app — the frontend will call /auth/me.
+    if not code or not state:
+        return RedirectResponse(
+            url="/login?error=missing_params", status_code=status.HTTP_302_FOUND
+        )
+
+    # Validate CSRF state
+    r = await get_redis()
+    stored = await r.get(f"github_oauth_state:{state}")
+    if not stored:
+        return RedirectResponse(url="/login?error=invalid_state", status_code=status.HTTP_302_FOUND)
+    await r.delete(f"github_oauth_state:{state}")
+
+    async with httpx.AsyncClient() as client:
+        # Exchange code for access token
+        token_resp = await client.post(
+            GITHUB_TOKEN_URL,
+            data={
+                "client_id": authentik_settings.github_client_id,
+                "client_secret": authentik_settings.github_client_secret,
+                "code": code,
+                "redirect_uri": authentik_settings.github_redirect_uri,
+            },
+            headers={"Accept": "application/json"},
+        )
+        if token_resp.status_code != 200:
+            logger.error("GitHub token exchange failed: %s", token_resp.text)
+            return RedirectResponse(
+                url="/login?error=token_exchange_failed", status_code=status.HTTP_302_FOUND
+            )
+
+        token_data = token_resp.json()
+        access_token = token_data.get("access_token")
+        if not access_token:
+            logger.error("No access_token in GitHub response: %s", token_data)
+            return RedirectResponse(
+                url="/login?error=no_access_token", status_code=status.HTTP_302_FOUND
+            )
+
+        auth_headers = {"Authorization": f"Bearer {access_token}"}
+
+        # Get user profile
+        user_resp = await client.get(GITHUB_USER_API, headers=auth_headers)
+        if user_resp.status_code != 200:
+            logger.error("GitHub user API failed: %s", user_resp.text)
+            return RedirectResponse(
+                url="/login?error=github_user_failed", status_code=status.HTTP_302_FOUND
+            )
+        gh_user = user_resp.json()
+
+        # Get primary verified email
+        email = gh_user.get("email")
+        if not email:
+            emails_resp = await client.get(GITHUB_EMAILS_API, headers=auth_headers)
+            if emails_resp.status_code == 200:
+                for em in emails_resp.json():
+                    if em.get("primary") and em.get("verified"):
+                        email = em["email"]
+                        break
+
+        if not email:
+            return RedirectResponse(url="/login?error=no_email", status_code=status.HTTP_302_FOUND)
+
+    # Find or create local user
+    username = gh_user.get("login", email.split("@")[0])
+    github_id = str(gh_user.get("id", ""))
+
+    user = await _find_or_create_user(
+        db,
+        authentik_id=f"github:{github_id}",
+        email=email,
+        username=username,
+    )
+
+    # Issue JWT session cookie
+    token = create_session_jwt(user)
     redirect = RedirectResponse(url="/?auth=github", status_code=status.HTTP_302_FOUND)
+    _set_session_cookie(redirect, token)
     return redirect
 
 

@@ -43,6 +43,11 @@ class AuthentikSettings(BaseSettings):
         "AUTHENTIK_ENROLLMENT_FLOW_SLUG", "madewithprisme-enrollment"
     )
 
+    # GitHub OAuth (direct, bypassing Authentik UI)
+    github_client_id: str = os.getenv("GITHUB_CLIENT_ID", "")
+    github_client_secret: str = os.getenv("GITHUB_CLIENT_SECRET", "")
+    github_redirect_uri: str = os.getenv("GITHUB_REDIRECT_URI", "")
+
     # Webhook Configuration
     webhook_secret: str = os.getenv("AUTHENTIK_WEBHOOK_SECRET", "")
 
