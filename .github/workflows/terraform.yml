@@ -118,22 +118,20 @@ jobs:
 
           echo "environment=$ENV" >> $GITHUB_OUTPUT
 
-      - name: Trigger Deploy with Server IP
+      - name: Save deploy config artifact
         if: (github.event.inputs.action == 'apply' || github.event_name == 'workflow_run') && steps.outputs.outputs.server_ip != ''
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          SERVER_IP="${{ steps.outputs.outputs.server_ip }}"
-          ENV="${{ steps.outputs.outputs.environment }}"
+          mkdir -p deploy-config
+          echo "${{ steps.outputs.outputs.server_ip }}" > deploy-config/server_ip
+          echo "${{ steps.outputs.outputs.environment }}" > deploy-config/environment
 
-          echo "Triggering deploy workflow for $ENV with server IP $SERVER_IP"
-
-          gh workflow run deploy.yml \
-            -R "${{ github.repository }}" \
-            -f environment="$ENV" \
-            -f server_ip="$SERVER_IP"
-
-          echo "✓ Deploy workflow triggered"
+      - name: Upload deploy config
+        if: (github.event.inputs.action == 'apply' || github.event_name == 'workflow_run') && steps.outputs.outputs.server_ip != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-config
+          path: deploy-config/
+          retention-days: 1
 
       - name: Terraform Destroy
         if: github.event.inputs.action == 'destroy'
