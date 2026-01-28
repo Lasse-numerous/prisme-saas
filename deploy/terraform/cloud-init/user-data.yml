@@ -26,7 +26,8 @@ users:
     groups: sudo
     shell: /bin/bash
     sudo: ['ALL=(ALL) NOPASSWD:ALL']
-    ssh_authorized_keys: []
+    ssh_authorized_keys:
+      - ${ssh_public_key}
 
 runcmd:
   # Docker installation

@@ -70,11 +70,19 @@ resource "hcloud_firewall" "main" {
     destination_ips = ["0.0.0.0/0", "::/0"]
   }
 
-  # Allow ICMP
+  # Allow ICMP outbound
   rule {
     direction       = "out"
     protocol        = "icmp"
     destination_ips = ["0.0.0.0/0", "::/0"]
+  }
+
+  # Allow ICMP inbound (ping)
+  rule {
+    direction   = "in"
+    protocol    = "icmp"
+    source_ips  = ["0.0.0.0/0", "::/0"]
+    description = "ICMP"
   }
 }
 
@@ -95,6 +103,7 @@ module "staging" {
     project_name      = var.project_name
     domain            = var.domain
     github_repository = var.github_repository
+    ssh_public_key    = var.ssh_public_key
   })
   enable_floating_ip = false
 
@@ -122,6 +131,7 @@ module "production" {
     project_name      = var.project_name
     domain            = var.domain
     github_repository = var.github_repository
+    ssh_public_key    = var.ssh_public_key
   })
   enable_floating_ip = var.production_floating_ip
 
