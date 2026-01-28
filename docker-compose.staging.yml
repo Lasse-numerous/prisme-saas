@@ -115,13 +115,15 @@ services:
       # GitHub OAuth (optional)
       - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID:-}
       - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET:-}
-      # Email (Resend SMTP)
+      # Email (Resend SMTP via STARTTLS - port 465 blocked by Hetzner)
       - AUTHENTIK_EMAIL__HOST=smtp.resend.com
-      - AUTHENTIK_EMAIL__PORT=465
+      - AUTHENTIK_EMAIL__PORT=587
       - AUTHENTIK_EMAIL__USERNAME=resend
       - AUTHENTIK_EMAIL__PASSWORD=${RESEND_API_KEY:-}
       - AUTHENTIK_EMAIL__FROM=noreply@madewithpris.me
-      - AUTHENTIK_EMAIL__USE_SSL=true
+      - AUTHENTIK_EMAIL__USE_TLS=true
+      - AUTHENTIK_EMAIL__USE_SSL=false
+      - AUTHENTIK_EMAIL__TIMEOUT=10
     volumes:
       - authentik_media:/media
       - ./deploy/authentik/templates:/templates:ro
@@ -167,13 +169,15 @@ services:
       # GitHub OAuth (optional)
       - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID:-}
       - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET:-}
-      # Email (Resend SMTP)
+      # Email (Resend SMTP via STARTTLS - port 465 blocked by Hetzner)
       - AUTHENTIK_EMAIL__HOST=smtp.resend.com
-      - AUTHENTIK_EMAIL__PORT=465
+      - AUTHENTIK_EMAIL__PORT=587
       - AUTHENTIK_EMAIL__USERNAME=resend
       - AUTHENTIK_EMAIL__PASSWORD=${RESEND_API_KEY:-}
       - AUTHENTIK_EMAIL__FROM=noreply@madewithpris.me
-      - AUTHENTIK_EMAIL__USE_SSL=true
+      - AUTHENTIK_EMAIL__USE_TLS=true
+      - AUTHENTIK_EMAIL__USE_SSL=false
+      - AUTHENTIK_EMAIL__TIMEOUT=10
     volumes:
       - authentik_media:/media
       - authentik_certs:/certs
