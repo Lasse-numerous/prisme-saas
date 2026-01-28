@@ -31,6 +31,18 @@ class AuthentikSettings(BaseSettings):
     redirect_uri: str = os.getenv("AUTHENTIK_REDIRECT_URI", "")
     post_logout_redirect_uri: str = os.getenv("AUTHENTIK_POST_LOGOUT_REDIRECT_URI", "")
 
+    # Authentik base URL (for Flow Executor API)
+    authentik_base_url: str = os.getenv("AUTHENTIK_BASE_URL", "")
+
+    # JWT secret for self-issued session tokens
+    jwt_secret: str = os.getenv("JWT_SECRET", "change-me-in-production")
+
+    # Flow slugs
+    login_flow_slug: str = os.getenv("AUTHENTIK_LOGIN_FLOW_SLUG", "madewithprisme-authentication")
+    enrollment_flow_slug: str = os.getenv(
+        "AUTHENTIK_ENROLLMENT_FLOW_SLUG", "madewithprisme-enrollment"
+    )
+
     # Webhook Configuration
     webhook_secret: str = os.getenv("AUTHENTIK_WEBHOOK_SECRET", "")
 
