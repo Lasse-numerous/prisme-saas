@@ -12,12 +12,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from prisme_api.models.allowed_email_domain import AllowedEmailDomain
 
-from ._generated.base import ServiceBase
+from ._generated.allowed_email_domain_base import AllowedEmailDomainServiceBase
 
 logger = logging.getLogger(__name__)
 
 
-class AllowedEmailDomainService(ServiceBase[AllowedEmailDomain, None, None]):
+class AllowedEmailDomainService(AllowedEmailDomainServiceBase):
     """Service for managing allowed email domains.
 
     Extends the base service with domain validation methods.

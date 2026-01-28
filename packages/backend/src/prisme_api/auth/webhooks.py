@@ -17,7 +17,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from prisme_api.auth.config import authentik_settings
-from prisme_api.database import get_async_session
+from prisme_api.database import async_session as get_async_session
 from prisme_api.models.user import User
 
 logger = logging.getLogger(__name__)
