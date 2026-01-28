@@ -75,7 +75,7 @@ jobs:
         run: exit 1
 
       - name: Terraform Apply
-        if: github.event.inputs.action == 'apply' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+        if: github.event.inputs.action == 'apply' || github.event_name == 'workflow_run'
         env:
           TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
           TF_VAR_ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
@@ -83,7 +83,7 @@ jobs:
           terraform apply -auto-approve tfplan
 
       - name: Get Terraform Outputs
-        if: github.event.inputs.action == 'apply' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+        if: github.event.inputs.action == 'apply' || github.event_name == 'workflow_run'
         id: outputs
         env:
           TF_VAR_hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
@@ -106,7 +106,7 @@ jobs:
           echo "environment=$ENV" >> $GITHUB_OUTPUT
 
       - name: Trigger Deploy with Server IP
-        if: (github.event.inputs.action == 'apply' || (github.event_name == 'push' && github.ref == 'refs/heads/main')) && steps.outputs.outputs.server_ip != ''
+        if: (github.event.inputs.action == 'apply' || github.event_name == 'workflow_run') && steps.outputs.outputs.server_ip != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
