@@ -20,7 +20,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'uv run prism devcontainer up',
+    command: 'bash ../../scripts/ensure-devcontainer.sh',
     url: baseURL,
     reuseExistingServer: true,
     timeout: 120000,
