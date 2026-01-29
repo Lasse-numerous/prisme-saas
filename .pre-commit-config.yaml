@@ -64,3 +64,10 @@ repos:
         language: system
         pass_filenames: false
         stages: [pre-push]
+
+      - id: migration-check
+        name: migration drift check (pre-push)
+        entry: ./scripts/check-migrations.sh
+        language: system
+        pass_filenames: false
+        stages: [pre-push]

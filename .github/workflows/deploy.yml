@@ -256,7 +256,14 @@ jobs:
             docker compose -f docker-compose.staging.yml ps
 
             # Run database migrations
-            docker compose -f docker-compose.staging.yml exec -T -w /app/packages/backend/src backend alembic upgrade head
+            echo "Running database migrations..."
+            if ! docker compose -f docker-compose.staging.yml exec -T -w /app/packages/backend/src backend alembic upgrade head; then
+              echo "ERROR: Database migrations failed!"
+              echo "Current alembic state:"
+              docker compose -f docker-compose.staging.yml exec -T -w /app/packages/backend/src backend alembic current || true
+              exit 1
+            fi
+            echo "Migrations completed successfully."
 
             # Health check
             curl -f http://localhost:8000/health || exit 1
@@ -485,7 +492,14 @@ jobs:
             docker compose -f docker-compose.prod.yml ps
 
             # Run database migrations
-            docker compose -f docker-compose.prod.yml exec -T -w /app/packages/backend/src backend alembic upgrade head
+            echo "Running database migrations..."
+            if ! docker compose -f docker-compose.prod.yml exec -T -w /app/packages/backend/src backend alembic upgrade head; then
+              echo "ERROR: Database migrations failed!"
+              echo "Current alembic state:"
+              docker compose -f docker-compose.prod.yml exec -T -w /app/packages/backend/src backend alembic current || true
+              exit 1
+            fi
+            echo "Migrations completed successfully."
 
             # Health check
             curl -f http://localhost:8000/health || exit 1

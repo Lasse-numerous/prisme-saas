@@ -91,6 +91,52 @@ jobs:
       - name: Build documentation
         run: uv run mkdocs build --strict
 
+  migration-check:
+    name: Migration Drift Check
+    needs: lint
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: prisme_migration_check
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Set up Python
+        run: uv python install
+
+      - name: Install dependencies
+        run: uv sync --all-extras
+
+      - name: Apply all migrations
+        env:
+          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/prisme_migration_check
+        run: |
+          cd packages/backend/src
+          uv run alembic upgrade head
+
+      - name: Check for unapplied model changes
+        env:
+          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/prisme_migration_check
+        run: |
+          cd packages/backend/src
+          uv run alembic check
+          echo "✓ All model changes have corresponding migrations."
+
   e2e:
     name: Integration Tests
     needs: lint

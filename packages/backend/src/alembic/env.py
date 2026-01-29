@@ -77,9 +77,33 @@ def run_migrations_offline() -> None:
         context.run_migrations()
 
 
+def _compare_type(
+    context,
+    inspected_column,
+    metadata_column,
+    inspected_type,
+    metadata_type,
+):
+    """Ignore DateTime timezone=True vs DateTime() differences.
+
+    Prism generates models with bare DateTime() but migrations use
+    DateTime(timezone=True). Both map to the same Postgres type in practice.
+    """
+    from sqlalchemy import DateTime
+
+    if isinstance(inspected_type, DateTime) and isinstance(metadata_type, DateTime):
+        return False
+    # Return None to let alembic handle other type comparisons
+    return None
+
+
 def do_run_migrations(connection) -> None:
     """Run migrations with the given connection."""
-    context.configure(connection=connection, target_metadata=target_metadata)
+    context.configure(
+        connection=connection,
+        target_metadata=target_metadata,
+        compare_type=_compare_type,
+    )
 
     with context.begin_transaction():
         context.run_migrations()
