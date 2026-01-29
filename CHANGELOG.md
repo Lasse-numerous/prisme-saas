@@ -1,6 +1,27 @@
 # CHANGELOG
 
 
+## v0.15.6 (2026-01-29)
+
+### Bug Fixes
+
+- Make datetime columns timezone-aware to fix asyncpg 500 error
+  ([`fc6f1a2`](https://github.com/Lasse-numerous/prisme-saas/commit/fc6f1a2afeb9449f58213bd4cbb8d2898ee30ddf))
+
+The email_verification_token_expires_at, password_reset_token_expires_at, and locked_until columns
+  were TIMESTAMP (naive) but code passes timezone-aware datetimes via datetime.now(UTC), causing
+  asyncpg to reject the insert.
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+### Chores
+
+- Update lockfiles after ruff rebuild
+  ([`7f2d40a`](https://github.com/Lasse-numerous/prisme-saas/commit/7f2d40a29cbe9125b6d0450e5a8fd28ed3284180))
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+
 ## v0.15.5 (2026-01-29)
 
 ### Bug Fixes
