@@ -144,9 +144,9 @@ function defaultValidate(values: Partial<UserFormValues>): UserFormErrors {
   }  // email max length
   if (typeof values.email === 'string' && values.email.length > 255) {
     errors.email = 'Email must be 255 characters or less';
-  }  // authentik_id max length
-  if (typeof values.authentikId === 'string' && values.authentikId.length > 255) {
-    errors.authentikId = 'Authentik Id must be 255 characters or less';
+  }  // github_id max length
+  if (typeof values.githubId === 'string' && values.githubId.length > 255) {
+    errors.githubId = 'Github Id must be 255 characters or less';
   }  // username max length
   if (typeof values.username === 'string' && values.username.length > 100) {
     errors.username = 'Username must be 100 characters or less';

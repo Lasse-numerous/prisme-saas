@@ -63,83 +63,17 @@ async def db(engine) -> AsyncGenerator[AsyncSession]:
 
 
 @pytest_asyncio.fixture
-async def unauthenticated_client(db):
-    """Create test client without authentication (only DB override)."""
-    from httpx import ASGITransport, AsyncClient
-
-    from prisme_api.database import get_db
-    from prisme_api.main import app
-
-    async def override_get_db():
-        yield db
-
-    app.dependency_overrides[get_db] = override_get_db
-
-    transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
-        yield client
-
-    app.dependency_overrides.clear()
-
-
-@pytest_asyncio.fixture
 async def client(db):
-    """Create test client with authenticated regular user."""
+    """Create test client with database session."""
     from httpx import ASGITransport, AsyncClient
 
-    from prisme_api.auth.dependencies import get_current_active_user
     from prisme_api.database import get_db
     from prisme_api.main import app
-    from prisme_api.models.user import User
-
-    test_user = User(
-        id=1,
-        email="testuser@example.com",
-        is_active=True,
-        is_admin=False,
-        email_verified=True,
-        subdomain_limit=10,
-        roles=["user"],
-    )
 
     async def override_get_db():
         yield db
 
     app.dependency_overrides[get_db] = override_get_db
-    app.dependency_overrides[get_current_active_user] = lambda: test_user
-
-    transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
-        yield client
-
-    app.dependency_overrides.clear()
-
-
-@pytest_asyncio.fixture
-async def admin_client(db):
-    """Create test client with authenticated admin user."""
-    from httpx import ASGITransport, AsyncClient
-
-    from prisme_api.auth.dependencies import get_current_active_user
-    from prisme_api.database import get_db
-    from prisme_api.main import app
-    from prisme_api.models.user import User
-
-    admin_user = User(
-        id=1,
-        email="admin@example.com",
-        is_active=True,
-        is_admin=True,
-        email_verified=True,
-        subdomain_limit=10,
-        roles=["admin"],
-    )
-
-    async def override_get_db():
-        yield db
-
-    app.dependency_overrides[get_db] = override_get_db
-    app.dependency_overrides[get_current_active_user] = lambda: admin_user
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:

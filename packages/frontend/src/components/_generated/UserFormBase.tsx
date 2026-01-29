@@ -17,7 +17,11 @@ export const USER_FIELD_SPECS: FieldSpec[] = [
   { name: 'mfaEnabled', type: 'boolean', required: false, displayName: 'Mfa Enabled', description: 'Whether MFA is enabled' },
   { name: 'subdomainLimit', type: 'integer', required: false, displayName: 'Subdomain Limit', description: 'Maximum number of subdomains allowed' },
   { name: 'isAdmin', type: 'boolean', required: false, displayName: 'Is Admin', description: 'Whether user has admin privileges' },
-  { name: 'authentikId', type: 'string', required: false, displayName: 'Authentik Id', description: 'Authentik user ID for SSO' },
+  { name: 'passwordResetTokenExpiresAt', type: 'datetime', required: false, displayName: 'Password Reset Token Expires At', description: 'When password reset token expires' },
+  { name: 'emailVerificationTokenExpiresAt', type: 'datetime', required: false, displayName: 'Email Verification Token Expires At', description: 'When email verification token expires' },
+  { name: 'failedLoginAttempts', type: 'integer', required: false, displayName: 'Failed Login Attempts', description: 'Number of consecutive failed login attempts' },
+  { name: 'lockedUntil', type: 'datetime', required: false, displayName: 'Locked Until', description: 'Account locked until this time after too many failed logins' },
+  { name: 'githubId', type: 'string', required: false, displayName: 'Github Id', description: 'GitHub user ID for OAuth' },
   { name: 'username', type: 'string', required: false, displayName: 'Username', description: 'Username (optional, email is primary)' },
   { name: 'roles', type: 'json', required: false, displayName: 'Roles', description: 'User roles for authorization' },
   { name: 'isActive', type: 'boolean', required: false, displayName: 'Is Active', description: 'Whether user account is active' }
@@ -80,7 +84,7 @@ export function UserFormBase({
                 placeholder={field.placeholder}
                 required={field.required}
                 disabled={loading}
-                error={errors[field.name as keyof UserCreate]?.message as string | undefined}
+                error={errors[field.name as keyof UserCreate]?.message}
                 options={field.enumValues}
                 references={field.references}
                 {...field.widgetProps}

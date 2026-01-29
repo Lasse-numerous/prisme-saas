@@ -9,6 +9,14 @@ from __future__ import annotations
 from pydantic import BaseModel, EmailStr, Field
 
 
+class SignupRequest(BaseModel):
+    """User registration data."""
+
+    email: EmailStr
+    username: str
+    password: str = Field(..., min_length=8)
+
+
 class LoginRequest(BaseModel):
     """Email and password for login."""
 
@@ -16,17 +24,62 @@ class LoginRequest(BaseModel):
     password: str = Field(..., min_length=1)
 
 
-class SignupRequest(BaseModel):
-    """User registration data."""
+class LoginMFARequest(BaseModel):
+    """MFA login with TOTP code."""
 
     email: EmailStr
+    code: str
+
+
+class VerifyEmailRequest(BaseModel):
+    """Email verification token."""
+
+    token: str
+
+
+class ResendVerificationRequest(BaseModel):
+    """Resend verification email."""
+
+    email: EmailStr
+
+
+class ForgotPasswordRequest(BaseModel):
+    """Password reset request."""
+
+    email: EmailStr
+
+
+class ResetPasswordRequest(BaseModel):
+    """Password reset with token."""
+
+    token: str
     password: str = Field(..., min_length=8)
 
 
-class RefreshTokenRequest(BaseModel):
-    """Refresh token request."""
+class MFAVerifySetupRequest(BaseModel):
+    """Verify TOTP setup."""
 
-    refresh_token: str
+    code: str
+
+
+class MFADisableRequest(BaseModel):
+    """Disable MFA."""
+
+    password: str
+
+
+class MFASetupResponse(BaseModel):
+    """MFA setup response with TOTP URI."""
+
+    totp_uri: str
+    secret: str
+
+
+class LoginResponse(BaseModel):
+    """Login response — may require MFA step."""
+
+    requires_mfa: bool = False
+    user: dict | None = None
 
 
 class UserResponse(BaseModel):
@@ -37,16 +90,8 @@ class UserResponse(BaseModel):
 
     id: int
     email: str
+    username: str
     is_active: bool
     roles: list[str]
 
     model_config = {"from_attributes": True}
-
-
-class TokenResponse(BaseModel):
-    """JWT token response."""
-
-    access_token: str
-    refresh_token: str
-    token_type: str = "bearer"
-    user: UserResponse

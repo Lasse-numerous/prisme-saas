@@ -17,7 +17,7 @@ from prism import (
     RESTExposure,
     StackSpec,
 )
-from prism.spec.auth import AuthConfig, AuthentikConfig, AuthentikMFAConfig, Role
+from prism.spec.auth import AuthConfig, EmailConfig, OAuthProviderConfig, Role
 
 spec = StackSpec(
     name="prisme_api",
@@ -30,19 +30,26 @@ spec = StackSpec(
     ),
     auth=AuthConfig(
         enabled=True,
-        preset="authentik",
-        authentik=AuthentikConfig(
-            version="2024.2",
-            subdomain="auth",  # auth.madewithpris.me
-            mfa=AuthentikMFAConfig(
-                enabled=True,
-                methods=["totp", "email"],
-            ),
-            self_signup=True,
-            email_verification=True,
-        ),
+        preset="jwt",
         user_model="User",
         username_field="email",
+        email_verification=True,
+        password_reset=True,
+        mfa_enabled=True,
+        account_lockout=True,
+        allow_signup=True,
+        email=EmailConfig(
+            email_from="MadeWithPris.me <noreply@madewithpris.me>",
+            resend_api_key_env="RESEND_API_KEY",
+        ),
+        oauth_providers=[
+            OAuthProviderConfig(
+                provider="github",
+                client_id_env="GITHUB_CLIENT_ID",
+                client_secret_env="GITHUB_CLIENT_SECRET",
+                scopes=["user:email"],
+            ),
+        ],
         default_role="user",
         roles=[
             Role(name="admin", permissions=["*"], description="Full access"),
@@ -121,12 +128,45 @@ spec = StackSpec(
                     description="Whether user has admin privileges",
                 ),
                 FieldSpec(
-                    name="authentik_id",
+                    name="password_reset_token",
+                    type=FieldType.STRING,
+                    required=False,
+                    max_length=255,
+                    description="Token for password reset",
+                    hidden=True,
+                ),
+                FieldSpec(
+                    name="password_reset_token_expires_at",
+                    type=FieldType.DATETIME,
+                    required=False,
+                    description="When password reset token expires",
+                ),
+                FieldSpec(
+                    name="email_verification_token_expires_at",
+                    type=FieldType.DATETIME,
+                    required=False,
+                    description="When email verification token expires",
+                ),
+                FieldSpec(
+                    name="failed_login_attempts",
+                    type=FieldType.INTEGER,
+                    default=0,
+                    required=True,
+                    description="Number of consecutive failed login attempts",
+                ),
+                FieldSpec(
+                    name="locked_until",
+                    type=FieldType.DATETIME,
+                    required=False,
+                    description="Account locked until this time after too many failed logins",
+                ),
+                FieldSpec(
+                    name="github_id",
                     type=FieldType.STRING,
                     required=False,
                     unique=True,
                     max_length=255,
-                    description="Authentik user ID for SSO",
+                    description="GitHub user ID for OAuth",
                     indexed=True,
                 ),
                 FieldSpec(

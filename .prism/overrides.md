@@ -1,6 +1,6 @@
 # Code Override Log
 
-**Last Updated**: 2026-01-28T18:58:10.254619
+**Last Updated**: 2026-01-29T08:36:49.187174
 
 **Unreviewed Overrides**: 6
 
@@ -12,16 +12,228 @@
 
 **Strategy**: merge
 **Status**: Not Reviewed
-**Changes**: +6 lines, -4 lines, ~63 lines
-**Last Modified**: 2026-01-28T18:58:10.254594
+**Changes**: +5 lines, -4 lines, ~93 lines
+**Last Modified**: 2026-01-29T08:36:49.187150
 
 ### What Changed
 
 <details>
 <summary>Show Diff</summary>
 
-*Diff not available (run generation again to regenerate)*
+```diff
+--- generated+++ user@@ -11,10 +11,9 @@ import { ThemeToggle } from './ui/ThemeToggle';
+ import { Login } from './pages/Login';
+ import { Signup } from './pages/Signup';
+-import { ForgotPasswordForm } from './components/auth/ForgotPasswordForm';
+-import ResetPassword from './pages/ResetPassword';
+-import VerifyEmail from './pages/VerifyEmail';
+-import AuthCallback from './pages/AuthCallback';
++import { ForgotPassword } from './pages/ForgotPassword';
++import { AuthCallback } from './components/auth/AuthCallback';
++import { ProtectedRoute } from './components/auth/ProtectedRoute';
+ import UsersListPage from './pages/users';
+ import UserDetailPage from './pages/users/[id]';
+ import UserCreatePage from './pages/users/new';
+@@ -27,15 +26,13 @@ import SubdomainDetailPage from './pages/subdomains/[id]';
+ import SubdomainCreatePage from './pages/subdomains/new';
+ import SubdomainEditPage from './pages/subdomains/[id]/edit';
+-import AllowedEmailDomainsListPage from './pages/allowed-email-domains';
+-import AllowedEmailDomainDetailPage from './pages/allowed-email-domains/[id]';
+-import AllowedEmailDomainCreatePage from './pages/allowed-email-domains/new';
+-import AllowedEmailDomainEditPage from './pages/allowed-email-domains/[id]/edit';
+ import { useAuth } from './contexts/AuthContext';
 
+ // PRISM:PROTECTED:START - Custom Imports
+-// Add your custom page imports here:
+-// import MyCustomPage from './pages/custom';
++import LandingPage from './pages/LandingPage';
++import Dashboard from './pages/Dashboard';
++import ResetPassword from './pages/ResetPassword';
++import VerifyEmail from './pages/VerifyEmail';
+ // PRISM:PROTECTED:END
+
+ /** App name and description for branding */
+@@ -77,6 +74,8 @@
+           {/* Navigation */}
+           <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
++          {/* Admin-only: Users management */}
++          {user?.roles?.includes('admin') && (
+           <NavLink
+             to="/users"
+             className={({ isActive }) =>
+@@ -88,10 +87,13 @@             }
+           >
+             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
++              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+             </svg>
+             Users
+           </NavLink>
++          )}
++          {/* Protected: API Keys (any authenticated user) */}
++          {isAuthenticated && (
+           <NavLink
+             to="/api-keys"
+             className={({ isActive }) =>
+@@ -103,10 +105,13 @@             }
+           >
+             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+-            </svg>
+-            APIKeys
+-          </NavLink>
++              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
++            </svg>
++            API Keys
++          </NavLink>
++          )}
++          {/* Protected: Subdomains (any authenticated user) */}
++          {isAuthenticated && (
+           <NavLink
+             to="/subdomains"
+             className={({ isActive }) =>
+@@ -118,25 +123,46 @@             }
+           >
+             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
++              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+             </svg>
+             Subdomains
+           </NavLink>
+-          <NavLink
+-            to="/allowed-email-domains"
+-            className={({ isActive }) =>
+-              `flex items-center gap-3 px-3 py-2 rounded-nordic text-sm font-medium transition-colors ${
+-                isActive
+-                  ? 'bg-nordic-100 text-nordic-900'
+-                  : 'text-nordic-600 hover:bg-nordic-50 hover:text-nordic-900'
+-              }`
+-            }
+-          >
+-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+-            </svg>
+-            AllowedEmailDomains
+-          </NavLink>
++          )}
++          {/* Unauthenticated: Login/Signup */}
++          {!isAuthenticated && (
++          <>
++          <NavLink
++            to="/login"
++            className={({ isActive }) =>
++              `flex items-center gap-3 px-3 py-2 rounded-nordic text-sm font-medium transition-colors ${
++                isActive
++                  ? 'bg-nordic-100 text-nordic-900'
++                  : 'text-nordic-600 hover:bg-nordic-50 hover:text-nordic-900'
++              }`
++            }
++          >
++            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
++              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
++            </svg>
++            Login
++          </NavLink>
++          <NavLink
++            to="/signup"
++            className={({ isActive }) =>
++              `flex items-center gap-3 px-3 py-2 rounded-nordic text-sm font-medium transition-colors ${
++                isActive
++                  ? 'bg-nordic-100 text-nordic-900'
++                  : 'text-nordic-600 hover:bg-nordic-50 hover:text-nordic-900'
++              }`
++            }
++          >
++            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
++              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
++            </svg>
++            Sign Up
++          </NavLink>
++          </>
++          )}
+             {/* PRISM:PROTECTED:START - Custom Nav Links */}
+             {/* Add your custom navigation links here */}
+             {/* PRISM:PROTECTED:END */}
+@@ -186,23 +212,10 @@   );
+ }
+
+-/** Home page with welcome message */
++/** Home page: landing for guests, dashboard for authenticated users */
+ function HomePage(): ReactElement {
+-  return (
+-    <div className="page-container">
+-      <div className="card p-8 text-center">
+-        <div className="w-16 h-16 bg-surface-sunken rounded-full flex items-center justify-center mx-auto mb-4">
+-          <svg className="w-8 h-8 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
+-          </svg>
+-        </div>
+-        <h1 className="text-2xl font-semibold text-foreground mb-2">Welcome</h1>
+-        <p className="text-muted max-w-md mx-auto">
+-          Select an item from the sidebar to get started.
+-        </p>
+-      </div>
+-    </div>
+-  );
++  const { isAuthenticated } = useAuth();
++  return isAuthenticated ? <Dashboard /> : <LandingPage />;
+ }
+
+ /** Application router with all model routes */
+@@ -211,31 +224,28 @@     element: <Layout />,
+     children: [
+       { path: '/', element: <HomePage /> },
+-  { path: '/login', element: <Login /> },
+-  { path: '/signup', element: <Signup /> },
+-  { path: '/forgot-password', element: <ForgotPasswordForm /> },
+-  { path: '/reset-password', element: <ResetPassword /> },
+-  { path: '/verify-email', element: <VerifyEmail /> },
+-  { path: '/auth/callback', element: <AuthCallback /> },
+-  { path: '/users', element: <UsersListPage /> },
+-  { path: '/users/:id', element: <UserDetailPage /> },
+-  { path: '/users/new', element: <UserCreatePage /> },
+-  { path: '/users/:id/edit', element: <UserEditPage /> },
+-  { path: '/api-keys', element: <APIKeysListPage /> },
+-  { path: '/api-keys/:id', element: <APIKeyDetailPage /> },
+-  { path: '/api-keys/new', element: <APIKeyCreatePage /> },
+-  { path: '/api-keys/:id/edit', element: <APIKeyEditPage /> },
+-  { path: '/subdomains', element: <SubdomainsListPage /> },
+-  { path: '/subdomains/:id', element: <SubdomainDetailPage /> },
+-  { path: '/subdomains/new', element: <SubdomainCreatePage /> },
+-  { path: '/subdomains/:id/edit', element: <SubdomainEditPage /> },
+-  { path: '/allowed-email-domains', element: <AllowedEmailDomainsListPage /> },
+-  { path: '/allowed-email-domains/:id', element: <AllowedEmailDomainDetailPage /> },
+-  { path: '/allowed-email-domains/new', element: <AllowedEmailDomainCreatePage /> },
+-  { path: '/allowed-email-domains/:id/edit', element: <AllowedEmailDomainEditPage /> },
++      // Public routes
++      { path: '/login', element: <Login /> },
++      { path: '/signup', element: <Signup /> },
++      { path: '/forgot-password', element: <ForgotPassword /> },
++      { path: '/auth/callback', element: <AuthCallback /> },
++      // Admin-only routes (Users management)
++      { path: '/users', element: <ProtectedRoute roles={['admin']}><UsersListPage /></ProtectedRoute> },
++      { path: '/users/:id', element: <ProtectedRoute roles={['admin']}><UserDetailPage /></ProtectedRoute> },
++      { path: '/users/new', element: <ProtectedRoute roles={['admin']}><UserCreatePage /></ProtectedRoute> },
++      { path: '/users/:id/edit', element: <ProtectedRoute roles={['admin']}><UserEditPage /></ProtectedRoute> },
++      // Protected routes (any authenticated user - users see their own)
++      { path: '/api-keys', element: <ProtectedRoute><APIKeysListPage /></ProtectedRoute> },
++      { path: '/api-keys/:id', element: <ProtectedRoute><APIKeyDetailPage /></ProtectedRoute> },
++      { path: '/api-keys/new', element: <ProtectedRoute><APIKeyCreatePage /></ProtectedRoute> },
++      { path: '/api-keys/:id/edit', element: <ProtectedRoute><APIKeyEditPage /></ProtectedRoute> },
++      { path: '/subdomains', element: <ProtectedRoute><SubdomainsListPage /></ProtectedRoute> },
++      { path: '/subdomains/:id', element: <ProtectedRoute><SubdomainDetailPage /></ProtectedRoute> },
++      { path: '/subdomains/new', element: <ProtectedRoute><SubdomainCreatePage /></ProtectedRoute> },
++      { path: '/subdomains/:id/edit', element: <ProtectedRoute><SubdomainEditPage /></ProtectedRoute> },
+       // PRISM:PROTECTED:START - Custom Routes
+-      // Add your custom routes here:
+-      // { path: '/custom', element: <MyCustomPage /> },
++      { path: '/reset-password', element: <ResetPassword /> },
++      { path: '/verify-email', element: <VerifyEmail /> },
+       // PRISM:PROTECTED:END
+     ],
+   },
+
+```
 
 </details>
 
@@ -38,8 +250,8 @@
 
 **Strategy**: generate_once
 **Status**: Not Reviewed
-**Changes**: +0 lines, -0 lines, ~559 lines
-**Last Modified**: 2026-01-28T18:58:09.621469
+**Changes**: +0 lines, -0 lines, ~560 lines
+**Last Modified**: 2026-01-29T08:36:48.598475
 
 ### What Changed
 
@@ -47,7 +259,7 @@
 <summary>Show Diff</summary>
 
 ```diff
---- generated+++ user@@ -1,26 +1,568 @@ """Custom REST API routes for Subdomain.
+--- generated+++ user@@ -1,26 +1,569 @@ """Custom REST API routes for Subdomain.
 
 -✅ YOUR CODE - Safe to modify, will not be overwritten.
 -This file was generated once by Prism and is yours to customize.
@@ -76,6 +288,7 @@
 -#     """Get statistics for subdomains."""
 -#     pass
 +import logging
++import os
 +import re
 +from datetime import UTC, datetime, timedelta
 +from typing import Annotated
@@ -114,7 +327,7 @@
 +    return get_remote_address(request)
 +
 +
-+limiter = Limiter(key_func=get_user_key)
++limiter = Limiter(key_func=get_user_key, enabled="sqlite" not in os.environ.get("DATABASE_URL", ""))
 +
 +# Subdomain validation pattern
 +SUBDOMAIN_PATTERN = re.compile(r"^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$")
@@ -651,7 +864,7 @@
 **Strategy**: generate_once
 **Status**: Not Reviewed
 **Changes**: +4 lines, -0 lines, ~178 lines
-**Last Modified**: 2026-01-28T18:58:09.616627
+**Last Modified**: 2026-01-29T08:36:48.592331
 
 ### What Changed
 
@@ -885,7 +1098,7 @@
 **Strategy**: generate_once
 **Status**: Not Reviewed
 **Changes**: +0 lines, -0 lines, ~8 lines
-**Last Modified**: 2026-01-28T18:58:09.611618
+**Last Modified**: 2026-01-29T08:36:48.586426
 
 ### What Changed
 
@@ -931,8 +1144,8 @@
 
 **Strategy**: generate_once
 **Status**: Not Reviewed
-**Changes**: +20 lines, -0 lines, ~38 lines
-**Last Modified**: 2026-01-28T18:58:09.579756
+**Changes**: +95 lines, -11 lines, ~57 lines
+**Last Modified**: 2026-01-29T08:36:48.533204
 
 ### What Changed
 
@@ -940,120 +1153,400 @@
 <summary>Show Diff</summary>
 
 ```diff
---- generated+++ user@@ -1,14 +1,17 @@ """Authentik authentication routes.
-
--AUTO-GENERATED BY PRISM - DO NOT EDIT
-+⚠️ AUTO-GENERATED BY PRISM - DO NOT EDIT
- Endpoints for OIDC authentication flow with Authentik.
+--- generated+++ user@@ -1,7 +1,6 @@-"""Authentication routes — cookie-based JWT sessions.
+-
+-⚠️ AUTO-GENERATED BY PRISM (GENERATE_ONCE)
+-Signup, login, email verification, password reset, MFA/TOTP, OAuth.
++"""Authentication routes — self-contained (no Authentik).
++
++Signup, login, email verification, password reset, MFA/TOTP, GitHub OAuth.
  """
 
  from __future__ import annotations
-
-+import json
-+import os
- import secrets
- from typing import Annotated
-
-+import redis.asyncio as redis
- from fastapi import APIRouter, Cookie, Depends, HTTPException, Response, status
+@@ -16,47 +15,87 @@ import httpx
+ from fastapi import APIRouter, Cookie, Depends, HTTPException, Query, Response, status
  from fastapi.responses import RedirectResponse
++from pydantic import BaseModel, EmailStr
  from sqlalchemy import select
-@@ -23,8 +26,35 @@
+ from sqlalchemy.ext.asyncio import AsyncSession
+
+-from prisme_api.auth.password_service import (
++from prisme_api.auth.config import auth_settings
++from prisme_api.auth.dependencies import CurrentActiveUser, create_session_jwt
++from prisme_api.auth.utils import (
+     generate_token,
++    generate_totp_secret,
++    get_totp_uri,
+     hash_password,
+     validate_password_strength,
+     verify_password,
++    verify_totp,
+ )
+-from prisme_api.auth.token_service import create_session_jwt
+-from prisme_api.auth.config import auth_settings
+ from prisme_api.database import get_db
+-from prisme_api.middleware.auth import CurrentActiveUser
+ from prisme_api.models.user import User
+-from prisme_api.schemas.auth import (
+-    LoginRequest,
+-    LoginResponse,
+-    UserResponse,
+-    LoginMFARequest,
+-    MFADisableRequest,
+-    MFASetupResponse,
+-    MFAVerifySetupRequest,
+-    ResendVerificationRequest,
+-    VerifyEmailRequest,
+-    ForgotPasswordRequest,
+-    ResetPasswordRequest,
+-)
++from prisme_api.schemas.auth import UserResponse
+ from prisme_api.services.email_service import (
+-    send_verification_email,
+     send_password_changed_notification,
+     send_password_reset_email,
++    send_verification_email,
+ )
+-from prisme_api.auth.totp_service import (
+-    generate_totp_secret,
+-    get_totp_uri,
+-    verify_totp,
+-)
+
+ logger = logging.getLogger(__name__)
+
  router = APIRouter(prefix="/auth", tags=["authentication"])
++
++
++# ── Request/Response schemas ────────────────────────────────────
++
++
++class SignupRequest(BaseModel):
++    email: EmailStr
++    username: str
++    password: str
++
++
++class LoginRequest(BaseModel):
++    email: EmailStr
++    password: str
++
++
++class LoginMFARequest(BaseModel):
++    email: EmailStr
++    code: str
++
++
++class VerifyEmailRequest(BaseModel):
++    token: str
++
++
++class ResendVerificationRequest(BaseModel):
++    email: EmailStr
++
++
++class ForgotPasswordRequest(BaseModel):
++    email: EmailStr
++
++
++class ResetPasswordRequest(BaseModel):
++    token: str
++    password: str
++
++
++class MFAVerifySetupRequest(BaseModel):
++    code: str
++
++
++class MFADisableRequest(BaseModel):
++    password: str
++
++
++class LoginResponse(BaseModel):
++    requires_mfa: bool = False
++    user: dict | None = None
++
++
++class MFASetupResponse(BaseModel):
++    totp_uri: str
++    secret: str
 
--# In-memory state store (use Redis in production for distributed systems)
--_state_store: dict[str, dict] = {}
-+# Redis client for distributed state storage
-+REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
-+_redis_client: redis.Redis | None = None
-+STATE_TTL = 600  # State expires after 10 minutes
-+
-+
-+async def get_redis() -> redis.Redis:
-+    """Get or create Redis client."""
-+    global _redis_client
-+    if _redis_client is None:
-+        _redis_client = redis.from_url(REDIS_URL, decode_responses=True)
-+    return _redis_client
-+
-+
-+async def store_state(state: str, data: dict) -> None:
-+    """Store state in Redis with TTL."""
-+    client = await get_redis()
-+    await client.setex(f"oauth_state:{state}", STATE_TTL, json.dumps(data))
-+
-+
-+async def get_and_delete_state(state: str) -> dict | None:
-+    """Get and delete state from Redis."""
-+    client = await get_redis()
-+    key = f"oauth_state:{state}"
-+    data = await client.get(key)
-+    if data:
-+        await client.delete(key)
-+        return json.loads(data)
-+    return None
+
+ # ── Helpers ─────────────────────────────────────────────────────
+@@ -99,8 +138,10 @@ def _record_failed_login(user: User) -> None:
+     """Increment failed attempts and lock if threshold reached."""
+     user.failed_login_attempts = (user.failed_login_attempts or 0) + 1
+-    if user.failed_login_attempts >= 5:
+-        user.locked_until = datetime.now(UTC) + timedelta(minutes=15)
++    if user.failed_login_attempts >= auth_settings.max_failed_login_attempts:
++        user.locked_until = datetime.now(UTC) + timedelta(
++            minutes=auth_settings.lockout_duration_minutes
++        )
 
 
- @router.get("/login")
-@@ -40,8 +70,8 @@     state = secrets.token_urlsafe(32)
-     nonce = secrets.token_urlsafe(32)
+ def _reset_failed_logins(user: User) -> None:
+@@ -108,6 +149,22 @@     user.locked_until = None
 
--    # Store state and nonce for verification on callback
--    _state_store[state] = {"nonce": nonce}
-+    # Store state and nonce in Redis for verification on callback
-+    await store_state(state, {"nonce": nonce})
 
-     authorization_url = oidc_client.get_authorization_url(
-         state=state,
-@@ -73,8 +103,8 @@     Raises:
-         HTTPException: If state is invalid or token exchange fails
-     """
--    # Verify state
--    stored = _state_store.pop(state, None)
-+    # Verify state from Redis
-+    stored = await get_and_delete_state(state)
-     if not stored:
++async def _validate_email_domain(db: AsyncSession, email: str) -> None:
++    """Check email domain against whitelist."""
++    try:
++        from prisme_api.services.allowed_email_domain import AllowedEmailDomainService
++
++        domain_service = AllowedEmailDomainService(db)
++        if not await domain_service.is_domain_allowed(email):
++            domain = email.split("@")[1] if "@" in email else "unknown"
++            raise HTTPException(
++                status_code=status.HTTP_403_FORBIDDEN,
++                detail=f"Email domain '{domain}' is not allowed for signup.",
++            )
++    except ImportError:
++        pass
++
++
+ # ── Signup ──────────────────────────────────────────────────────
+
+
+@@ -117,21 +174,23 @@     db: Annotated[AsyncSession, Depends(get_db)],
+ ) -> dict[str, str]:
+     """Create a new user account and send verification email."""
+-    from prisme_api.schemas.auth import SignupRequest
+-
++    # Validate password
+     pw_error = validate_password_strength(body.password)
+     if pw_error:
+         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=pw_error)
+
+-    result = await db.execute(
+-        select(User).where(User.email == body.email)
+-    )
++    # Check if email already exists
++    result = await db.execute(select(User).where(User.email == body.email))
+     if result.scalar_one_or_none():
+         raise HTTPException(
+             status_code=status.HTTP_409_CONFLICT,
+             detail="An account with this email already exists.",
+         )
+
++    # Validate email domain
++    await _validate_email_domain(db, body.email)
++
++    # Create user
+     token = generate_token()
+     user = User(
+         email=body.email,
+@@ -140,14 +199,16 @@         email_verified=False,
+         email_verification_token=token,
+         email_verification_token_expires_at=datetime.now(UTC)
+-        + timedelta(hours=24),
++        + timedelta(hours=auth_settings.email_verification_token_hours),
+         roles=["user"],
+         is_active=True,
+     )
+     db.add(user)
+     await db.commit()
+
++    # Send verification email
+     send_verification_email(body.email, token)
++
+     return {"message": "Account created. Please check your email to verify your address."}
+
+
+@@ -161,9 +222,7 @@     db: Annotated[AsyncSession, Depends(get_db)],
+ ) -> dict:
+     """Verify email address and auto-login."""
+-    result = await db.execute(
+-        select(User).where(User.email_verification_token == body.token)
+-    )
++    result = await db.execute(select(User).where(User.email_verification_token == body.token))
+     user = result.scalar_one_or_none()
+
+     if not user:
+@@ -187,6 +246,7 @@     await db.commit()
+     await db.refresh(user)
+
++    # Auto-login
+     token = create_session_jwt(user)
+     _set_session_cookie(response, token)
+
+@@ -199,16 +259,14 @@     db: Annotated[AsyncSession, Depends(get_db)],
+ ) -> dict[str, str]:
+     """Resend verification email. Always returns 200 to prevent email enumeration."""
+-    result = await db.execute(
+-        select(User).where(User.email == body.email)
+-    )
++    result = await db.execute(select(User).where(User.email == body.email))
+     user = result.scalar_one_or_none()
+
+     if user and not user.email_verified:
+         token = generate_token()
+         user.email_verification_token = token
+         user.email_verification_token_expires_at = datetime.now(UTC) + timedelta(
+-            hours=24
++            hours=auth_settings.email_verification_token_hours
+         )
+         await db.commit()
+         send_verification_email(body.email, token)
+@@ -225,10 +283,8 @@     response: Response,
+     db: Annotated[AsyncSession, Depends(get_db)],
+ ) -> LoginResponse:
+-    """Login with email and password."""
+-    result = await db.execute(
+-        select(User).where(User.email == body.email)
+-    )
++    """Login with email and password. Returns requires_mfa if MFA is enabled."""
++    result = await db.execute(select(User).where(User.email == body.email))
+     user = result.scalar_one_or_none()
+
+     if not user or not user.password_hash:
+@@ -284,9 +340,7 @@     db: Annotated[AsyncSession, Depends(get_db)],
+ ) -> LoginResponse:
+     """Complete MFA login with TOTP code."""
+-    result = await db.execute(
+-        select(User).where(User.email == body.email)
+-    )
++    result = await db.execute(select(User).where(User.email == body.email))
+     user = result.scalar_one_or_none()
+
+     if not user or not user.mfa_secret:
+@@ -325,16 +379,14 @@     db: Annotated[AsyncSession, Depends(get_db)],
+ ) -> dict[str, str]:
+     """Send password reset email. Always returns 200 to prevent email enumeration."""
+-    result = await db.execute(
+-        select(User).where(User.email == body.email)
+-    )
++    result = await db.execute(select(User).where(User.email == body.email))
+     user = result.scalar_one_or_none()
+
+     if user:
+         token = generate_token()
+         user.password_reset_token = token
+         user.password_reset_token_expires_at = datetime.now(UTC) + timedelta(
+-            hours=1
++            hours=auth_settings.password_reset_token_hours
+         )
+         await db.commit()
+         send_password_reset_email(body.email, token)
+@@ -353,9 +405,7 @@     if pw_error:
+         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=pw_error)
+
+-    result = await db.execute(
+-        select(User).where(User.password_reset_token == body.token)
+-    )
++    result = await db.execute(select(User).where(User.password_reset_token == body.token))
+     user = result.scalar_one_or_none()
+
+     if not user:
+@@ -364,9 +414,8 @@             detail="Invalid or expired reset token.",
+         )
+
+-    if (
+-        user.password_reset_token_expires_at
+-        and user.password_reset_token_expires_at < datetime.now(UTC)
++    if user.password_reset_token_expires_at and user.password_reset_token_expires_at < datetime.now(
++        UTC
+     ):
          raise HTTPException(
              status_code=status.HTTP_400_BAD_REQUEST,
-@@ -96,10 +126,22 @@
-         # Get or create local user
-         authentik_id = claims.get("sub")
--        result = await db.execute(
--            select(User).where(User.authentik_id == authentik_id)
--        )
-+        result = await db.execute(select(User).where(User.authentik_id == authentik_id))
-         user = result.scalar_one_or_none()
-+
-+        # Validate email domain against whitelist for new users
-+        if not user:
-+            from prisme_api.services.allowed_email_domain import AllowedEmailDomainService
-+
-+            email_domain_service = AllowedEmailDomainService(db)
-+            email = claims.get("email", f"{claims.get('preferred_username', 'user')}@local")
-+
-+            if not await email_domain_service.is_domain_allowed(email):
-+                domain = email.split("@")[1] if "@" in email else "unknown"
-+                raise HTTPException(
-+                    status_code=status.HTTP_403_FORBIDDEN,
-+                    detail=f"Email domain '{domain}' is not allowed for signup. Contact admin for access.",
-+                )
+@@ -382,6 +431,7 @@
+     send_password_changed_notification(user.email)
 
-         if not user:
-             # Create new user from claims
-@@ -136,10 +178,13 @@         return response
++    # Auto-login
+     token = create_session_jwt(user)
+     _set_session_cookie(response, token)
 
-     except OIDCError as e:
-+        import logging
-+
-+        logging.error(f"OIDC authentication error: {e}")
-         raise HTTPException(
-             status_code=status.HTTP_400_BAD_REQUEST,
-             detail=f"Authentication failed: {e}",
--        )
-+        ) from e
+@@ -398,6 +448,7 @@ ) -> MFASetupResponse:
+     """Generate TOTP secret and URI for QR code. Requires authentication."""
+     secret = generate_totp_secret()
++    # Store pending secret (not yet enabled)
+     current_user.mfa_secret = secret
+     await db.commit()
+
+@@ -457,6 +508,7 @@ GITHUB_USER_API = "https://api.github.com/user"
+ GITHUB_EMAILS_API = "https://api.github.com/user/emails"
+
++# In-memory state store (acceptable for single-instance; use Redis if scaling)
+ _oauth_states: dict[str, float] = {}
 
 
- @router.get("/logout")
+@@ -510,6 +562,7 @@             url="/auth/callback?error=missing_params", status_code=status.HTTP_302_FOUND
+         )
+
++    # Validate CSRF state
+     if state not in _oauth_states:
+         return RedirectResponse(
+             url="/auth/callback?error=invalid_state", status_code=status.HTTP_302_FOUND
+@@ -517,6 +570,7 @@     _oauth_states.pop(state, None)
+
+     async with httpx.AsyncClient() as client:
++        # Exchange code for access token
+         token_resp = await client.post(
+             GITHUB_TOKEN_URL,
+             data={
+@@ -544,6 +598,7 @@
+         auth_headers = {"Authorization": f"Bearer {access_token}"}
+
++        # Get user profile
+         user_resp = await client.get(GITHUB_USER_API, headers=auth_headers)
+         if user_resp.status_code != 200:
+             return RedirectResponse(
+@@ -552,6 +607,7 @@             )
+         gh_user = user_resp.json()
+
++        # Get primary verified email
+         email = gh_user.get("email")
+         if not email:
+             emails_resp = await client.get(GITHUB_EMAILS_API, headers=auth_headers)
+@@ -566,9 +622,11 @@                 url="/auth/callback?error=no_email", status_code=status.HTTP_302_FOUND
+             )
+
++    # Find or create user
+     username = gh_user.get("login", email.split("@")[0])
+     github_id = str(gh_user.get("id", ""))
+
++    # Try finding by github_id first
+     result = await db.execute(select(User).where(User.github_id == github_id))
+     user = result.scalar_one_or_none()
+
+@@ -577,15 +635,19 @@         user = result.scalar_one_or_none()
+
+     if user:
++        # Link github_id if not set
+         if not user.github_id:
+             user.github_id = github_id
+             await db.commit()
+     else:
++        # Validate email domain
++        await _validate_email_domain(db, email)
++
+         user = User(
+             email=email,
+             username=username,
+             github_id=github_id,
+-            email_verified=True,
++            email_verified=True,  # GitHub emails are verified
+             is_active=True,
+             roles=["user"],
+         )
+@@ -593,9 +655,9 @@         await db.commit()
+         await db.refresh(user)
+
+-    jwt_token = create_session_jwt(user)
++    token = create_session_jwt(user)
+     redirect = RedirectResponse(url="/auth/callback", status_code=status.HTTP_302_FOUND)
+-    _set_session_cookie(redirect, jwt_token)
++    _set_session_cookie(redirect, token)
+     return redirect
+
+
+@@ -625,8 +687,6 @@     session_token: str | None = Cookie(None, alias=auth_settings.session_cookie_name),
+ ) -> RedirectResponse:
+     """Logout via GET: clear cookie and redirect to login."""
+-    from fastapi.responses import RedirectResponse
+-
+     redirect = RedirectResponse(url="/login", status_code=status.HTTP_302_FOUND)
+     redirect.delete_cookie(
+         key=auth_settings.session_cookie_name,
 
 ```
 
@@ -1073,7 +1566,7 @@
 **Strategy**: generate_once
 **Status**: Not Reviewed
 **Changes**: +4 lines, -0 lines, ~20 lines
-**Last Modified**: 2026-01-28T18:58:09.546894
+**Last Modified**: 2026-01-29T08:36:48.451432
 
 ### What Changed
 

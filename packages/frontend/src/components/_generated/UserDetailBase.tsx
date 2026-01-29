@@ -105,8 +105,24 @@ export function UserDetailBase({
             <dd className="text-nordic-900">{String(data.isAdmin ?? '-')}</dd>
           </div>
           <div>
-            <dt className="text-sm font-medium text-nordic-500 mb-1" title="Authentik user ID for SSO">Authentik Id</dt>
-            <dd className="text-nordic-900">{String(data.authentikId ?? '-')}</dd>
+            <dt className="text-sm font-medium text-nordic-500 mb-1" title="When password reset token expires">Password Reset Token Expires At</dt>
+            <dd className="text-nordic-900">{String(data.passwordResetTokenExpiresAt ?? '-')}</dd>
+          </div>
+          <div>
+            <dt className="text-sm font-medium text-nordic-500 mb-1" title="When email verification token expires">Email Verification Token Expires At</dt>
+            <dd className="text-nordic-900">{String(data.emailVerificationTokenExpiresAt ?? '-')}</dd>
+          </div>
+          <div>
+            <dt className="text-sm font-medium text-nordic-500 mb-1" title="Number of consecutive failed login attempts">Failed Login Attempts</dt>
+            <dd className="text-nordic-900">{String(data.failedLoginAttempts ?? '-')}</dd>
+          </div>
+          <div>
+            <dt className="text-sm font-medium text-nordic-500 mb-1" title="Account locked until this time after too many failed logins">Locked Until</dt>
+            <dd className="text-nordic-900">{String(data.lockedUntil ?? '-')}</dd>
+          </div>
+          <div>
+            <dt className="text-sm font-medium text-nordic-500 mb-1" title="GitHub user ID for OAuth">Github Id</dt>
+            <dd className="text-nordic-900">{String(data.githubId ?? '-')}</dd>
           </div>
           <div>
             <dt className="text-sm font-medium text-nordic-500 mb-1" title="Username (optional, email is primary)">Username</dt>

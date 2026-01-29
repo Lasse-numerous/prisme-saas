@@ -1,7 +1,6 @@
-"""Authentication routes using Authentik Flow Executor API.
+"""Authentication routes — self-contained (no Authentik).
 
-Custom auth UX: the frontend drives Authentik flows through these endpoints.
-GitHub OAuth goes directly to GitHub (bypasses Authentik UI).
+Signup, login, email verification, password reset, MFA/TOTP, GitHub OAuth.
 """
 
 from __future__ import annotations
@@ -9,65 +8,109 @@ from __future__ import annotations
 import logging
 import os
 import secrets
+from datetime import UTC, datetime, timedelta
 from typing import Annotated
 from urllib.parse import urlencode
 
 import httpx
-import redis.asyncio as redis
 from fastapi import APIRouter, Cookie, Depends, HTTPException, Query, Response, status
 from fastapi.responses import RedirectResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from prisme_api.auth.config import authentik_settings
+from prisme_api.auth.config import auth_settings
 from prisme_api.auth.dependencies import CurrentActiveUser, create_session_jwt
-from prisme_api.auth.flow_executor import FlowExecutorClient, FlowExecutorError
+from prisme_api.auth.utils import (
+    generate_token,
+    generate_totp_secret,
+    get_totp_uri,
+    hash_password,
+    validate_password_strength,
+    verify_password,
+    verify_totp,
+)
 from prisme_api.database import get_db
 from prisme_api.models.user import User
 from prisme_api.schemas.auth import UserResponse
-from prisme_api.schemas.auth_flow import (
-    FlowChallenge,
-    FlowStartResponse,
-    FlowStepResponse,
-    FlowSubmitRequest,
+from prisme_api.services.email_service import (
+    send_password_changed_notification,
+    send_password_reset_email,
+    send_verification_email,
 )
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
 
-# Redis client for flow session storage
-REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
-_redis_client: redis.Redis | None = None
+
+# ── Request/Response schemas ────────────────────────────────────
 
 
-async def get_redis() -> redis.Redis:
-    """Get or create Redis client."""
-    global _redis_client
-    if _redis_client is None:
-        _redis_client = redis.from_url(REDIS_URL, decode_responses=True)
-    return _redis_client
+class SignupRequest(BaseModel):
+    email: EmailStr
+    username: str
+    password: str
 
 
-async def get_flow_executor() -> FlowExecutorClient:
-    """Get a FlowExecutorClient instance."""
-    r = await get_redis()
-    return FlowExecutorClient(r)
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class LoginMFARequest(BaseModel):
+    email: EmailStr
+    code: str
+
+
+class VerifyEmailRequest(BaseModel):
+    token: str
+
+
+class ResendVerificationRequest(BaseModel):
+    email: EmailStr
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    password: str
+
+
+class MFAVerifySetupRequest(BaseModel):
+    code: str
+
+
+class MFADisableRequest(BaseModel):
+    password: str
+
+
+class LoginResponse(BaseModel):
+    requires_mfa: bool = False
+    user: dict | None = None
+
+
+class MFASetupResponse(BaseModel):
+    totp_uri: str
+    secret: str
+
+
+# ── Helpers ─────────────────────────────────────────────────────
 
 
 def _is_secure_context() -> bool:
-    """Check if we should use secure cookies (disabled in DEBUG mode)."""
     debug = os.getenv("DEBUG", "false").lower() in ("true", "1", "yes")
     return not debug
 
 
 def _set_session_cookie(response: Response, token: str) -> None:
-    """Set the JWT session cookie on a response."""
     response.set_cookie(
-        key=authentik_settings.session_cookie_name,
+        key=auth_settings.session_cookie_name,
         value=token,
-        max_age=authentik_settings.session_max_age,
+        max_age=auth_settings.session_max_age,
         httponly=True,
         secure=_is_secure_context(),
         samesite="lax",
@@ -75,38 +118,39 @@ def _set_session_cookie(response: Response, token: str) -> None:
 
 
 def _clear_session_cookie(response: Response) -> None:
-    """Clear the session cookie."""
     response.delete_cookie(
-        key=authentik_settings.session_cookie_name,
+        key=auth_settings.session_cookie_name,
         httponly=True,
         secure=_is_secure_context(),
         samesite="lax",
     )
 
 
-async def _find_or_create_user(
-    db: AsyncSession,
-    *,
-    authentik_id: str | None = None,
-    email: str,
-    username: str | None = None,
-    roles: list[str] | None = None,
-) -> User:
-    """Find an existing user by authentik_id or email, or create a new one."""
-    user = None
+def _check_account_locked(user: User) -> None:
+    """Raise 423 if the account is currently locked."""
+    if user.locked_until and user.locked_until > datetime.now(UTC):
+        raise HTTPException(
+            status_code=status.HTTP_423_LOCKED,
+            detail="Account temporarily locked due to too many failed login attempts. Try again later.",
+        )
 
-    if authentik_id:
-        result = await db.execute(select(User).where(User.authentik_id == authentik_id))
-        user = result.scalar_one_or_none()
 
-    if not user:
-        result = await db.execute(select(User).where(User.email == email))
-        user = result.scalar_one_or_none()
+def _record_failed_login(user: User) -> None:
+    """Increment failed attempts and lock if threshold reached."""
+    user.failed_login_attempts = (user.failed_login_attempts or 0) + 1
+    if user.failed_login_attempts >= auth_settings.max_failed_login_attempts:
+        user.locked_until = datetime.now(UTC) + timedelta(
+            minutes=auth_settings.lockout_duration_minutes
+        )
 
-    if user:
-        return user
 
-    # Validate email domain
+def _reset_failed_logins(user: User) -> None:
+    user.failed_login_attempts = 0
+    user.locked_until = None
+
+
+async def _validate_email_domain(db: AsyncSession, email: str) -> None:
+    """Check email domain against whitelist."""
     try:
         from prisme_api.services.allowed_email_domain import AllowedEmailDomainService
 
@@ -115,381 +159,383 @@ async def _find_or_create_user(
             domain = email.split("@")[1] if "@" in email else "unknown"
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"Email domain '{domain}' is not allowed for signup. Contact admin for access.",
+                detail=f"Email domain '{domain}' is not allowed for signup.",
             )
     except ImportError:
         pass
 
+
+# ── Signup ──────────────────────────────────────────────────────
+
+
+@router.post("/signup")
+async def signup(
+    body: SignupRequest,
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> dict[str, str]:
+    """Create a new user account and send verification email."""
+    # Validate password
+    pw_error = validate_password_strength(body.password)
+    if pw_error:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=pw_error)
+
+    # Check if email already exists
+    result = await db.execute(select(User).where(User.email == body.email))
+    if result.scalar_one_or_none():
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="An account with this email already exists.",
+        )
+
+    # Validate email domain
+    await _validate_email_domain(db, body.email)
+
+    # Create user
+    token = generate_token()
     user = User(
-        authentik_id=authentik_id or "",
-        email=email,
-        username=username or email.split("@")[0],
+        email=body.email,
+        username=body.username,
+        password_hash=hash_password(body.password),
+        email_verified=False,
+        email_verification_token=token,
+        email_verification_token_expires_at=datetime.now(UTC)
+        + timedelta(hours=auth_settings.email_verification_token_hours),
+        roles=["user"],
         is_active=True,
-        roles=roles or ["user"],
     )
     db.add(user)
     await db.commit()
+
+    # Send verification email
+    send_verification_email(body.email, token)
+
+    return {"message": "Account created. Please check your email to verify your address."}
+
+
+# ── Email verification ──────────────────────────────────────────
+
+
+@router.post("/verify-email")
+async def verify_email(
+    body: VerifyEmailRequest,
+    response: Response,
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> dict:
+    """Verify email address and auto-login."""
+    result = await db.execute(select(User).where(User.email_verification_token == body.token))
+    user = result.scalar_one_or_none()
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired verification token.",
+        )
+
+    if (
+        user.email_verification_token_expires_at
+        and user.email_verification_token_expires_at < datetime.now(UTC)
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Verification token has expired. Please request a new one.",
+        )
+
+    user.email_verified = True
+    user.email_verification_token = None
+    user.email_verification_token_expires_at = None
+    await db.commit()
     await db.refresh(user)
-    return user
+
+    # Auto-login
+    token = create_session_jwt(user)
+    _set_session_cookie(response, token)
+
+    return {"message": "Email verified", "user": UserResponse.model_validate(user).model_dump()}
 
 
-# ── Flow endpoints ──────────────────────────────────────────────
-
-
-@router.post("/flow/login/start", response_model=FlowStartResponse)
-async def flow_login_start(
-    executor: Annotated[FlowExecutorClient, Depends(get_flow_executor)],
-) -> FlowStartResponse:
-    """Start the login authentication flow."""
-    try:
-        flow_token, challenge = await executor.start_flow(
-            authentik_settings.login_flow_slug,
-        )
-        return FlowStartResponse(
-            flow_token=flow_token,
-            challenge=FlowChallenge(**challenge),
-        )
-    except FlowExecutorError as e:
-        raise HTTPException(status_code=502, detail=str(e)) from e
-
-
-@router.post("/flow/login/submit", response_model=FlowStepResponse)
-async def flow_login_submit(
-    body: FlowSubmitRequest,
-    response: Response,
+@router.post("/resend-verification")
+async def resend_verification(
+    body: ResendVerificationRequest,
     db: Annotated[AsyncSession, Depends(get_db)],
-    executor: Annotated[FlowExecutorClient, Depends(get_flow_executor)],
-) -> FlowStepResponse:
-    """Submit data to the login flow. On completion, issues a JWT session cookie."""
-    try:
-        result = await executor.submit_flow(
-            body.flow_token,
-            authentik_settings.login_flow_slug,
-            body.data,
-        )
-    except FlowExecutorError as e:
-        raise HTTPException(status_code=502, detail=str(e)) from e
-
-    if result.get("error"):
-        return FlowStepResponse(
-            completed=False,
-            error=result["error"],
-            challenge=FlowChallenge(**result["challenge"]) if result.get("challenge") else None,
-        )
-
-    if result.get("completed"):
-        # Flow complete — find/create local user and issue JWT
-        # We need to get user info from Authentik after flow completion
-        # The flow data in 'data' should contain uid_field (email/username)
-        email = body.data.get("uid_field", body.data.get("email", ""))
-        user = await _find_or_create_user(db, email=email)
-
-        token = create_session_jwt(user)
-        _set_session_cookie(response, token)
-
-        return FlowStepResponse(
-            completed=True,
-            user=UserResponse.model_validate(user).model_dump(),
-        )
-
-    # Next challenge
-    return FlowStepResponse(
-        completed=False,
-        challenge=FlowChallenge(**result["challenge"]) if result.get("challenge") else None,
-    )
-
-
-@router.post("/flow/signup/start", response_model=FlowStartResponse)
-async def flow_signup_start(
-    executor: Annotated[FlowExecutorClient, Depends(get_flow_executor)],
-) -> FlowStartResponse:
-    """Start the enrollment (signup) flow."""
-    try:
-        flow_token, challenge = await executor.start_flow(
-            authentik_settings.enrollment_flow_slug,
-        )
-        return FlowStartResponse(
-            flow_token=flow_token,
-            challenge=FlowChallenge(**challenge),
-        )
-    except FlowExecutorError as e:
-        raise HTTPException(status_code=502, detail=str(e)) from e
-
-
-@router.post("/flow/signup/submit", response_model=FlowStepResponse)
-async def flow_signup_submit(
-    body: FlowSubmitRequest,
-    response: Response,
-    db: Annotated[AsyncSession, Depends(get_db)],
-    executor: Annotated[FlowExecutorClient, Depends(get_flow_executor)],
-) -> FlowStepResponse:
-    """Submit data to the signup flow."""
-    try:
-        result = await executor.submit_flow(
-            body.flow_token,
-            authentik_settings.enrollment_flow_slug,
-            body.data,
-        )
-    except FlowExecutorError as e:
-        raise HTTPException(status_code=502, detail=str(e)) from e
-
-    if result.get("error"):
-        return FlowStepResponse(
-            completed=False,
-            error=result["error"],
-            challenge=FlowChallenge(**result["challenge"]) if result.get("challenge") else None,
-        )
-
-    if result.get("completed"):
-        return FlowStepResponse(completed=True)
-
-    # Next challenge (e.g., email verification stage)
-    return FlowStepResponse(
-        completed=False,
-        challenge=FlowChallenge(**result["challenge"]) if result.get("challenge") else None,
-    )
-
-
-@router.post("/flow/signup/resend-email")
-async def flow_signup_resend_email(
-    body: FlowSubmitRequest,
-    executor: Annotated[FlowExecutorClient, Depends(get_flow_executor)],
 ) -> dict[str, str]:
-    """Re-trigger the email verification stage by submitting empty data."""
-    try:
-        await executor.submit_flow(
-            body.flow_token,
-            authentik_settings.enrollment_flow_slug,
-            body.data or {},
+    """Resend verification email. Always returns 200 to prevent email enumeration."""
+    result = await db.execute(select(User).where(User.email == body.email))
+    user = result.scalar_one_or_none()
+
+    if user and not user.email_verified:
+        token = generate_token()
+        user.email_verification_token = token
+        user.email_verification_token_expires_at = datetime.now(UTC) + timedelta(
+            hours=auth_settings.email_verification_token_hours
         )
-        return {"message": "Verification email resent"}
-    except FlowExecutorError as e:
-        raise HTTPException(status_code=502, detail=str(e)) from e
+        await db.commit()
+        send_verification_email(body.email, token)
+
+    return {"message": "If an unverified account exists, a verification email has been sent."}
 
 
-# ── Email token verification (keeps users in our UX) ───────────
+# ── Login ───────────────────────────────────────────────────────
 
 
-class TokenVerifyRequest(BaseModel):
-    """Request body for email token verification."""
-
-    token: str
-
-
-class TokenVerifyResponse(BaseModel):
-    """Response from email token verification."""
-
-    flow_token: str
-    challenge: FlowChallenge | None = None
-
-
-@router.post("/flow/recovery/verify-token", response_model=TokenVerifyResponse)
-async def verify_recovery_token(
-    body: TokenVerifyRequest,
-    executor: Annotated[FlowExecutorClient, Depends(get_flow_executor)],
-) -> TokenVerifyResponse:
-    """Verify a password reset email token and advance the flow to the password stage.
-
-    The email links the user to the frontend with ?token=<key>. The frontend
-    calls this endpoint which simulates clicking the Authentik email link,
-    advancing the flow past the email stage to the password prompt.
-    """
-    try:
-        # Hit Authentik's flow executor with the token query param, as if the
-        # user clicked the email link. This advances past the email stage.
-        flow_token = secrets.token_urlsafe(32)
-        recovery_slug = authentik_settings.recovery_flow_slug
-        url = f"{executor.base_url}/api/v3/flows/executor/{recovery_slug}/?token={body.token}"
-
-        async with httpx.AsyncClient() as client:
-            resp = await client.get(
-                url,
-                headers={"Accept": "application/json"},
-                follow_redirects=True,
-            )
-
-            if resp.status_code not in (200, 302):
-                logger.error("Recovery token verify failed: %s %s", resp.status_code, resp.text)
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Invalid or expired reset token",
-                )
-
-            # Store the Authentik session cookies under our flow_token
-            cookies = dict(resp.cookies)
-            await executor._store_cookies(flow_token, cookies)
-
-            body_json = resp.json()
-            challenge_data = executor._translate_challenge(body_json)
-
-            # If we got an access_denied challenge, the token is invalid/expired
-            if challenge_data.get("type") == "access_denied":
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=challenge_data.get("error", "Invalid or expired reset token"),
-                )
-
-            return TokenVerifyResponse(
-                flow_token=flow_token,
-                challenge=FlowChallenge(**challenge_data),
-            )
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.exception("Recovery token verification error")
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid or expired reset token",
-        ) from e
-
-
-@router.post("/flow/signup/verify-token", response_model=TokenVerifyResponse)
-async def verify_signup_token(
-    body: TokenVerifyRequest,
-    executor: Annotated[FlowExecutorClient, Depends(get_flow_executor)],
-) -> TokenVerifyResponse:
-    """Verify a signup email verification token and advance the flow.
-
-    Same pattern as recovery token verification but for the enrollment flow.
-    """
-    try:
-        flow_token = secrets.token_urlsafe(32)
-        enrollment_slug = authentik_settings.enrollment_flow_slug
-        url = f"{executor.base_url}/api/v3/flows/executor/{enrollment_slug}/?token={body.token}"
-
-        async with httpx.AsyncClient() as client:
-            resp = await client.get(
-                url,
-                headers={"Accept": "application/json"},
-                follow_redirects=True,
-            )
-
-            if resp.status_code not in (200, 302):
-                logger.error("Signup token verify failed: %s %s", resp.status_code, resp.text)
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Invalid or expired verification token",
-                )
-
-            cookies = dict(resp.cookies)
-            await executor._store_cookies(flow_token, cookies)
-
-            body_json = resp.json()
-            challenge_data = executor._translate_challenge(body_json)
-
-            if challenge_data.get("type") == "access_denied":
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=challenge_data.get("error", "Invalid or expired verification token"),
-                )
-
-            return TokenVerifyResponse(
-                flow_token=flow_token,
-                challenge=FlowChallenge(**challenge_data),
-            )
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.exception("Signup token verification error")
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid or expired verification token",
-        ) from e
-
-
-# ── Recovery (forgot password) flow endpoints ──────────────────
-
-
-@router.post("/flow/recovery/start", response_model=FlowStartResponse)
-async def flow_recovery_start(
-    executor: Annotated[FlowExecutorClient, Depends(get_flow_executor)],
-) -> FlowStartResponse:
-    """Start the password recovery flow."""
-    try:
-        flow_token, challenge = await executor.start_flow(
-            authentik_settings.recovery_flow_slug,
-        )
-        return FlowStartResponse(
-            flow_token=flow_token,
-            challenge=FlowChallenge(**challenge),
-        )
-    except FlowExecutorError as e:
-        raise HTTPException(status_code=502, detail=str(e)) from e
-
-
-@router.post("/flow/recovery/submit", response_model=FlowStepResponse)
-async def flow_recovery_submit(
-    body: FlowSubmitRequest,
+@router.post("/login", response_model=LoginResponse)
+async def login(
+    body: LoginRequest,
     response: Response,
     db: Annotated[AsyncSession, Depends(get_db)],
-    executor: Annotated[FlowExecutorClient, Depends(get_flow_executor)],
-) -> FlowStepResponse:
-    """Submit data to the recovery flow. On completion, issues a JWT session cookie."""
-    try:
-        result = await executor.submit_flow(
-            body.flow_token,
-            authentik_settings.recovery_flow_slug,
-            body.data,
-        )
-    except FlowExecutorError as e:
-        raise HTTPException(status_code=502, detail=str(e)) from e
+) -> LoginResponse:
+    """Login with email and password. Returns requires_mfa if MFA is enabled."""
+    result = await db.execute(select(User).where(User.email == body.email))
+    user = result.scalar_one_or_none()
 
-    if result.get("error"):
-        return FlowStepResponse(
-            completed=False,
-            error=result["error"],
-            challenge=FlowChallenge(**result["challenge"]) if result.get("challenge") else None,
+    if not user or not user.password_hash:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid email or password.",
         )
 
-    if result.get("completed"):
-        # Recovery complete — find user and issue JWT for auto-login
-        email = body.data.get("uid_field", body.data.get("email", ""))
-        if email:
-            try:
-                user = await _find_or_create_user(db, email=email)
-                token = create_session_jwt(user)
-                _set_session_cookie(response, token)
-                return FlowStepResponse(
-                    completed=True,
-                    user=UserResponse.model_validate(user).model_dump(),
-                )
-            except Exception:
-                logger.exception("Failed to auto-login after recovery")
-        return FlowStepResponse(completed=True)
+    _check_account_locked(user)
 
-    # Next challenge
-    return FlowStepResponse(
-        completed=False,
-        challenge=FlowChallenge(**result["challenge"]) if result.get("challenge") else None,
+    if not verify_password(body.password, user.password_hash):
+        _record_failed_login(user)
+        await db.commit()
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid email or password.",
+        )
+
+    _reset_failed_logins(user)
+
+    if not user.email_verified:
+        await db.commit()
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Please verify your email before logging in.",
+        )
+
+    if not user.is_active:
+        await db.commit()
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Account is inactive.",
+        )
+
+    if user.mfa_enabled and user.mfa_secret:
+        await db.commit()
+        return LoginResponse(requires_mfa=True)
+
+    await db.commit()
+
+    token = create_session_jwt(user)
+    _set_session_cookie(response, token)
+    return LoginResponse(
+        requires_mfa=False,
+        user=UserResponse.model_validate(user).model_dump(),
     )
 
 
-# ── GitHub OAuth (direct, bypassing Authentik UI) ──────────────
+@router.post("/login/mfa", response_model=LoginResponse)
+async def login_mfa(
+    body: LoginMFARequest,
+    response: Response,
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> LoginResponse:
+    """Complete MFA login with TOTP code."""
+    result = await db.execute(select(User).where(User.email == body.email))
+    user = result.scalar_one_or_none()
+
+    if not user or not user.mfa_secret:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid credentials.",
+        )
+
+    _check_account_locked(user)
+
+    if not verify_totp(user.mfa_secret, body.code):
+        _record_failed_login(user)
+        await db.commit()
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid TOTP code.",
+        )
+
+    _reset_failed_logins(user)
+    await db.commit()
+
+    token = create_session_jwt(user)
+    _set_session_cookie(response, token)
+    return LoginResponse(
+        requires_mfa=False,
+        user=UserResponse.model_validate(user).model_dump(),
+    )
+
+
+# ── Password reset ──────────────────────────────────────────────
+
+
+@router.post("/forgot-password")
+async def forgot_password(
+    body: ForgotPasswordRequest,
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> dict[str, str]:
+    """Send password reset email. Always returns 200 to prevent email enumeration."""
+    result = await db.execute(select(User).where(User.email == body.email))
+    user = result.scalar_one_or_none()
+
+    if user:
+        token = generate_token()
+        user.password_reset_token = token
+        user.password_reset_token_expires_at = datetime.now(UTC) + timedelta(
+            hours=auth_settings.password_reset_token_hours
+        )
+        await db.commit()
+        send_password_reset_email(body.email, token)
+
+    return {"message": "If an account exists, a password reset email has been sent."}
+
+
+@router.post("/reset-password")
+async def reset_password(
+    body: ResetPasswordRequest,
+    response: Response,
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> dict:
+    """Reset password using token and auto-login."""
+    pw_error = validate_password_strength(body.password)
+    if pw_error:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=pw_error)
+
+    result = await db.execute(select(User).where(User.password_reset_token == body.token))
+    user = result.scalar_one_or_none()
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired reset token.",
+        )
+
+    if user.password_reset_token_expires_at and user.password_reset_token_expires_at < datetime.now(
+        UTC
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Reset token has expired.",
+        )
+
+    user.password_hash = hash_password(body.password)
+    user.password_reset_token = None
+    user.password_reset_token_expires_at = None
+    _reset_failed_logins(user)
+    await db.commit()
+    await db.refresh(user)
+
+    send_password_changed_notification(user.email)
+
+    # Auto-login
+    token = create_session_jwt(user)
+    _set_session_cookie(response, token)
+
+    return {"message": "Password reset", "user": UserResponse.model_validate(user).model_dump()}
+
+
+# ── MFA / TOTP ──────────────────────────────────────────────────
+
+
+@router.post("/mfa/setup", response_model=MFASetupResponse)
+async def mfa_setup(
+    current_user: CurrentActiveUser,
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> MFASetupResponse:
+    """Generate TOTP secret and URI for QR code. Requires authentication."""
+    secret = generate_totp_secret()
+    # Store pending secret (not yet enabled)
+    current_user.mfa_secret = secret
+    await db.commit()
+
+    uri = get_totp_uri(secret, current_user.email)
+    return MFASetupResponse(totp_uri=uri, secret=secret)
+
+
+@router.post("/mfa/verify-setup")
+async def mfa_verify_setup(
+    body: MFAVerifySetupRequest,
+    current_user: CurrentActiveUser,
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> dict[str, str]:
+    """Verify TOTP code and enable MFA."""
+    if not current_user.mfa_secret:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="MFA setup not started. Call /auth/mfa/setup first.",
+        )
+
+    if not verify_totp(current_user.mfa_secret, body.code):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid TOTP code.",
+        )
+
+    current_user.mfa_enabled = True
+    await db.commit()
+    return {"message": "MFA enabled successfully."}
+
+
+@router.post("/mfa/disable")
+async def mfa_disable(
+    body: MFADisableRequest,
+    current_user: CurrentActiveUser,
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> dict[str, str]:
+    """Disable MFA. Requires password verification."""
+    if not current_user.password_hash or not verify_password(
+        body.password, current_user.password_hash
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid password.",
+        )
+
+    current_user.mfa_enabled = False
+    current_user.mfa_secret = None
+    await db.commit()
+    return {"message": "MFA disabled."}
+
+
+# ── GitHub OAuth ────────────────────────────────────────────────
 
 GITHUB_AUTHORIZE_URL = "https://github.com/login/oauth/authorize"
 GITHUB_TOKEN_URL = "https://github.com/login/oauth/access_token"
 GITHUB_USER_API = "https://api.github.com/user"
 GITHUB_EMAILS_API = "https://api.github.com/user/emails"
 
+# In-memory state store (acceptable for single-instance; use Redis if scaling)
+_oauth_states: dict[str, float] = {}
+
+
+def _cleanup_expired_states() -> None:
+    now = datetime.now(UTC).timestamp()
+    expired = [k for k, v in _oauth_states.items() if now - v > 300]
+    for k in expired:
+        _oauth_states.pop(k, None)
+
 
 @router.get("/github/login")
 async def github_login() -> RedirectResponse:
     """Redirect to GitHub OAuth authorization page."""
-    if not authentik_settings.github_client_id:
+    if not auth_settings.github_client_id:
         raise HTTPException(
             status_code=status.HTTP_501_NOT_IMPLEMENTED,
             detail="GitHub OAuth is not configured",
         )
 
+    _cleanup_expired_states()
     state = secrets.token_urlsafe(32)
-    # Store state in Redis for CSRF validation (5 min TTL)
-    r = await get_redis()
-    await r.set(f"github_oauth_state:{state}", "1", ex=300)
+    _oauth_states[state] = datetime.now(UTC).timestamp()
 
     params = urlencode(
         {
-            "client_id": authentik_settings.github_client_id,
-            "redirect_uri": authentik_settings.github_redirect_uri,
+            "client_id": auth_settings.github_client_id,
+            "redirect_uri": auth_settings.github_redirect_uri,
             "scope": "user:email",
             "state": state,
         }
@@ -507,7 +553,7 @@ async def github_callback(
     state: str | None = Query(None),
     error: str | None = Query(None),
 ) -> RedirectResponse:
-    """Handle GitHub OAuth callback: exchange code, get user, issue JWT."""
+    """Handle GitHub OAuth callback."""
     if error:
         return RedirectResponse(url=f"/login?error={error}", status_code=status.HTTP_302_FOUND)
 
@@ -517,38 +563,37 @@ async def github_callback(
         )
 
     # Validate CSRF state
-    r = await get_redis()
-    stored = await r.get(f"github_oauth_state:{state}")
-    if not stored:
+    if state not in _oauth_states:
         return RedirectResponse(
             url="/auth/callback?error=invalid_state", status_code=status.HTTP_302_FOUND
         )
-    await r.delete(f"github_oauth_state:{state}")
+    _oauth_states.pop(state, None)
 
     async with httpx.AsyncClient() as client:
         # Exchange code for access token
         token_resp = await client.post(
             GITHUB_TOKEN_URL,
             data={
-                "client_id": authentik_settings.github_client_id,
-                "client_secret": authentik_settings.github_client_secret,
+                "client_id": auth_settings.github_client_id,
+                "client_secret": auth_settings.github_client_secret,
                 "code": code,
-                "redirect_uri": authentik_settings.github_redirect_uri,
+                "redirect_uri": auth_settings.github_redirect_uri,
             },
             headers={"Accept": "application/json"},
         )
         if token_resp.status_code != 200:
             logger.error("GitHub token exchange failed: %s", token_resp.text)
             return RedirectResponse(
-                url="/auth/callback?error=token_exchange_failed", status_code=status.HTTP_302_FOUND
+                url="/auth/callback?error=token_exchange_failed",
+                status_code=status.HTTP_302_FOUND,
             )
 
         token_data = token_resp.json()
         access_token = token_data.get("access_token")
         if not access_token:
-            logger.error("No access_token in GitHub response: %s", token_data)
             return RedirectResponse(
-                url="/auth/callback?error=no_access_token", status_code=status.HTTP_302_FOUND
+                url="/auth/callback?error=no_access_token",
+                status_code=status.HTTP_302_FOUND,
             )
 
         auth_headers = {"Authorization": f"Bearer {access_token}"}
@@ -556,9 +601,9 @@ async def github_callback(
         # Get user profile
         user_resp = await client.get(GITHUB_USER_API, headers=auth_headers)
         if user_resp.status_code != 200:
-            logger.error("GitHub user API failed: %s", user_resp.text)
             return RedirectResponse(
-                url="/auth/callback?error=github_user_failed", status_code=status.HTTP_302_FOUND
+                url="/auth/callback?error=github_user_failed",
+                status_code=status.HTTP_302_FOUND,
             )
         gh_user = user_resp.json()
 
@@ -577,18 +622,39 @@ async def github_callback(
                 url="/auth/callback?error=no_email", status_code=status.HTTP_302_FOUND
             )
 
-    # Find or create local user
+    # Find or create user
     username = gh_user.get("login", email.split("@")[0])
     github_id = str(gh_user.get("id", ""))
 
-    user = await _find_or_create_user(
-        db,
-        authentik_id=f"github:{github_id}",
-        email=email,
-        username=username,
-    )
+    # Try finding by github_id first
+    result = await db.execute(select(User).where(User.github_id == github_id))
+    user = result.scalar_one_or_none()
 
-    # Issue JWT session cookie
+    if not user:
+        result = await db.execute(select(User).where(User.email == email))
+        user = result.scalar_one_or_none()
+
+    if user:
+        # Link github_id if not set
+        if not user.github_id:
+            user.github_id = github_id
+            await db.commit()
+    else:
+        # Validate email domain
+        await _validate_email_domain(db, email)
+
+        user = User(
+            email=email,
+            username=username,
+            github_id=github_id,
+            email_verified=True,  # GitHub emails are verified
+            is_active=True,
+            roles=["user"],
+        )
+        db.add(user)
+        await db.commit()
+        await db.refresh(user)
+
     token = create_session_jwt(user)
     redirect = RedirectResponse(url="/auth/callback", status_code=status.HTTP_302_FOUND)
     _set_session_cookie(redirect, token)
@@ -609,10 +675,7 @@ async def get_current_user_info(
 @router.post("/logout")
 async def logout_post(
     response: Response,
-    session_token: str | None = Cookie(
-        None,
-        alias=authentik_settings.session_cookie_name,
-    ),
+    session_token: str | None = Cookie(None, alias=auth_settings.session_cookie_name),
 ) -> dict[str, str]:
     """Logout: clear JWT session cookie."""
     _clear_session_cookie(response)
@@ -621,15 +684,12 @@ async def logout_post(
 
 @router.get("/logout")
 async def logout_get(
-    session_token: str | None = Cookie(
-        None,
-        alias=authentik_settings.session_cookie_name,
-    ),
+    session_token: str | None = Cookie(None, alias=auth_settings.session_cookie_name),
 ) -> RedirectResponse:
     """Logout via GET: clear cookie and redirect to login."""
     redirect = RedirectResponse(url="/login", status_code=status.HTTP_302_FOUND)
     redirect.delete_cookie(
-        key=authentik_settings.session_cookie_name,
+        key=auth_settings.session_cookie_name,
         httponly=True,
         secure=_is_secure_context(),
         samesite="lax",

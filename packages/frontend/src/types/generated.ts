@@ -76,8 +76,18 @@ export interface User {
   subdomainLimit: number;
   /** Whether user has admin privileges */
   isAdmin: boolean;
-  /** Authentik user ID for SSO */
-  authentikId?: string | null;
+  /** Token for password reset */
+  passwordResetToken?: string | null;
+  /** When password reset token expires */
+  passwordResetTokenExpiresAt?: string | null;
+  /** When email verification token expires */
+  emailVerificationTokenExpiresAt?: string | null;
+  /** Number of consecutive failed login attempts */
+  failedLoginAttempts: number;
+  /** Account locked until this time after too many failed logins */
+  lockedUntil?: string | null;
+  /** GitHub user ID for OAuth */
+  githubId?: string | null;
   /** Username (optional, email is primary) */
   username?: string | null;
   /** User roles for authorization */
@@ -111,8 +121,18 @@ export interface UserCreate {
   subdomainLimit: number;
   /** Whether user has admin privileges */
   isAdmin: boolean;
-  /** Authentik user ID for SSO */
-  authentikId?: string | null;
+  /** Token for password reset */
+  passwordResetToken?: string | null;
+  /** When password reset token expires */
+  passwordResetTokenExpiresAt?: string | null;
+  /** When email verification token expires */
+  emailVerificationTokenExpiresAt?: string | null;
+  /** Number of consecutive failed login attempts */
+  failedLoginAttempts: number;
+  /** Account locked until this time after too many failed logins */
+  lockedUntil?: string | null;
+  /** GitHub user ID for OAuth */
+  githubId?: string | null;
   /** Username (optional, email is primary) */
   username?: string | null;
   /** User roles for authorization */
@@ -143,8 +163,18 @@ export interface UserUpdate {
   subdomainLimit?: number;
   /** Whether user has admin privileges */
   isAdmin?: boolean;
-  /** Authentik user ID for SSO */
-  authentikId?: string;
+  /** Token for password reset */
+  passwordResetToken?: string;
+  /** When password reset token expires */
+  passwordResetTokenExpiresAt?: string;
+  /** When email verification token expires */
+  emailVerificationTokenExpiresAt?: string;
+  /** Number of consecutive failed login attempts */
+  failedLoginAttempts?: number;
+  /** Account locked until this time after too many failed logins */
+  lockedUntil?: string;
+  /** GitHub user ID for OAuth */
+  githubId?: string;
   /** Username (optional, email is primary) */
   username?: string;
   /** User roles for authorization */
@@ -168,7 +198,12 @@ export interface UserFilter {
   mfaSecret?: string;
   subdomainLimit?: number;
   isAdmin?: boolean;
-  authentikId?: string;
+  passwordResetToken?: string;
+  passwordResetTokenExpiresAt?: string;
+  emailVerificationTokenExpiresAt?: string;
+  failedLoginAttempts?: number;
+  lockedUntil?: string;
+  githubId?: string;
   username?: string;
   roles?: Record<string, unknown>;
   isActive?: boolean;

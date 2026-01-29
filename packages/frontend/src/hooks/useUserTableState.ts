@@ -63,7 +63,7 @@ import {
 // ============================================================================
 
 /** Valid sort fields for User */
-export type UserSortField = 'email' | 'subdomainLimit' | 'authentikId' | 'username' | 'createdAt' | 'updatedAt';
+export type UserSortField = 'email' | 'subdomainLimit' | 'passwordResetTokenExpiresAt' | 'emailVerificationTokenExpiresAt' | 'failedLoginAttempts' | 'lockedUntil' | 'githubId' | 'username' | 'createdAt' | 'updatedAt';
 
 /** Table state hook options */
 export interface UseUserTableStateOptions {
@@ -141,7 +141,7 @@ export function useUserTableState(
     enableSelection = false,
     initialSort,
     searchDebounceMs = 300,
-    searchFields = ['email', 'authentikId', 'username'],
+    searchFields = ['email', 'githubId', 'username'],
     onRowClick,
   } = options;
 

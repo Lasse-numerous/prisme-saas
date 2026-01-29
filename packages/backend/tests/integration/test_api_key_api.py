@@ -13,7 +13,7 @@ class TestAPIKeyAPI:
     """API integration tests for APIKey endpoints."""
 
     @pytest.mark.asyncio
-    async def test_list_api_keys(self, admin_client, db):
+    async def test_list_api_keys(self, client, db):
         """Test GET /api-keys"""
         # Create test data
         APIKeyFactory._meta.sqlalchemy_session = db
@@ -21,7 +21,7 @@ class TestAPIKeyAPI:
             APIKeyFactory.create()
         await db.commit()
 
-        response = await admin_client.get("/api/api-keys")
+        response = await client.get("/api/api-keys")
 
         assert response.status_code == 200
         data = response.json()
@@ -29,27 +29,27 @@ class TestAPIKeyAPI:
         assert len(data["items"]) >= 3
 
     @pytest.mark.asyncio
-    async def test_get_api_key(self, admin_client, db):
+    async def test_get_api_key(self, client, db):
         """Test GET /api-keys/{id}"""
         APIKeyFactory._meta.sqlalchemy_session = db
         instance = APIKeyFactory.create()
         await db.commit()
 
-        response = await admin_client.get(f"/api/api-keys/{instance.id}")
+        response = await client.get(f"/api/api-keys/{instance.id}")
 
         assert response.status_code == 200
         data = response.json()
         assert data["id"] == instance.id
 
     @pytest.mark.asyncio
-    async def test_get_api_key_not_found(self, admin_client):
+    async def test_get_api_key_not_found(self, client):
         """Test GET /api-keys/{id} with invalid ID"""
-        response = await admin_client.get("/api/api-keys/99999")
+        response = await client.get("/api/api-keys/99999")
 
         assert response.status_code == 404
 
     @pytest.mark.asyncio
-    async def test_create_api_key(self, admin_client):
+    async def test_create_api_key(self, client):
         """Test POST /api-keys"""
         payload = {
             "user_id": 1,
@@ -58,14 +58,14 @@ class TestAPIKeyAPI:
             "name": "test_value",
         }
 
-        response = await admin_client.post("/api/api-keys", json=payload)
+        response = await client.post("/api/api-keys", json=payload)
 
         assert response.status_code == 201
         data = response.json()
         assert "id" in data
 
     @pytest.mark.asyncio
-    async def test_update_api_key(self, admin_client, db):
+    async def test_update_api_key(self, client, db):
         """Test PATCH /api-keys/{id}"""
         APIKeyFactory._meta.sqlalchemy_session = db
         instance = APIKeyFactory.create()
@@ -75,17 +75,17 @@ class TestAPIKeyAPI:
             "user_id": 1,
         }
 
-        response = await admin_client.patch(f"/api/api-keys/{instance.id}", json=payload)
+        response = await client.patch(f"/api/api-keys/{instance.id}", json=payload)
 
         assert response.status_code == 200
 
     @pytest.mark.asyncio
-    async def test_delete_api_key(self, admin_client, db):
+    async def test_delete_api_key(self, client, db):
         """Test DELETE /api-keys/{id}"""
         APIKeyFactory._meta.sqlalchemy_session = db
         instance = APIKeyFactory.create()
         await db.commit()
 
-        response = await admin_client.delete(f"/api/api-keys/{instance.id}")
+        response = await client.delete(f"/api/api-keys/{instance.id}")
 
         assert response.status_code == 204

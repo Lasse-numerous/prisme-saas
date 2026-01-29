@@ -101,9 +101,16 @@ def register_user_tools(mcp: FastMCP) -> None:
         mfa_secret: str | None = None,  # TOTP MFA secret
         subdomain_limit: int | None = 10,  # Maximum number of subdomains allowed
         is_admin: bool | None = False,  # Whether user has admin privileges
-        authentik_id: str | None = None,  # Authentik user ID for SSO
+        password_reset_token: str | None = None,  # Token for password reset
+        password_reset_token_expires_at: str | None = None,  # When password reset token expires
+        email_verification_token_expires_at: str
+        | None = None,  # When email verification token expires
+        failed_login_attempts: int | None = 0,  # Number of consecutive failed login attempts
+        locked_until: str
+        | None = None,  # Account locked until this time after too many failed logins
+        github_id: str | None = None,  # GitHub user ID for OAuth
         username: str | None = None,  # Username (optional, email is primary)
-        roles: dict | list | None = None,  # User roles for authorization (default: ["user"])
+        roles: dict | list | None = None,  # User roles for authorization
         is_active: bool | None = True,  # Whether user account is active
         api_keys_ids: list[int] | None = None,  # IDs of related APIKey entities
         subdomains_ids: list[int] | None = None,  # IDs of related Subdomain entities
@@ -119,7 +126,12 @@ def register_user_tools(mcp: FastMCP) -> None:
             mfa_secret: TOTP MFA secret (optional)
             subdomain_limit: Maximum number of subdomains allowed (optional)
             is_admin: Whether user has admin privileges (optional)
-            authentik_id: Authentik user ID for SSO (optional)
+            password_reset_token: Token for password reset (optional)
+            password_reset_token_expires_at: When password reset token expires (optional)
+            email_verification_token_expires_at: When email verification token expires (optional)
+            failed_login_attempts: Number of consecutive failed login attempts (optional)
+            locked_until: Account locked until this time after too many failed logins (optional)
+            github_id: GitHub user ID for OAuth (optional)
             username: Username (optional, email is primary) (optional)
             roles: User roles for authorization (optional)
             is_active: Whether user account is active (optional)
@@ -139,9 +151,14 @@ def register_user_tools(mcp: FastMCP) -> None:
                 mfa_secret=mfa_secret,
                 subdomain_limit=subdomain_limit,
                 is_admin=is_admin,
-                authentik_id=authentik_id,
+                password_reset_token=password_reset_token,
+                password_reset_token_expires_at=password_reset_token_expires_at,
+                email_verification_token_expires_at=email_verification_token_expires_at,
+                failed_login_attempts=failed_login_attempts,
+                locked_until=locked_until,
+                github_id=github_id,
                 username=username,
-                roles=roles if roles is not None else ["user"],
+                roles=roles,
                 is_active=is_active,
             )
             result = await service.create(data=data)
@@ -158,7 +175,14 @@ def register_user_tools(mcp: FastMCP) -> None:
         mfa_secret: str | None = None,  # TOTP MFA secret
         subdomain_limit: int | None = None,  # Maximum number of subdomains allowed
         is_admin: bool | None = None,  # Whether user has admin privileges
-        authentik_id: str | None = None,  # Authentik user ID for SSO
+        password_reset_token: str | None = None,  # Token for password reset
+        password_reset_token_expires_at: str | None = None,  # When password reset token expires
+        email_verification_token_expires_at: str
+        | None = None,  # When email verification token expires
+        failed_login_attempts: int | None = None,  # Number of consecutive failed login attempts
+        locked_until: str
+        | None = None,  # Account locked until this time after too many failed logins
+        github_id: str | None = None,  # GitHub user ID for OAuth
         username: str | None = None,  # Username (optional, email is primary)
         roles: dict | list | None = None,  # User roles for authorization
         is_active: bool | None = None,  # Whether user account is active
@@ -177,7 +201,12 @@ def register_user_tools(mcp: FastMCP) -> None:
             mfa_secret: TOTP MFA secret (optional)
             subdomain_limit: Maximum number of subdomains allowed (optional)
             is_admin: Whether user has admin privileges (optional)
-            authentik_id: Authentik user ID for SSO (optional)
+            password_reset_token: Token for password reset (optional)
+            password_reset_token_expires_at: When password reset token expires (optional)
+            email_verification_token_expires_at: When email verification token expires (optional)
+            failed_login_attempts: Number of consecutive failed login attempts (optional)
+            locked_until: Account locked until this time after too many failed logins (optional)
+            github_id: GitHub user ID for OAuth (optional)
             username: Username (optional, email is primary) (optional)
             roles: User roles for authorization (optional)
             is_active: Whether user account is active (optional)
@@ -206,8 +235,20 @@ def register_user_tools(mcp: FastMCP) -> None:
                 update_fields["subdomain_limit"] = subdomain_limit
             if is_admin is not None:
                 update_fields["is_admin"] = is_admin
-            if authentik_id is not None:
-                update_fields["authentik_id"] = authentik_id
+            if password_reset_token is not None:
+                update_fields["password_reset_token"] = password_reset_token
+            if password_reset_token_expires_at is not None:
+                update_fields["password_reset_token_expires_at"] = password_reset_token_expires_at
+            if email_verification_token_expires_at is not None:
+                update_fields["email_verification_token_expires_at"] = (
+                    email_verification_token_expires_at
+                )
+            if failed_login_attempts is not None:
+                update_fields["failed_login_attempts"] = failed_login_attempts
+            if locked_until is not None:
+                update_fields["locked_until"] = locked_until
+            if github_id is not None:
+                update_fields["github_id"] = github_id
             if username is not None:
                 update_fields["username"] = username
             if roles is not None:

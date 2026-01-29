@@ -13,7 +13,7 @@ class TestSubdomainAPI:
     """API integration tests for Subdomain endpoints."""
 
     @pytest.mark.asyncio
-    async def test_list_subdomains(self, admin_client, db):
+    async def test_list_subdomains(self, client, db):
         """Test GET /subdomains"""
         # Create test data
         SubdomainFactory._meta.sqlalchemy_session = db
@@ -21,7 +21,7 @@ class TestSubdomainAPI:
             SubdomainFactory.create()
         await db.commit()
 
-        response = await admin_client.get("/api/subdomains")
+        response = await client.get("/api/subdomains")
 
         assert response.status_code == 200
         data = response.json()
@@ -29,45 +29,60 @@ class TestSubdomainAPI:
         assert len(data["items"]) >= 3
 
     @pytest.mark.asyncio
-    async def test_get_subdomain(self, admin_client, db):
+    async def test_get_subdomain(self, client, db):
         """Test GET /subdomains/{id}"""
         SubdomainFactory._meta.sqlalchemy_session = db
         instance = SubdomainFactory.create()
         await db.commit()
 
-        response = await admin_client.get(f"/api/subdomains/{instance.id}")
+        response = await client.get(f"/api/subdomains/{instance.id}")
 
         assert response.status_code == 200
         data = response.json()
         assert data["id"] == instance.id
 
     @pytest.mark.asyncio
-    async def test_get_subdomain_not_found(self, admin_client):
+    async def test_get_subdomain_not_found(self, client):
         """Test GET /subdomains/{id} with invalid ID"""
-        response = await admin_client.get("/api/subdomains/99999")
+        response = await client.get("/api/subdomains/99999")
 
         assert response.status_code == 404
 
     @pytest.mark.asyncio
-    async def test_create_subdomain_via_claim(self, admin_client):
-        """Test POST /subdomains/claim"""
+    async def test_create_subdomain(self, client):
+        """Test POST /subdomains"""
         payload = {
-            "name": "testapi",
+            "name": "testvalapi",
         }
 
-        response = await admin_client.post("/api/subdomains/claim", json=payload)
+        response = await client.post("/api/subdomains", json=payload)
 
         assert response.status_code == 201
         data = response.json()
-        assert data["name"] == "testapi"
+        assert "id" in data
 
     @pytest.mark.asyncio
-    async def test_delete_subdomain(self, admin_client, db):
+    async def test_update_subdomain(self, client, db):
+        """Test PATCH /subdomains/{id}"""
+        SubdomainFactory._meta.sqlalchemy_session = db
+        instance = SubdomainFactory.create()
+        await db.commit()
+
+        payload = {
+            "owner_id": 1,
+        }
+
+        response = await client.patch(f"/api/subdomains/{instance.id}", json=payload)
+
+        assert response.status_code == 200
+
+    @pytest.mark.asyncio
+    async def test_delete_subdomain(self, client, db):
         """Test DELETE /subdomains/{id}"""
         SubdomainFactory._meta.sqlalchemy_session = db
         instance = SubdomainFactory.create()
         await db.commit()
 
-        response = await admin_client.delete(f"/api/subdomains/{instance.id}")
+        response = await client.delete(f"/api/subdomains/{instance.id}")
 
         assert response.status_code == 204

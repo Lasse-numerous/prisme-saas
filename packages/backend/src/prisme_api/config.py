@@ -28,6 +28,11 @@ class Settings(BaseSettings):
     base_domain: str = "madewithpris.me"  # Production domain on GoDaddy
     environment: str = "development"
 
+    # Email (Resend)
+    resend_api_key: str = ""
+    email_from: str = "MadeWithPris.me <noreply@madewithpris.me>"
+    frontend_url: str = "https://madewithpris.me"
+
     # CORS - include common dev server ports and Docker hostnames
     cors_origins: list[str] = [
         "http://localhost:5173",

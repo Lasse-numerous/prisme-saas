@@ -28,6 +28,7 @@ class TestUserService:
             email_verified=True,
             mfa_enabled=True,
             is_admin=True,
+            failed_login_attempts=42,
         )
 
         result = await service.create(data=data)
@@ -38,6 +39,7 @@ class TestUserService:
         assert result.email_verified is not None
         assert result.mfa_enabled is not None
         assert result.is_admin is not None
+        assert result.failed_login_attempts is not None
 
     async def test_get(self, service, db):
         """Test getting a user by ID."""

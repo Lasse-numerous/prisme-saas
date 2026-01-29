@@ -22,7 +22,11 @@ export const USER_COLUMNS: Column<User>[] = [
   { key: 'mfaEnabled', label: 'Mfa Enabled', tooltip: 'Whether MFA is enabled' },
   { key: 'subdomainLimit', label: 'Subdomain Limit', tooltip: 'Maximum number of subdomains allowed' },
   { key: 'isAdmin', label: 'Is Admin', tooltip: 'Whether user has admin privileges' },
-  { key: 'authentikId', label: 'Authentik Id', tooltip: 'Authentik user ID for SSO' },
+  { key: 'passwordResetTokenExpiresAt', label: 'Password Reset Token Expires At', tooltip: 'When password reset token expires' },
+  { key: 'emailVerificationTokenExpiresAt', label: 'Email Verification Token Expires At', tooltip: 'When email verification token expires' },
+  { key: 'failedLoginAttempts', label: 'Failed Login Attempts', tooltip: 'Number of consecutive failed login attempts' },
+  { key: 'lockedUntil', label: 'Locked Until', tooltip: 'Account locked until this time after too many failed logins' },
+  { key: 'githubId', label: 'Github Id', tooltip: 'GitHub user ID for OAuth' },
   { key: 'username', label: 'Username', tooltip: 'Username (optional, email is primary)' },
   { key: 'roles', label: 'Roles', tooltip: 'User roles for authorization' },
   { key: 'isActive', label: 'Is Active', tooltip: 'Whether user account is active' }

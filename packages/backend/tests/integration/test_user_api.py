@@ -13,7 +13,7 @@ class TestUserAPI:
     """API integration tests for User endpoints."""
 
     @pytest.mark.asyncio
-    async def test_list_users(self, admin_client, db):
+    async def test_list_users(self, client, db):
         """Test GET /users"""
         # Create test data
         UserFactory._meta.sqlalchemy_session = db
@@ -21,7 +21,7 @@ class TestUserAPI:
             UserFactory.create()
         await db.commit()
 
-        response = await admin_client.get("/api/users")
+        response = await client.get("/api/users")
 
         assert response.status_code == 200
         data = response.json()
@@ -29,43 +29,44 @@ class TestUserAPI:
         assert len(data["items"]) >= 3
 
     @pytest.mark.asyncio
-    async def test_get_user(self, admin_client, db):
+    async def test_get_user(self, client, db):
         """Test GET /users/{id}"""
         UserFactory._meta.sqlalchemy_session = db
         instance = UserFactory.create()
         await db.commit()
 
-        response = await admin_client.get(f"/api/users/{instance.id}")
+        response = await client.get(f"/api/users/{instance.id}")
 
         assert response.status_code == 200
         data = response.json()
         assert data["id"] == instance.id
 
     @pytest.mark.asyncio
-    async def test_get_user_not_found(self, admin_client):
+    async def test_get_user_not_found(self, client):
         """Test GET /users/{id} with invalid ID"""
-        response = await admin_client.get("/api/users/99999")
+        response = await client.get("/api/users/99999")
 
         assert response.status_code == 404
 
     @pytest.mark.asyncio
-    async def test_create_user(self, admin_client):
+    async def test_create_user(self, client):
         """Test POST /users"""
         payload = {
             "email": "test_api@example.com",
             "email_verified": True,
             "mfa_enabled": True,
             "is_admin": True,
+            "failed_login_attempts": 42,
         }
 
-        response = await admin_client.post("/api/users", json=payload)
+        response = await client.post("/api/users", json=payload)
 
         assert response.status_code == 201
         data = response.json()
         assert "id" in data
 
     @pytest.mark.asyncio
-    async def test_update_user(self, admin_client, db):
+    async def test_update_user(self, client, db):
         """Test PATCH /users/{id}"""
         UserFactory._meta.sqlalchemy_session = db
         instance = UserFactory.create()
@@ -75,17 +76,17 @@ class TestUserAPI:
             "password_hash": "test_value_updated",
         }
 
-        response = await admin_client.patch(f"/api/users/{instance.id}", json=payload)
+        response = await client.patch(f"/api/users/{instance.id}", json=payload)
 
         assert response.status_code == 200
 
     @pytest.mark.asyncio
-    async def test_delete_user(self, admin_client, db):
+    async def test_delete_user(self, client, db):
         """Test DELETE /users/{id}"""
         UserFactory._meta.sqlalchemy_session = db
         instance = UserFactory.create()
         await db.commit()
 
-        response = await admin_client.delete(f"/api/users/{instance.id}")
+        response = await client.delete(f"/api/users/{instance.id}")
 
         assert response.status_code == 204

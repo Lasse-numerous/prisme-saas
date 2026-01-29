@@ -29,7 +29,20 @@ class UserType:
     mfaSecret: str | None = strawberry.field(description="TOTP MFA secret")
     subdomainLimit: int = strawberry.field(description="Maximum number of subdomains allowed")
     isAdmin: bool = strawberry.field(description="Whether user has admin privileges")
-    authentikId: str | None = strawberry.field(description="Authentik user ID for SSO")
+    passwordResetToken: str | None = strawberry.field(description="Token for password reset")
+    passwordResetTokenExpiresAt: datetime.datetime | None = strawberry.field(
+        description="When password reset token expires"
+    )
+    emailVerificationTokenExpiresAt: datetime.datetime | None = strawberry.field(
+        description="When email verification token expires"
+    )
+    failedLoginAttempts: int = strawberry.field(
+        description="Number of consecutive failed login attempts"
+    )
+    lockedUntil: datetime.datetime | None = strawberry.field(
+        description="Account locked until this time after too many failed logins"
+    )
+    githubId: str | None = strawberry.field(description="GitHub user ID for OAuth")
     username: str | None = strawberry.field(description="Username (optional, email is primary)")
     roles: strawberry.scalars.JSON = strawberry.field(description="User roles for authorization")
     isActive: bool = strawberry.field(description="Whether user account is active")
@@ -78,9 +91,14 @@ class UserInput:
     mfaSecret: str | None = None
     subdomainLimit: int = 10
     isAdmin: bool = False
-    authentikId: str | None = None
+    passwordResetToken: str | None = None
+    passwordResetTokenExpiresAt: datetime.datetime | None = None
+    emailVerificationTokenExpiresAt: datetime.datetime | None = None
+    failedLoginAttempts: int = 0
+    lockedUntil: datetime.datetime | None = None
+    githubId: str | None = None
     username: str | None = None
-    roles: strawberry.scalars.JSON = strawberry.field(default_factory=lambda: ["user"])
+    roles: strawberry.scalars.JSON = ["user"]
     isActive: bool = True
     apiKeysIds: list[int] | None = None
     subdomainsIds: list[int] | None = None
@@ -98,7 +116,12 @@ class UserUpdateInput:
     mfaSecret: str | None = None
     subdomainLimit: int | None = None
     isAdmin: bool | None = None
-    authentikId: str | None = None
+    passwordResetToken: str | None = None
+    passwordResetTokenExpiresAt: datetime.datetime | None = None
+    emailVerificationTokenExpiresAt: datetime.datetime | None = None
+    failedLoginAttempts: int | None = None
+    lockedUntil: datetime.datetime | None = None
+    githubId: str | None = None
     username: str | None = None
     roles: strawberry.scalars.JSON | None = None
     isActive: bool | None = None
@@ -118,7 +141,12 @@ def user_from_model(obj: Any) -> UserType:
         mfaSecret=obj.mfa_secret,
         subdomainLimit=obj.subdomain_limit,
         isAdmin=obj.is_admin,
-        authentikId=obj.authentik_id,
+        passwordResetToken=obj.password_reset_token,
+        passwordResetTokenExpiresAt=obj.password_reset_token_expires_at,
+        emailVerificationTokenExpiresAt=obj.email_verification_token_expires_at,
+        failedLoginAttempts=obj.failed_login_attempts,
+        lockedUntil=obj.locked_until,
+        githubId=obj.github_id,
         username=obj.username,
         roles=obj.roles,
         isActive=obj.is_active,

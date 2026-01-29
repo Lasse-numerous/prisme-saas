@@ -1,27 +1,27 @@
 {
   "version": "1.0",
-  "generated_at": "2026-01-28T18:58:10.368629",
+  "generated_at": "2026-01-29T08:36:49.288526",
   "prism_version": "0.4.0",
   "spec_hash": "",
   "files": {
     "packages/backend/src/prisme_api/models/base.py": {
       "strategy": "always_overwrite",
       "content_hash": "aded4bb80d3a8873b5907dd392770e1713b4a344fec602b88ef76f7966bf12d3",
-      "generated_at": "2026-01-28T18:58:09.462392",
+      "generated_at": "2026-01-29T08:36:48.365715",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/models/subdomain.py": {
       "strategy": "always_overwrite",
       "content_hash": "715145268876a83dfb8a9d851b577ff493ffdc0330b77839f481535534ff9631",
-      "generated_at": "2026-01-28T18:58:09.470731",
+      "generated_at": "2026-01-29T08:36:48.376512",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/models/__init__.py": {
       "strategy": "always_overwrite",
       "content_hash": "a6832a319c03ce0a076b3989322714a7dbeaba03834002fc8ca319fda0d2bc88",
-      "generated_at": "2026-01-28T18:58:09.476994",
+      "generated_at": "2026-01-29T08:36:48.384178",
       "has_hooks": false,
       "extends": null
     },
@@ -35,7 +35,7 @@
     "packages/backend/src/alembic/env.py": {
       "strategy": "always_overwrite",
       "content_hash": "4c40290d39353b1cf0a8ed1ce6278dc979dafeafe3c4f7cb032a6ce90790b699",
-      "generated_at": "2026-01-28T18:58:09.484188",
+      "generated_at": "2026-01-29T08:36:48.393061",
       "has_hooks": false,
       "extends": null
     },
@@ -56,42 +56,42 @@
     "packages/backend/src/prisme_api/schemas/base.py": {
       "strategy": "always_overwrite",
       "content_hash": "412864c0c2227e7eb84e382dc711e91f464d76a27b495d1d89027258857533e7",
-      "generated_at": "2026-01-28T18:58:09.492399",
+      "generated_at": "2026-01-29T08:36:48.400920",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/schemas/subdomain.py": {
       "strategy": "always_overwrite",
       "content_hash": "3514fc6f981e2450dc1c9c523f8584ee121d4e19797141ba95d2279dad5266d7",
-      "generated_at": "2026-01-28T18:58:09.503636",
+      "generated_at": "2026-01-29T08:36:48.412464",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/schemas/__init__.py": {
       "strategy": "always_overwrite",
       "content_hash": "32154fcefc3488703187f0c8caeb79f706004c423396d9367d065e62752d3675",
-      "generated_at": "2026-01-28T18:58:09.510960",
+      "generated_at": "2026-01-29T08:36:48.419464",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/services/_generated/base.py": {
       "strategy": "always_overwrite",
-      "content_hash": "f2df2273fa4da623498e7ccdcab37e7c63a5648b3e629e8748d0c746f18d2f35",
-      "generated_at": "2026-01-28T18:58:09.529303",
+      "content_hash": "899c3071825a78804d6aeed6c932652a01e99cd4e82e6742b7f17d350303eea3",
+      "generated_at": "2026-01-29T08:36:48.432655",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/services/_generated/__init__.py": {
       "strategy": "always_overwrite",
       "content_hash": "d314ac84b2d89be2f5d48c193d40a65d1d62fc2f0bd9eceeedb0dc912c3606e7",
-      "generated_at": "2026-01-28T18:58:09.532388",
+      "generated_at": "2026-01-29T08:36:48.436150",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/services/_generated/subdomain_base.py": {
       "strategy": "always_overwrite",
       "content_hash": "fe557e83ffc918350d8d0424f042ee2ad04ef7649d7e0fe7e2eecf91aaf336e0",
-      "generated_at": "2026-01-28T18:58:09.542899",
+      "generated_at": "2026-01-29T08:36:48.448351",
       "has_hooks": false,
       "extends": null
     },
@@ -105,28 +105,28 @@
     "packages/backend/src/prisme_api/services/__init__.py": {
       "strategy": "always_overwrite",
       "content_hash": "5ba94b10f95712058df272e7e6a8419fda746a58fdd0160b1a9953eeccd5a816",
-      "generated_at": "2026-01-28T18:58:09.551987",
+      "generated_at": "2026-01-29T08:36:48.463751",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/auth/token_service.py": {
       "strategy": "always_overwrite",
-      "content_hash": "5de8c69eeb3d2d44346e60b253e984e731f43dbd36624deb75e3d71d6ffcc758",
-      "generated_at": "2026-01-26T16:59:11.074725",
+      "content_hash": "448b5902342940aeea60a58dc20aba9ed65fe093a9fc8e91e30edf8b4db24f6c",
+      "generated_at": "2026-01-29T08:36:48.510974",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/auth/password_service.py": {
       "strategy": "always_overwrite",
-      "content_hash": "f365213fff2f0ca976e12d12469b14e6028659dc55863d160b1081d357864ae1",
-      "generated_at": "2026-01-26T16:59:11.075087",
+      "content_hash": "7d431f4e52905d5233f1f47d6876d158d823245705211a005d4d21ca63311f4b",
+      "generated_at": "2026-01-29T08:36:48.518611",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/middleware/auth.py": {
       "strategy": "always_overwrite",
-      "content_hash": "f8015c5af4e4d484bed53a79f644a1adea70a188af87e26530345ceeeffdaaf8",
-      "generated_at": "2026-01-26T16:59:11.076109",
+      "content_hash": "0bd2975654cd57499b9be190bcf6f24bfa97b3066631d2d612194eeb895d6f9d",
+      "generated_at": "2026-01-29T08:36:48.524486",
       "has_hooks": false,
       "extends": null
     },
@@ -139,22 +139,22 @@
     },
     "packages/backend/src/prisme_api/schemas/auth.py": {
       "strategy": "always_overwrite",
-      "content_hash": "21fb93646acfc0e548d87b4ae56d62e0b553248d3a51596870de10239e2dac0f",
-      "generated_at": "2026-01-26T16:59:11.077138",
+      "content_hash": "ca0a2edcd84378a472e8b087c65366409d3b026922f4e5a624fb1fa85d51534f",
+      "generated_at": "2026-01-29T08:36:48.538388",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/auth/__init__.py": {
       "strategy": "always_overwrite",
-      "content_hash": "d6a728eb664debec03e88f401433040d30f8db5114aa74c7def4cbc5a3784d42",
-      "generated_at": "2026-01-28T18:58:09.582477",
+      "content_hash": "9b3e7cd71d89b035b764bbff9ef75e053a97d5300d2678c1b208a68e9ccae0d4",
+      "generated_at": "2026-01-29T08:36:48.543142",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/middleware/__init__.py": {
       "strategy": "always_overwrite",
-      "content_hash": "a3dfa805077ef7139b835e697634bd24b221434751ae534d12db51f527c1c199",
-      "generated_at": "2026-01-26T17:05:43.527947",
+      "content_hash": "4990cf22ef20a2773b51dd8bd7c158a4f184fcb3b85825869e01217c1ea57d38",
+      "generated_at": "2026-01-29T08:36:48.548380",
       "has_hooks": false,
       "extends": null
     },
@@ -175,21 +175,21 @@
     "packages/backend/src/prisme_api/api/rest/_generated/deps.py": {
       "strategy": "always_overwrite",
       "content_hash": "6f1fb81e0f2f59a502e34015bef78f14f64621ebe9f81b9e0cc276323244062c",
-      "generated_at": "2026-01-28T18:58:09.600494",
+      "generated_at": "2026-01-29T08:36:48.575758",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/api/rest/_generated/__init__.py": {
       "strategy": "always_overwrite",
       "content_hash": "371a90bfef170ea314560da96d4eb62a8b2c76ffc65e1f57da42b536b4ea7150",
-      "generated_at": "2026-01-28T18:58:09.604361",
+      "generated_at": "2026-01-29T08:36:48.579163",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/api/rest/_generated/subdomain_routes.py": {
       "strategy": "always_overwrite",
       "content_hash": "e775cce01276b8f5e179d80649afe81bd5fd0aa25f747d3e01c264eeffe1ff02",
-      "generated_at": "2026-01-28T18:58:09.618446",
+      "generated_at": "2026-01-29T08:36:48.594286",
       "has_hooks": false,
       "extends": null
     },
@@ -202,211 +202,211 @@
     },
     "packages/backend/src/prisme_api/api/rest/router.py": {
       "strategy": "always_overwrite",
-      "content_hash": "3f7354cf39eb0791b59398bd446c7ae97ad4449bed21f9d9db649170918398b1",
-      "generated_at": "2026-01-28T18:58:09.631236",
+      "content_hash": "56080f6540d5654b7461c30cdd0577d0e99187a2b471944b1b15ad7fca4f9123",
+      "generated_at": "2026-01-29T08:36:48.604553",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/api/rest/__init__.py": {
       "strategy": "always_overwrite",
       "content_hash": "5227ced26de0cb1728e55a4d0fc0cfc2c0f5bd5b0e54aa34d91bbdf516d26f63",
-      "generated_at": "2026-01-28T18:58:09.634439",
+      "generated_at": "2026-01-29T08:36:48.608386",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/api/graphql/_generated/context.py": {
       "strategy": "always_overwrite",
       "content_hash": "a78832d92d25271bc55b2c0b29df498829ad400a3e3f99a4a75ac600f27cec97",
-      "generated_at": "2026-01-28T18:58:09.662807",
+      "generated_at": "2026-01-29T08:36:48.629085",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/api/graphql/_generated/scalars.py": {
       "strategy": "always_overwrite",
       "content_hash": "139af3cb8a250852a8d3ed76c363e8292621590ca0f90078f2cd7e1bae3a1019",
-      "generated_at": "2026-01-28T18:58:09.666788",
+      "generated_at": "2026-01-29T08:36:48.632676",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/api/graphql/_generated/pagination.py": {
       "strategy": "always_overwrite",
       "content_hash": "3a551dc0c4cedf0874894432423f2a25112e29c9663500d60e1d79c1f8785cbd",
-      "generated_at": "2026-01-28T18:58:09.670239",
+      "generated_at": "2026-01-29T08:36:48.635959",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/api/graphql/_generated/filters/common.py": {
       "strategy": "always_overwrite",
       "content_hash": "9a259387ef716eea4cbc0e70eb63e87724870b3812bcc95b0f499f10f3e5b653",
-      "generated_at": "2026-01-28T18:58:09.673784",
+      "generated_at": "2026-01-29T08:36:48.639014",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/api/graphql/_generated/types/__init__.py": {
       "strategy": "always_overwrite",
       "content_hash": "b6cc2a376be7344ea69fffa26999ab7b185d04ec535ded3cc66c9ab288025bcf",
-      "generated_at": "2026-01-28T18:58:09.677197",
+      "generated_at": "2026-01-29T08:36:48.641966",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/api/graphql/_generated/queries/__init__.py": {
       "strategy": "always_overwrite",
       "content_hash": "418f2d6b33e2b94ae96e91d1ea9af12da5b2a89393b07898c5a8b6f0254cc0c4",
-      "generated_at": "2026-01-28T18:58:09.680310",
+      "generated_at": "2026-01-29T08:36:48.645403",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/api/graphql/_generated/mutations/__init__.py": {
       "strategy": "always_overwrite",
       "content_hash": "d67bf2d686e8d95fb70248b8a5cd6984f1971ab8b94afd43f7ec3c0fc331af29",
-      "generated_at": "2026-01-28T18:58:09.683192",
+      "generated_at": "2026-01-29T08:36:48.649586",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/api/graphql/_generated/filters/__init__.py": {
       "strategy": "always_overwrite",
       "content_hash": "d320e6dbbbc27e84ce4b67d2a9507ebc608dad70639bf63372a937eb9d154407",
-      "generated_at": "2026-01-28T18:58:09.686026",
+      "generated_at": "2026-01-29T08:36:48.652874",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/api/graphql/_generated/types/subdomain.py": {
       "strategy": "always_overwrite",
       "content_hash": "c4d9ee5ddf212dd8e17e1d3e3ac992f1e72e2bf8ff8813d0707952f5426c24cc",
-      "generated_at": "2026-01-28T18:58:09.715306",
+      "generated_at": "2026-01-29T08:36:48.685578",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/api/graphql/_generated/filters/subdomain.py": {
       "strategy": "always_overwrite",
       "content_hash": "79cb9c1e774d5da45255330edad6c7a65b55b88cda16f3d23e742b4e33473e02",
-      "generated_at": "2026-01-28T18:58:09.718600",
+      "generated_at": "2026-01-29T08:36:48.688815",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/api/graphql/_generated/queries/subdomain.py": {
       "strategy": "always_overwrite",
       "content_hash": "0723cd8647cb1bcbdaec1874a6996b79dc0193b589047d42298d27656cbe5a19",
-      "generated_at": "2026-01-28T18:58:09.722296",
+      "generated_at": "2026-01-29T08:36:48.691904",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/api/graphql/_generated/mutations/subdomain.py": {
       "strategy": "always_overwrite",
       "content_hash": "ab098425ab1758195c552ee97fbc1f35d41f305238c5727911db1d295d8cfd59",
-      "generated_at": "2026-01-28T18:58:09.725958",
+      "generated_at": "2026-01-29T08:36:48.695024",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/api/graphql/schema.py": {
       "strategy": "always_overwrite",
       "content_hash": "19f6add5e96520f7e8e735d898a3d1d0df6843775bda2c16c28f9baf34296dbc",
-      "generated_at": "2026-01-28T18:58:09.744304",
+      "generated_at": "2026-01-29T08:36:48.712317",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/api/graphql/__init__.py": {
       "strategy": "always_overwrite",
       "content_hash": "0f2c8db240181a90fdd8a0a431a652452b68b302b56c4ff5063444fd2f671a5d",
-      "generated_at": "2026-01-28T18:58:09.747206",
+      "generated_at": "2026-01-29T08:36:48.715799",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/mcp_server/server.py": {
       "strategy": "always_overwrite",
       "content_hash": "8cf5524c1eba7f0e5ecb4c7f4de02a4210cbb2bbd6e7d440fe3cd626fb75c720",
-      "generated_at": "2026-01-28T18:58:09.758133",
+      "generated_at": "2026-01-29T08:36:48.730787",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/mcp_server/subdomain_tools.py": {
       "strategy": "always_overwrite",
       "content_hash": "ab1b5a2547cb54be7b7623ce7ee695c271b7cb4240709038677390d7d5d62485",
-      "generated_at": "2026-01-28T18:58:09.767296",
+      "generated_at": "2026-01-29T08:36:48.744291",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/mcp_server/__init__.py": {
       "strategy": "always_overwrite",
       "content_hash": "fcbe35dd6e18cc3360ca6ee7f60200d959f1992bd3103e9a795d6ddb2c3ae2c6",
-      "generated_at": "2026-01-28T18:58:09.774975",
+      "generated_at": "2026-01-29T08:36:48.753787",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/types/generated.ts": {
       "strategy": "always_overwrite",
-      "content_hash": "3e697dd93228f366fad98ef9e3cc9fc1e92b14c7cb2066db21ba58ed8d16d5bf",
-      "generated_at": "2026-01-28T18:58:09.781805",
+      "content_hash": "fa8eaf62b42f77ff74527cf9fef7a30d374adaaeeadde67ad5c78c972d66c753",
+      "generated_at": "2026-01-29T08:36:48.764864",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/graphql/client.ts": {
       "strategy": "always_overwrite",
       "content_hash": "3d5c70ff13faf486453d5a4569f79c084a1239958eff87619032b0ec95b47cbb",
-      "generated_at": "2026-01-28T18:58:09.793524",
+      "generated_at": "2026-01-29T08:36:48.781923",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/graphql/gql.ts": {
       "strategy": "always_overwrite",
       "content_hash": "e6c61cbfe09394b464dd61f76c3a582fb863d85888d3e9c0ad21aa40b57a03dc",
-      "generated_at": "2026-01-28T18:58:09.797244",
+      "generated_at": "2026-01-29T08:36:48.786224",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/graphql/fragments/subdomain.ts": {
       "strategy": "always_overwrite",
       "content_hash": "8d3d5e11605a3cb4c702444b1987bdb081f158e9e88ad212416a65d97429e493",
-      "generated_at": "2026-01-28T18:58:09.821644",
+      "generated_at": "2026-01-29T08:36:48.811086",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/graphql/queries/subdomain.ts": {
       "strategy": "always_overwrite",
       "content_hash": "8949f10205d8a27ef1bad37f98da380c4f594d663d9337ebe89ff7a029817910",
-      "generated_at": "2026-01-28T18:58:09.825153",
+      "generated_at": "2026-01-29T08:36:48.814079",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/graphql/mutations/subdomain.ts": {
       "strategy": "always_overwrite",
       "content_hash": "81c7f523350b75e56f376a39f4ca2521bd10945fccb129281c1e3e2155430e4a",
-      "generated_at": "2026-01-28T18:58:09.828181",
+      "generated_at": "2026-01-29T08:36:48.817878",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/graphql/index.ts": {
       "strategy": "always_overwrite",
       "content_hash": "e70b0dee983ad86b257d98df800f1d470a6fe39d396c7f87c6af21c65bf8515d",
-      "generated_at": "2026-01-28T18:58:09.842912",
+      "generated_at": "2026-01-29T08:36:48.831000",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/prism/widgets/types.ts": {
       "strategy": "always_overwrite",
       "content_hash": "8378cbd3d69e8ddeadd28f5c423192c524b40f534a9600ffa881fd44f6ea3df5",
-      "generated_at": "2026-01-28T18:58:09.938229",
+      "generated_at": "2026-01-29T08:36:48.915258",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/prism/widgets/defaults.ts": {
       "strategy": "always_overwrite",
       "content_hash": "c2846c04f9838d65042ec469a4c1a71fd84343b686335b061aee4958468bf83a",
-      "generated_at": "2026-01-28T18:58:09.944736",
+      "generated_at": "2026-01-29T08:36:48.918492",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/prism/widgets/registry.ts": {
       "strategy": "always_overwrite",
       "content_hash": "39704bf0031a0bcbc689dff9c565f37c9986757bf721830e4030d397a9cd51ee",
-      "generated_at": "2026-01-28T18:58:09.951081",
+      "generated_at": "2026-01-29T08:36:48.921761",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/prism/widgets/context.tsx": {
       "strategy": "always_overwrite",
       "content_hash": "9c7c81db50edd2e5efe09426fe4603d15b77a66c659c0c0a6851610f83c32e53",
-      "generated_at": "2026-01-28T18:58:09.956338",
+      "generated_at": "2026-01-29T08:36:48.924790",
       "has_hooks": false,
       "extends": null
     },
@@ -420,126 +420,126 @@
     "packages/frontend/src/prism/widgets/components/TextInput.tsx": {
       "strategy": "always_overwrite",
       "content_hash": "735794f344a5db237a0b1e771ffba229cc45fb453f46e4b63dd05f604c3acb11",
-      "generated_at": "2026-01-28T18:58:09.960864",
+      "generated_at": "2026-01-29T08:36:48.928521",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/prism/widgets/components/TextArea.tsx": {
       "strategy": "always_overwrite",
       "content_hash": "35f13b353dff70f804af21dd790f81c17eae879a50b9e2cd7c9fbd249bab8a4a",
-      "generated_at": "2026-01-28T18:58:09.965745",
+      "generated_at": "2026-01-29T08:36:48.932184",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/prism/widgets/components/NumberInput.tsx": {
       "strategy": "always_overwrite",
       "content_hash": "c84d1f25a57b24a4b63b3a90f7df21ec84d18685c1204ff814936cb6c01ecb43",
-      "generated_at": "2026-01-28T18:58:09.980145",
+      "generated_at": "2026-01-29T08:36:48.935479",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/prism/widgets/components/Checkbox.tsx": {
       "strategy": "always_overwrite",
       "content_hash": "3edf53cdcefdcad34f1859060c7c6862d931a072f72c1b24914a113c8c32170d",
-      "generated_at": "2026-01-28T18:58:09.984859",
+      "generated_at": "2026-01-29T08:36:48.939303",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/prism/widgets/components/Select.tsx": {
       "strategy": "always_overwrite",
       "content_hash": "1f69ec0e210d0e16892dbeca9f2478a0420502017a073d30353830cabdaf73a3",
-      "generated_at": "2026-01-28T18:58:09.989747",
+      "generated_at": "2026-01-29T08:36:48.943403",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/prism/widgets/components/DatePicker.tsx": {
       "strategy": "always_overwrite",
       "content_hash": "47d0be098af66d518515d90d7cbe01e7034f06e504b58b92b88324a62dac23f4",
-      "generated_at": "2026-01-28T18:58:09.993492",
+      "generated_at": "2026-01-29T08:36:48.946819",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/prism/widgets/components/EmailInput.tsx": {
       "strategy": "always_overwrite",
       "content_hash": "697d39d32a184e8425f84d7d025e1301280ece8258909fe680ca90da4607f991",
-      "generated_at": "2026-01-28T18:58:09.997332",
+      "generated_at": "2026-01-29T08:36:48.950524",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/prism/widgets/components/UrlInput.tsx": {
       "strategy": "always_overwrite",
       "content_hash": "53912bcd100fa29888f1e7a6423175add8d828028228bb6182dd6ab00a381342",
-      "generated_at": "2026-01-28T18:58:10.001691",
+      "generated_at": "2026-01-29T08:36:48.953960",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/prism/widgets/components/PhoneInput.tsx": {
       "strategy": "always_overwrite",
       "content_hash": "94962629714a6eddd7c74b89cce13130e3bdf52d33506f9a9df3cf523486656c",
-      "generated_at": "2026-01-28T18:58:10.005994",
+      "generated_at": "2026-01-29T08:36:48.957123",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/prism/widgets/components/PasswordInput.tsx": {
       "strategy": "always_overwrite",
       "content_hash": "4e4b2c154e04ffe026e5c7b1c967612f6bb7aa963e81869a9a9e77f65fe1816e",
-      "generated_at": "2026-01-28T18:58:10.010195",
+      "generated_at": "2026-01-29T08:36:48.960483",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/prism/widgets/components/CurrencyInput.tsx": {
       "strategy": "always_overwrite",
       "content_hash": "1f6f4067f7c260908d685f16db8863951ca45d27765184f1f25004f6c3a1e27f",
-      "generated_at": "2026-01-28T18:58:10.014173",
+      "generated_at": "2026-01-29T08:36:48.964149",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/prism/widgets/components/PercentageInput.tsx": {
       "strategy": "always_overwrite",
       "content_hash": "1f37a38fa85e1f63f5c4701cffff12d44e3c2c0885ba9ed2f947fb55a6d141e8",
-      "generated_at": "2026-01-28T18:58:10.018678",
+      "generated_at": "2026-01-29T08:36:48.968266",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/prism/widgets/components/TagInput.tsx": {
       "strategy": "always_overwrite",
       "content_hash": "4742913da3fdfeac76502eb139dfe216453a6dcf2b844e1706887ed700b93a36",
-      "generated_at": "2026-01-28T18:58:10.035258",
+      "generated_at": "2026-01-29T08:36:48.971347",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/prism/widgets/components/JsonEditor.tsx": {
       "strategy": "always_overwrite",
       "content_hash": "b8dac5c4d8fa131a61bcfd0e66e914e31484ea4ad6e482f2a5f288eec3eb79f0",
-      "generated_at": "2026-01-28T18:58:10.037947",
+      "generated_at": "2026-01-29T08:36:48.975292",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/prism/widgets/components/RelationSelect.tsx": {
       "strategy": "always_overwrite",
       "content_hash": "aee8ad0de73e98bff2171622119b54408617dea0b74e29b25657144f1d0378ac",
-      "generated_at": "2026-01-28T18:58:10.041831",
+      "generated_at": "2026-01-29T08:36:48.978629",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/prism/widgets/components/index.ts": {
       "strategy": "always_overwrite",
       "content_hash": "99bf23d8addf8cc6b42c88d68d8e2498ba95de546d91f405143b8c7acc608955",
-      "generated_at": "2026-01-28T18:58:10.044453",
+      "generated_at": "2026-01-29T08:36:48.982315",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/prism/widgets/index.ts": {
       "strategy": "always_overwrite",
       "content_hash": "3df90443d4ea75d0e426f3be6b03c0f2ec63cbc3124e847d9efb9eab918b1d60",
-      "generated_at": "2026-01-28T18:58:10.047246",
+      "generated_at": "2026-01-29T08:36:48.985256",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/components/_generated/SubdomainFormBase.tsx": {
       "strategy": "always_overwrite",
       "content_hash": "2ae46b3f6ec11e57f433606cbe62b1045204c6827e027cb303102480e88cf900",
-      "generated_at": "2026-01-28T18:58:10.083783",
+      "generated_at": "2026-01-29T08:36:49.023739",
       "has_hooks": false,
       "extends": null
     },
@@ -553,7 +553,7 @@
     "packages/frontend/src/components/_generated/SubdomainTableBase.tsx": {
       "strategy": "always_overwrite",
       "content_hash": "f3363387ac94e12987dace8dc051513f7b5de11147cf8cfc5795713ea2223285",
-      "generated_at": "2026-01-28T18:58:10.087130",
+      "generated_at": "2026-01-29T08:36:49.028404",
       "has_hooks": false,
       "extends": null
     },
@@ -567,7 +567,7 @@
     "packages/frontend/src/components/_generated/SubdomainDetailBase.tsx": {
       "strategy": "always_overwrite",
       "content_hash": "03932171f389bb1c73bc12624c1423f85d76752a354cc3db4dc80ada6fbe9d05",
-      "generated_at": "2026-01-28T18:58:10.090433",
+      "generated_at": "2026-01-29T08:36:49.032662",
       "has_hooks": false,
       "extends": null
     },
@@ -581,7 +581,7 @@
     "packages/frontend/src/components/_generated/index.ts": {
       "strategy": "always_overwrite",
       "content_hash": "ac91df4b0f23b623c75330323ff7e9b029c8bd8b1c23d279987bf7597626c5f8",
-      "generated_at": "2026-01-28T18:58:10.112391",
+      "generated_at": "2026-01-29T08:36:49.049602",
       "has_hooks": false,
       "extends": null
     },
@@ -595,7 +595,7 @@
     "packages/frontend/src/hooks/index.ts": {
       "strategy": "always_overwrite",
       "content_hash": "f2bf5210a327300f2e40acc2faa4e265938684955408a5705e2477a2e97bc3e8",
-      "generated_at": "2026-01-28T18:58:10.160804",
+      "generated_at": "2026-01-29T08:36:49.101690",
       "has_hooks": false,
       "extends": null
     },
@@ -629,50 +629,50 @@
     },
     "packages/frontend/src/contexts/AuthContext.tsx": {
       "strategy": "always_overwrite",
-      "content_hash": "715402434c979e2976c0a24fd930a462c7be56c6e7b3cf69b2a5c7b58cd35923",
-      "generated_at": "2026-01-28T18:58:10.235513",
+      "content_hash": "169aaeb4fe86878e0bcdb005091ee15c5d559d7e36646d4c9292644fbf8eac89",
+      "generated_at": "2026-01-29T08:36:49.138694",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/components/auth/LoginForm.tsx": {
       "strategy": "always_overwrite",
-      "content_hash": "04a6377ea2c3cb5498eac9e97b9376d2eac917f74515a35d62fcfb9452615a35",
-      "generated_at": "2026-01-28T18:58:10.211371",
+      "content_hash": "483e78f510ad7bce1a80ebc0ffd2c082363b1ef5e38f03f6b793e12519f55e10",
+      "generated_at": "2026-01-29T08:36:49.142190",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/components/auth/SignupForm.tsx": {
       "strategy": "always_overwrite",
-      "content_hash": "554da598936fc96ca406aceb513e1ec9f13d69b56c772b4087ef3fa76cce7d98",
-      "generated_at": "2026-01-28T18:58:10.215426",
+      "content_hash": "075ccf3f266f44d07e1210550ee0d5d4ec22265eb43b9d7655a0c1352214c7bd",
+      "generated_at": "2026-01-29T08:36:49.145476",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/components/auth/ProtectedRoute.tsx": {
       "strategy": "always_overwrite",
-      "content_hash": "c5ad1b1c0cdf0469b93448eddc621dd1c416675dbeeedd5562baa1ba9ab29129",
-      "generated_at": "2026-01-28T18:58:10.242540",
+      "content_hash": "41ec8658f6fe80d3f0139342736006c4f05748f61d1911af9d772cc4ad7ec647",
+      "generated_at": "2026-01-29T08:36:49.149240",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/pages/Login.tsx": {
       "strategy": "always_overwrite",
-      "content_hash": "ba1f7e20b10693dc82ec10f4e6d65c5d43a508d64062345edfb60a12cf85e71b",
-      "generated_at": "2026-01-28T18:58:10.221398",
+      "content_hash": "ffded72144b1bad300054ed80306cab8ed4cfed42d43da2ea758b53c4ad63566",
+      "generated_at": "2026-01-29T08:36:49.152631",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/pages/Signup.tsx": {
       "strategy": "always_overwrite",
       "content_hash": "a3f37becab87115d9e2f3ed05182ca5d4f1d57b2b4b35086e6df9714d120652b",
-      "generated_at": "2026-01-28T18:58:10.224329",
+      "generated_at": "2026-01-29T08:36:49.156047",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/components/auth/index.ts": {
       "strategy": "always_overwrite",
-      "content_hash": "7b9a57a59a8e449adf23672749e48d35dfece45dd397b742313767caf6c791b7",
-      "generated_at": "2026-01-28T18:58:10.246951",
+      "content_hash": "6bb399ce9fdb7b005ce3515f4e9e7226532c9f08c9a59b42a0363433777ea31e",
+      "generated_at": "2026-01-29T08:36:49.180230",
       "has_hooks": false,
       "extends": null
     },
@@ -686,119 +686,119 @@
     "packages/frontend/src/App.tsx": {
       "strategy": "merge",
       "content_hash": "90565d4162f82f912495665edc7eb725e696418a924c768a24884bebfa1c932e",
-      "generated_at": "2026-01-28T18:58:10.256648",
+      "generated_at": "2026-01-29T08:36:49.189666",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/main.tsx": {
       "strategy": "always_overwrite",
       "content_hash": "a7d6884d532e6b33e8cd032f4e5d69c1590328a5e0e48a584a9883bd7cb21be8",
-      "generated_at": "2026-01-28T18:58:10.260187",
+      "generated_at": "2026-01-29T08:36:49.192835",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/tests/conftest.py": {
       "strategy": "always_overwrite",
       "content_hash": "2451cbddfcb00f4a342db31b13d482ca235146944e65ff0cfa824aba07a239a3",
-      "generated_at": "2026-01-28T18:58:10.275969",
+      "generated_at": "2026-01-29T08:36:49.197700",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/tests/factories/__init__.py": {
       "strategy": "always_overwrite",
       "content_hash": "ff73b021e0ff82b27de0599f485176403cd421022e3b5262c8d6fa3be94bf870",
-      "generated_at": "2026-01-28T18:58:10.278670",
+      "generated_at": "2026-01-29T08:36:49.200634",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/tests/factories/subdomain.py": {
       "strategy": "always_overwrite",
       "content_hash": "4fe31e13e6bdffe44fd53c8c3f8223eaf59827c2948cb30dcf714401edb949ac",
-      "generated_at": "2026-01-28T18:58:10.306461",
+      "generated_at": "2026-01-29T08:36:49.231894",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/tests/unit/test_subdomain_service.py": {
       "strategy": "always_overwrite",
-      "content_hash": "fc748f22431af25bfd8bf467a0ea33ea3385e7dd92091a6275bc363404e200c4",
-      "generated_at": "2026-01-28T18:58:10.309657",
+      "content_hash": "2ef28ba169a24c2a968adec0289106cb31d19553b1e62fdc8b2a31a0f3f4524c",
+      "generated_at": "2026-01-29T08:36:49.234865",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/tests/integration/test_subdomain_api.py": {
       "strategy": "always_overwrite",
-      "content_hash": "9c6b899f18d40943641ef989f82b3ea1dd7ce78e57ce3264bb8d985b66a8498b",
-      "generated_at": "2026-01-28T18:58:10.312828",
+      "content_hash": "4cbb3e8379851b6b9adb8adeedb1b5edf6e700933ca24bb0f7e28d9b2ec448b7",
+      "generated_at": "2026-01-29T08:36:49.238012",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/tests/graphql/test_subdomain.py": {
       "strategy": "always_overwrite",
       "content_hash": "631f19f6204c0e5bbc95bc06064bbfe181d3a957bea2f6aef8f642d462a7675e",
-      "generated_at": "2026-01-28T18:58:10.316184",
+      "generated_at": "2026-01-29T08:36:49.240887",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/__tests__/setup.ts": {
       "strategy": "always_overwrite",
       "content_hash": "b65f6586aa2f5443f68bf5e349ef650c12ffa712b27eb597f1ea9b544bd45cd8",
-      "generated_at": "2026-01-28T18:58:10.332730",
+      "generated_at": "2026-01-29T08:36:49.256920",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/__tests__/utils.tsx": {
       "strategy": "always_overwrite",
       "content_hash": "09393e4eb910fbece51c62f27ab604cbe7d1a084ff353ee71e2580453f6984dd",
-      "generated_at": "2026-01-28T18:58:10.335917",
+      "generated_at": "2026-01-29T08:36:49.260140",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/__tests__/components/Subdomain.test.tsx": {
       "strategy": "always_overwrite",
       "content_hash": "f5945f44c2629e4a4dbfdbca788db08adf21af79ee575c90b8b83b356d17c572",
-      "generated_at": "2026-01-28T18:58:10.355677",
+      "generated_at": "2026-01-29T08:36:49.278103",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/__tests__/hooks/useSubdomain.test.tsx": {
       "strategy": "always_overwrite",
       "content_hash": "f6ab4114e02d368fb165231802919ee7fd09025ec80d304c00fa9ba22d2d00fe",
-      "generated_at": "2026-01-28T18:58:10.358934",
+      "generated_at": "2026-01-29T08:36:49.282075",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/models/user.py": {
       "strategy": "always_overwrite",
-      "content_hash": "8ee2959011840129fae5c81885e58c7e6f8c7b951eed94fb1a9e4120b8f93504",
-      "generated_at": "2026-01-28T18:58:09.465153",
+      "content_hash": "e74382ac840cfd579808f7abb854d819619d792a6710429efd8aabdec79d0f40",
+      "generated_at": "2026-01-29T08:36:48.369151",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/models/api_key.py": {
       "strategy": "always_overwrite",
       "content_hash": "1141a87da782befc0bd976f7e47d5b77817b073cf9222da62d5cb525e34c48a4",
-      "generated_at": "2026-01-28T18:58:09.468239",
+      "generated_at": "2026-01-29T08:36:48.372840",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/schemas/user.py": {
       "strategy": "always_overwrite",
-      "content_hash": "2d4087512276c3d85e61c317efdd93031266ea42a2824df06e2c9e5814180b28",
-      "generated_at": "2026-01-28T18:58:09.496132",
+      "content_hash": "2bd34facd520c6dd83dbe1ff13eea08404aca1590127e4facca06f928920bec0",
+      "generated_at": "2026-01-29T08:36:48.404793",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/schemas/api_key.py": {
       "strategy": "always_overwrite",
       "content_hash": "b5771a4f70296a2c87163dbc616a9908245c61e3944997dc51ce4839fc8d7c9f",
-      "generated_at": "2026-01-28T18:58:09.500037",
+      "generated_at": "2026-01-29T08:36:48.408950",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/services/_generated/user_base.py": {
       "strategy": "always_overwrite",
       "content_hash": "50648d4f2e1c24f61a0adeac9549e1cd90203786cc0bcc687098c1a0fbdd67f5",
-      "generated_at": "2026-01-28T18:58:09.535543",
+      "generated_at": "2026-01-29T08:36:48.439503",
       "has_hooks": false,
       "extends": null
     },
@@ -812,7 +812,7 @@
     "packages/backend/src/prisme_api/services/_generated/api_key_base.py": {
       "strategy": "always_overwrite",
       "content_hash": "031058fe741fed462e1a42f2006228d5b7e5e8132b2654950eef9be1da36b75d",
-      "generated_at": "2026-01-28T18:58:09.539196",
+      "generated_at": "2026-01-29T08:36:48.443793",
       "has_hooks": false,
       "extends": null
     },
@@ -826,7 +826,7 @@
     "packages/backend/src/prisme_api/api/rest/_generated/user_routes.py": {
       "strategy": "always_overwrite",
       "content_hash": "85f093ac9511fb1cf3783564e936c81077d75deb82fa6bf736cce5f7dfa72abf",
-      "generated_at": "2026-01-28T18:58:09.608214",
+      "generated_at": "2026-01-29T08:36:48.582966",
       "has_hooks": false,
       "extends": null
     },
@@ -840,7 +840,7 @@
     "packages/backend/src/prisme_api/api/rest/_generated/api_key_routes.py": {
       "strategy": "always_overwrite",
       "content_hash": "cf2c26d2871eb77fe8546256adee91b91b45d4141b3eecc0d8725398875388d2",
-      "generated_at": "2026-01-28T18:58:09.613388",
+      "generated_at": "2026-01-29T08:36:48.588303",
       "has_hooks": false,
       "extends": null
     },
@@ -853,120 +853,120 @@
     },
     "packages/backend/src/prisme_api/api/graphql/_generated/types/user.py": {
       "strategy": "always_overwrite",
-      "content_hash": "507c4e9441b9e3e0025f401521ce8c0a6bea5292505bd11dad8a7bc044ce920d",
-      "generated_at": "2026-01-28T18:58:09.688914",
+      "content_hash": "374e4805ca1d3b44ce3b74ebafdbea646e5125069f2dc98eb98fd8e51a0c8610",
+      "generated_at": "2026-01-29T08:36:48.656477",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/api/graphql/_generated/filters/user.py": {
       "strategy": "always_overwrite",
-      "content_hash": "d0ef5cc525a7aa93ca6e7a5489dd27c98ea9dcd0cf27f83b58f7795adca0d56d",
-      "generated_at": "2026-01-28T18:58:09.691706",
+      "content_hash": "23322deb2fa7249a4191b1b0fc7b2d5695a5593073ba618aa763ea25d9f5835b",
+      "generated_at": "2026-01-29T08:36:48.660623",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/api/graphql/_generated/queries/user.py": {
       "strategy": "always_overwrite",
       "content_hash": "d309f4f0745b95a46587ff88eeea8b79288a91f7c759de61c9dc814f89459594",
-      "generated_at": "2026-01-28T18:58:09.694462",
+      "generated_at": "2026-01-29T08:36:48.665092",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/api/graphql/_generated/mutations/user.py": {
       "strategy": "always_overwrite",
       "content_hash": "47622f92a915b5aff8cdcc826fb2bd5cfde26753f25615b590eb36f2329b78fc",
-      "generated_at": "2026-01-28T18:58:09.697300",
+      "generated_at": "2026-01-29T08:36:48.669367",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/api/graphql/_generated/types/api_key.py": {
       "strategy": "always_overwrite",
       "content_hash": "833a20d106adccf4966dcd2540d0581f0259ba75c55f592be4c7d6097ea83770",
-      "generated_at": "2026-01-28T18:58:09.700166",
+      "generated_at": "2026-01-29T08:36:48.672435",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/api/graphql/_generated/filters/api_key.py": {
       "strategy": "always_overwrite",
       "content_hash": "8a68dd05902088fe95b72af3b19ef521e672b4dc50486ad9dfe2bfc71513687f",
-      "generated_at": "2026-01-28T18:58:09.703109",
+      "generated_at": "2026-01-29T08:36:48.675581",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/api/graphql/_generated/queries/api_key.py": {
       "strategy": "always_overwrite",
       "content_hash": "984b1466249c795b33d9dea12ea5ec94b722054a55759dab63735462e04e734f",
-      "generated_at": "2026-01-28T18:58:09.708488",
+      "generated_at": "2026-01-29T08:36:48.678874",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/api/graphql/_generated/mutations/api_key.py": {
       "strategy": "always_overwrite",
       "content_hash": "55799683459ab82bfc04d84011f1e802318bc76d916ffc8ae0d20259e4704fd6",
-      "generated_at": "2026-01-28T18:58:09.711781",
+      "generated_at": "2026-01-29T08:36:48.682384",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/mcp_server/user_tools.py": {
       "strategy": "always_overwrite",
-      "content_hash": "20c0051b21bfa13cf103bb0868634c70c02e73414e1c5a20390ac56f7768b27b",
-      "generated_at": "2026-01-28T18:58:09.760940",
+      "content_hash": "aae7b064c6d1aef063ef6dcddc084af8d0756ec5717f08e574a78169eaecdec5",
+      "generated_at": "2026-01-29T08:36:48.736454",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/mcp_server/api_key_tools.py": {
       "strategy": "always_overwrite",
       "content_hash": "2b98fb134e6fd32a5814a6ea72f1902117f1fadfc6fb3f3ab75d69f201a0f1e3",
-      "generated_at": "2026-01-28T18:58:09.763824",
+      "generated_at": "2026-01-29T08:36:48.740342",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/graphql/fragments/user.ts": {
       "strategy": "always_overwrite",
-      "content_hash": "48408af05039d035673efd33a23c0ac0fac7f49dbc2ceca10d5f401837838728",
-      "generated_at": "2026-01-28T18:58:09.800090",
+      "content_hash": "65463ef2e77b1375d688f3c0b3e1807a70cef8e7797235eebf32774ae9513e58",
+      "generated_at": "2026-01-29T08:36:48.790181",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/graphql/queries/user.ts": {
       "strategy": "always_overwrite",
-      "content_hash": "e151ffa43de1836e9e221b1d4ac201de412cac634292ec8479f7735b8dbb84a2",
-      "generated_at": "2026-01-28T18:58:09.802848",
+      "content_hash": "79a9c0246cf3efd560d07835fc1f1fb827324f9fb4dc42d645d886391bc10ea4",
+      "generated_at": "2026-01-29T08:36:48.793529",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/graphql/mutations/user.ts": {
       "strategy": "always_overwrite",
-      "content_hash": "c8c483c1ebfac83f739bd815d37255e81faed502c8da2549c6958dd96790ab85",
-      "generated_at": "2026-01-28T18:58:09.805465",
+      "content_hash": "587830bcf36f260f49befd760c26a3dc4a25c9ae0f7b07f8522a86f1a2bdef3c",
+      "generated_at": "2026-01-29T08:36:48.797109",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/graphql/fragments/api_key.ts": {
       "strategy": "always_overwrite",
       "content_hash": "5ffb414e7ae4eac286d5a0ee07c2601f22218b7786f79acadc67a5f61137d54e",
-      "generated_at": "2026-01-28T18:58:09.808426",
+      "generated_at": "2026-01-29T08:36:48.800983",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/graphql/queries/api_key.ts": {
       "strategy": "always_overwrite",
       "content_hash": "a15c835b33d325166ddbc4cbb6599a8325e2a33f4fa8c4f495c2369f9efd4928",
-      "generated_at": "2026-01-28T18:58:09.812490",
+      "generated_at": "2026-01-29T08:36:48.804942",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/graphql/mutations/api_key.ts": {
       "strategy": "always_overwrite",
       "content_hash": "743a19420829c306a3485ef33071ea23190aed1dbc3311dfc15ff15f5b041a61",
-      "generated_at": "2026-01-28T18:58:09.817811",
+      "generated_at": "2026-01-29T08:36:48.808169",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/components/_generated/UserFormBase.tsx": {
       "strategy": "always_overwrite",
-      "content_hash": "2080a8e764d21984d2d6f882f7355bf2b4b4df1a6fd4dd23d83d5982145c72b4",
-      "generated_at": "2026-01-28T18:58:10.058800",
+      "content_hash": "2cdc196cbe69e0b407473fcd65497c8a99b67772f8a7df8f905966e4cb355aaf",
+      "generated_at": "2026-01-29T08:36:48.998899",
       "has_hooks": false,
       "extends": null
     },
@@ -979,8 +979,8 @@
     },
     "packages/frontend/src/components/_generated/UserTableBase.tsx": {
       "strategy": "always_overwrite",
-      "content_hash": "dca112f6496bf94e1a0fe92b4fe331b125482371dbbbbe4e56a786a892ee1466",
-      "generated_at": "2026-01-28T18:58:10.062088",
+      "content_hash": "150e6e043eebf2ed20e13476da2c581ea33a995a9fcd5350de176cb862258c69",
+      "generated_at": "2026-01-29T08:36:49.002864",
       "has_hooks": false,
       "extends": null
     },
@@ -993,8 +993,8 @@
     },
     "packages/frontend/src/components/_generated/UserDetailBase.tsx": {
       "strategy": "always_overwrite",
-      "content_hash": "dd70441137115a7f43ef3ad2d38d2290a2937e48b91e68cefd5f675eee2e6c29",
-      "generated_at": "2026-01-28T18:58:10.065492",
+      "content_hash": "936cc64c1abf0dd3ce91c6ea11d94e605804c5f26860b6b851407665cf1035dd",
+      "generated_at": "2026-01-29T08:36:49.007813",
       "has_hooks": false,
       "extends": null
     },
@@ -1008,7 +1008,7 @@
     "packages/frontend/src/components/_generated/APIKeyFormBase.tsx": {
       "strategy": "always_overwrite",
       "content_hash": "f770475979843ffd8df4dce35dcaf8175b4db5369a568a8b24a79e353c3f812d",
-      "generated_at": "2026-01-28T18:58:10.071886",
+      "generated_at": "2026-01-29T08:36:49.011970",
       "has_hooks": false,
       "extends": null
     },
@@ -1022,7 +1022,7 @@
     "packages/frontend/src/components/_generated/APIKeyTableBase.tsx": {
       "strategy": "always_overwrite",
       "content_hash": "43c7bee07103a40fc6446a88d9526ebf3e9c7baae3099c46ce448c1b6db5794f",
-      "generated_at": "2026-01-28T18:58:10.075830",
+      "generated_at": "2026-01-29T08:36:49.015765",
       "has_hooks": false,
       "extends": null
     },
@@ -1036,7 +1036,7 @@
     "packages/frontend/src/components/_generated/APIKeyDetailBase.tsx": {
       "strategy": "always_overwrite",
       "content_hash": "b50bf834f3d38804b1859e7f7660caaf04f194a2be870d95702bff53c559c1a9",
-      "generated_at": "2026-01-28T18:58:10.079666",
+      "generated_at": "2026-01-29T08:36:49.019392",
       "has_hooks": false,
       "extends": null
     },
@@ -1119,85 +1119,85 @@
     },
     "packages/backend/tests/factories/user.py": {
       "strategy": "always_overwrite",
-      "content_hash": "e8a56593e85bad308b42df45f7156c34d0647d8970cfc806b9f52d1a607c7d70",
-      "generated_at": "2026-01-28T18:58:10.281328",
+      "content_hash": "b9a65adf7a6463882cae362f6df24286b35034a52722bc02def75ba1e3ef09e2",
+      "generated_at": "2026-01-29T08:36:49.203691",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/tests/unit/test_user_service.py": {
       "strategy": "always_overwrite",
-      "content_hash": "3449bae20103e98e7494c1280610aba080396b5fcf4284638df47da53d7e92df",
-      "generated_at": "2026-01-28T18:58:10.284111",
+      "content_hash": "0c26649009c1822f092e311b19f41f5d71953b3b030928a3786e856b56b21b3c",
+      "generated_at": "2026-01-29T08:36:49.207112",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/tests/integration/test_user_api.py": {
       "strategy": "always_overwrite",
-      "content_hash": "ac0407c171d086479d6118ae568a1b64ac21a9d963506c95689b0f7b1770e601",
-      "generated_at": "2026-01-28T18:58:10.287458",
+      "content_hash": "41edc941b52a044554e87c84e3f92a25b59c58a34bfeb91b890efa131941bced",
+      "generated_at": "2026-01-29T08:36:49.211225",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/tests/graphql/test_user.py": {
       "strategy": "always_overwrite",
       "content_hash": "6d0b48ca1079392e5a82a6c7bbeddcfc320e320bbf9ae90019ec7f892435cd4b",
-      "generated_at": "2026-01-28T18:58:10.290932",
+      "generated_at": "2026-01-29T08:36:49.214729",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/tests/factories/api_key.py": {
       "strategy": "always_overwrite",
       "content_hash": "11715ce641e5acec99fe06d6bab0844c78a2a3a0f01d1c54393f2ab11cddff9e",
-      "generated_at": "2026-01-28T18:58:10.294279",
+      "generated_at": "2026-01-29T08:36:49.218128",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/tests/unit/test_api_key_service.py": {
       "strategy": "always_overwrite",
       "content_hash": "93cb1a6291253937b6da36548a65c725c71688f217354d2d010de20312b1f537",
-      "generated_at": "2026-01-28T18:58:10.298119",
+      "generated_at": "2026-01-29T08:36:49.221656",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/tests/integration/test_api_key_api.py": {
       "strategy": "always_overwrite",
       "content_hash": "0cff7edb930eb8d69a7b384b95ebcf4571838723b0d9c0fecbc05cf0656c20cd",
-      "generated_at": "2026-01-28T18:58:10.300997",
+      "generated_at": "2026-01-29T08:36:49.224623",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/tests/graphql/test_api_key.py": {
       "strategy": "always_overwrite",
       "content_hash": "5143d55bdb375dd729acce42f000bf13ba38d19fbad5698ad9aa9d0626e01cad",
-      "generated_at": "2026-01-28T18:58:10.303737",
+      "generated_at": "2026-01-29T08:36:49.228756",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/__tests__/components/User.test.tsx": {
       "strategy": "always_overwrite",
-      "content_hash": "8f23d0efeece78169b304a9f0bc6c9d3595c7f315738399e7536030f7514b9cd",
-      "generated_at": "2026-01-28T18:58:10.339172",
+      "content_hash": "f61a78bf6ea853a24c1249ed54b451ca8d446a9d2d043bb19aabe9935bbb0b92",
+      "generated_at": "2026-01-29T08:36:49.263689",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/__tests__/hooks/useUser.test.tsx": {
       "strategy": "always_overwrite",
       "content_hash": "58a79f3022c8c0deafc3962f535d36ed196e0e39a3be3ff4278019c72575ecb2",
-      "generated_at": "2026-01-28T18:58:10.343531",
+      "generated_at": "2026-01-29T08:36:49.267313",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/__tests__/components/APIKey.test.tsx": {
       "strategy": "always_overwrite",
       "content_hash": "2cb42b83732ab7618f0bdc0d57989e9f678fa3551e167fa9b98bc6c5b4f1389a",
-      "generated_at": "2026-01-28T18:58:10.348210",
+      "generated_at": "2026-01-29T08:36:49.270975",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/__tests__/hooks/useAPIKey.test.tsx": {
       "strategy": "always_overwrite",
       "content_hash": "980ebea2096416d9a0be37452bb4bb119be02547f20498ce5c011340c43465a4",
-      "generated_at": "2026-01-28T18:58:10.352249",
+      "generated_at": "2026-01-29T08:36:49.274096",
       "has_hooks": false,
       "extends": null
     },
@@ -3080,28 +3080,28 @@
     "packages/backend/src/prisme_api/models/allowed_email_domain.py": {
       "strategy": "always_overwrite",
       "content_hash": "1f8c267cd7bcb9ab2dff36c78fc8c6479b6e989ae5bf6a8f8a64ffc7d7c7d47d",
-      "generated_at": "2026-01-28T18:58:09.473132",
+      "generated_at": "2026-01-29T08:36:48.380075",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/schemas/allowed_email_domain.py": {
       "strategy": "always_overwrite",
       "content_hash": "15608c4fa2bd2459e19d5aa3d170a4b72194403d8d46f67e585a8bca14e1ce73",
-      "generated_at": "2026-01-28T18:58:09.507169",
+      "generated_at": "2026-01-29T08:36:48.416297",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/services/_generated/allowed_email_domain_base.py": {
       "strategy": "always_overwrite",
       "content_hash": "2f0fd1757aa86008aa69ef7e30d208fe7247e3c5363efad35f9ecf37e34f26a2",
-      "generated_at": "2026-01-28T18:58:09.548544",
+      "generated_at": "2026-01-29T08:36:48.453148",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/auth/config.py": {
       "strategy": "always_overwrite",
-      "content_hash": "bc132c75b1dda04fcc9667a75e1300692954261ba23328add4079deff4e731ea",
-      "generated_at": "2026-01-28T18:58:09.564950",
+      "content_hash": "c037ccb378e49ae4df99a4ee58c05f5bdeed45b2baab160c9e8633d75ddd6c0b",
+      "generated_at": "2026-01-29T08:36:48.505922",
       "has_hooks": false,
       "extends": null
     },
@@ -3129,182 +3129,182 @@
     "packages/backend/src/prisme_api/api/rest/_generated/allowed_email_domain_routes.py": {
       "strategy": "always_overwrite",
       "content_hash": "2a56589312c46932594c1e21088a95fd6562bf596d3b1f08d84f38cc9b809c89",
-      "generated_at": "2026-01-28T18:58:09.623939",
+      "generated_at": "2026-01-29T08:36:48.600638",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/api/graphql/_generated/types/allowed_email_domain.py": {
       "strategy": "always_overwrite",
       "content_hash": "d37a9d0a93cae93dfda85a0e5408db5ef2fee532292c8022cce96568fc6304d9",
-      "generated_at": "2026-01-28T18:58:09.729221",
+      "generated_at": "2026-01-29T08:36:48.698886",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/api/graphql/_generated/filters/allowed_email_domain.py": {
       "strategy": "always_overwrite",
       "content_hash": "93692460dc4f9cb32ee4cb990409267fd3917162881326f57ec1b13ca05d5f1c",
-      "generated_at": "2026-01-28T18:58:09.732561",
+      "generated_at": "2026-01-29T08:36:48.702173",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/api/graphql/_generated/queries/allowed_email_domain.py": {
       "strategy": "always_overwrite",
       "content_hash": "0aaf9feaff284eb19a73dcaa68e945301dcd81a2c4fb0690ea4d9c8116fa9586",
-      "generated_at": "2026-01-28T18:58:09.736760",
+      "generated_at": "2026-01-29T08:36:48.705864",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/api/graphql/_generated/mutations/allowed_email_domain.py": {
       "strategy": "always_overwrite",
       "content_hash": "586fe37f5d4e53b858da89326523453d88efee12d2c2da9c55f002560e97aeba",
-      "generated_at": "2026-01-28T18:58:09.741310",
+      "generated_at": "2026-01-29T08:36:48.709305",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/src/prisme_api/mcp_server/allowed_email_domain_tools.py": {
       "strategy": "always_overwrite",
       "content_hash": "6f9023a3ae10e3680a92f306da031f70708fa87c681ac52c4803b6e718092e74",
-      "generated_at": "2026-01-28T18:58:09.770834",
+      "generated_at": "2026-01-29T08:36:48.748869",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/graphql/fragments/allowed_email_domain.ts": {
       "strategy": "always_overwrite",
       "content_hash": "feefe9708b2b9e29dbe230acd8e87c21a61c8bf655c1fa8b5e46301cacbc108a",
-      "generated_at": "2026-01-28T18:58:09.830713",
+      "generated_at": "2026-01-29T08:36:48.821524",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/graphql/queries/allowed_email_domain.ts": {
       "strategy": "always_overwrite",
       "content_hash": "5239489ee0547498b7708a9b3cf130be2ca8573c94e7fc04f518ac3c5850be1c",
-      "generated_at": "2026-01-28T18:58:09.833903",
+      "generated_at": "2026-01-29T08:36:48.824580",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/graphql/mutations/allowed_email_domain.ts": {
       "strategy": "always_overwrite",
       "content_hash": "ca0d9af79bbd58fd8f2b96ba6858703a89d61e85575d9407c0d2abff02096d1b",
-      "generated_at": "2026-01-28T18:58:09.837333",
+      "generated_at": "2026-01-29T08:36:48.827712",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/prism/headless/types.ts": {
       "strategy": "always_overwrite",
       "content_hash": "26606c22676c5bfe6481a9d6faf9ac81dfb121647ff9278827eea05ba933f020",
-      "generated_at": "2026-01-28T18:58:09.863163",
+      "generated_at": "2026-01-29T08:36:48.846045",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/prism/headless/composables/usePagination.ts": {
       "strategy": "always_overwrite",
       "content_hash": "48ad912eff241919b135236b580d4d7439beb8fb115c711af0af8c110fcf8d9a",
-      "generated_at": "2026-01-28T18:58:09.865800",
+      "generated_at": "2026-01-29T08:36:48.849520",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/prism/headless/composables/useSelection.ts": {
       "strategy": "always_overwrite",
       "content_hash": "2bdbc016d027b03f887af76b6c9e4a1d80a80e0a847173bd7ef14237b4ed8ce6",
-      "generated_at": "2026-01-28T18:58:09.871160",
+      "generated_at": "2026-01-29T08:36:48.852830",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/prism/headless/composables/useSorting.ts": {
       "strategy": "always_overwrite",
       "content_hash": "8e2b0679311b68aa220a94f335f5dd0ebf0636bbfc0fd52b481a545fa860fa45",
-      "generated_at": "2026-01-28T18:58:09.876049",
+      "generated_at": "2026-01-29T08:36:48.855838",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/prism/headless/composables/useFiltering.ts": {
       "strategy": "always_overwrite",
       "content_hash": "5f8f0ebb63c5f84dd6c431e547728de180876c76af4c8cbe5332465c56a3af62",
-      "generated_at": "2026-01-28T18:58:09.880857",
+      "generated_at": "2026-01-29T08:36:48.858830",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/prism/headless/composables/useSearch.ts": {
       "strategy": "always_overwrite",
       "content_hash": "f6f950a51fe837572361fd4e36698e066ee905862b814da4e69945d2b1f39c30",
-      "generated_at": "2026-01-28T18:58:09.886810",
+      "generated_at": "2026-01-29T08:36:48.862120",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/prism/headless/composables/index.ts": {
       "strategy": "always_overwrite",
       "content_hash": "71ba533b3123c7b4394e34d616b683de96612e9196ba25a649218032accd668c",
-      "generated_at": "2026-01-28T18:58:09.892224",
+      "generated_at": "2026-01-29T08:36:48.865726",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/prism/headless/ui/useModal.ts": {
       "strategy": "always_overwrite",
       "content_hash": "350225607b600a4d3aadb635b46d19215cc67017c6843f0246df4198b09419c7",
-      "generated_at": "2026-01-28T18:58:09.896651",
+      "generated_at": "2026-01-29T08:36:48.869474",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/prism/headless/ui/useConfirmation.tsx": {
       "strategy": "always_overwrite",
       "content_hash": "b4c19562dac94f2a1218db42710ca66a8f473f025e7111b050c15c23709dd7b1",
-      "generated_at": "2026-01-28T18:58:09.900325",
+      "generated_at": "2026-01-29T08:36:48.873787",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/prism/headless/ui/useToast.tsx": {
       "strategy": "always_overwrite",
       "content_hash": "4b16423bb50ab50414e6eb15f19f5e1879c891c373f31422016fcc994832e595",
-      "generated_at": "2026-01-28T18:58:09.903544",
+      "generated_at": "2026-01-29T08:36:48.876670",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/prism/headless/ui/useDrawer.ts": {
       "strategy": "always_overwrite",
       "content_hash": "ba8592b03e1b854ac0293660ac2bf27769e29073a1bd1f79ffba0310010b263e",
-      "generated_at": "2026-01-28T18:58:09.907072",
+      "generated_at": "2026-01-29T08:36:48.879668",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/prism/headless/ui/index.ts": {
       "strategy": "always_overwrite",
       "content_hash": "c0594d424a421d523063cd5c44236e00828e9db610e7af22fea76ccaafb3cf7e",
-      "generated_at": "2026-01-28T18:58:09.910329",
+      "generated_at": "2026-01-29T08:36:48.883227",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/prism/headless/utils/transform.ts": {
       "strategy": "always_overwrite",
       "content_hash": "dcb25616399253043a1b61940eba3fe6ec356cd3a763c2a84b5e14657f6f2285",
-      "generated_at": "2026-01-28T18:58:09.914042",
+      "generated_at": "2026-01-29T08:36:48.887253",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/prism/headless/utils/export.ts": {
       "strategy": "always_overwrite",
       "content_hash": "cd6879c77a94d979c76bf39d89368e4892ad6f0260f757011ecd4f9b766a4830",
-      "generated_at": "2026-01-28T18:58:09.917404",
+      "generated_at": "2026-01-29T08:36:48.890676",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/prism/headless/utils/index.ts": {
       "strategy": "always_overwrite",
       "content_hash": "ab21a644a94e0fc68df5cdbbfde0ee5af1543ea985393759f6317facb2a8d380",
-      "generated_at": "2026-01-28T18:58:09.920674",
+      "generated_at": "2026-01-29T08:36:48.893624",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/prism/headless/index.ts": {
       "strategy": "always_overwrite",
       "content_hash": "2455939feebe98945fd40170d1231c5fc25cd45500740e0b5f2a62c515fb6e0a",
-      "generated_at": "2026-01-28T18:58:09.923788",
+      "generated_at": "2026-01-29T08:36:48.896519",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/components/_generated/AllowedEmailDomainFormBase.tsx": {
       "strategy": "always_overwrite",
       "content_hash": "8c653b96a7c035cc112efe06d60d9c222699b275fd5cecf697830c4e7315e57e",
-      "generated_at": "2026-01-28T18:58:10.093749",
+      "generated_at": "2026-01-29T08:36:49.037282",
       "has_hooks": false,
       "extends": null
     },
@@ -3318,7 +3318,7 @@
     "packages/frontend/src/components/_generated/AllowedEmailDomainTableBase.tsx": {
       "strategy": "always_overwrite",
       "content_hash": "c198fcacf3f6970ee1b7554c14199a4016754cf883d6feaa9a3fd997141921c5",
-      "generated_at": "2026-01-28T18:58:10.100514",
+      "generated_at": "2026-01-29T08:36:49.042045",
       "has_hooks": false,
       "extends": null
     },
@@ -3332,7 +3332,7 @@
     "packages/frontend/src/components/_generated/AllowedEmailDomainDetailBase.tsx": {
       "strategy": "always_overwrite",
       "content_hash": "c355be02df70fc98c76a30cf38e4767d0e951607fc8b2ee973acb29b74189141",
-      "generated_at": "2026-01-28T18:58:10.106490",
+      "generated_at": "2026-01-29T08:36:49.045789",
       "has_hooks": false,
       "extends": null
     },
@@ -3345,43 +3345,43 @@
     },
     "packages/frontend/src/hooks/useUserFormState.ts": {
       "strategy": "always_overwrite",
-      "content_hash": "8d17bad63748c275415d7bf21ff76abda301da3642917758bc48c13c099e168f",
-      "generated_at": "2026-01-28T18:58:10.130454",
+      "content_hash": "a8568aba85c395e910ef2882b9f1b0fd31fac962040558780e65d6949e072eb6",
+      "generated_at": "2026-01-29T08:36:49.069725",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/hooks/useUserTableState.ts": {
       "strategy": "always_overwrite",
-      "content_hash": "0d0c101ebcef1fb769c9cdd925cc84212e224fddf52876baa8178a617d2c7cdb",
-      "generated_at": "2026-01-28T18:58:10.133436",
+      "content_hash": "48f55d1778ae25ac16279ef5b4927825274a5452383a61c9c4fa69e23dd8f62c",
+      "generated_at": "2026-01-29T08:36:49.074028",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/hooks/useAPIKeyFormState.ts": {
       "strategy": "always_overwrite",
       "content_hash": "256f69011e721d270f67e4e9f1daa5f0654dbfe9b373a83eea306b79a0aac66d",
-      "generated_at": "2026-01-28T18:58:10.137705",
+      "generated_at": "2026-01-29T08:36:49.078843",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/hooks/useAPIKeyTableState.ts": {
       "strategy": "always_overwrite",
       "content_hash": "d850511829227e4cd0e8a248d2162cf8260b89e7dd6f41217a204424af57b5bf",
-      "generated_at": "2026-01-28T18:58:10.140765",
+      "generated_at": "2026-01-29T08:36:49.082639",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/hooks/useSubdomainFormState.ts": {
       "strategy": "always_overwrite",
       "content_hash": "d16a373526dc9c2be9c54dd4bcacb82c9bf82c46599801235d9580d149e8ffe2",
-      "generated_at": "2026-01-28T18:58:10.145637",
+      "generated_at": "2026-01-29T08:36:49.086811",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/hooks/useSubdomainTableState.ts": {
       "strategy": "always_overwrite",
       "content_hash": "4412e635ad45d5cd4afd31839c51eda724c6307462f2e8c4a33b669d22baef59",
-      "generated_at": "2026-01-28T18:58:10.148573",
+      "generated_at": "2026-01-29T08:36:49.089853",
       "has_hooks": false,
       "extends": null
     },
@@ -3395,14 +3395,14 @@
     "packages/frontend/src/hooks/useAllowedEmailDomainFormState.ts": {
       "strategy": "always_overwrite",
       "content_hash": "2610cc24811dc377ab8b44738ad16bc5d2320bf9240007d5c19ef6c6f8421327",
-      "generated_at": "2026-01-28T18:58:10.154661",
+      "generated_at": "2026-01-29T08:36:49.094975",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/hooks/useAllowedEmailDomainTableState.ts": {
       "strategy": "always_overwrite",
       "content_hash": "d7458d36176d29127d5274e2250ddd3cc491909c1eb4884869d1b3ad51e18467",
-      "generated_at": "2026-01-28T18:58:10.157859",
+      "generated_at": "2026-01-29T08:36:49.098804",
       "has_hooks": false,
       "extends": null
     },
@@ -3437,42 +3437,119 @@
     "packages/backend/tests/factories/allowed_email_domain.py": {
       "strategy": "always_overwrite",
       "content_hash": "73c803b83c8dd3aff3d09008a83f4b386f7b9a5d193d66758732139f96a92d62",
-      "generated_at": "2026-01-28T18:58:10.319656",
+      "generated_at": "2026-01-29T08:36:49.244237",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/tests/unit/test_allowed_email_domain_service.py": {
       "strategy": "always_overwrite",
       "content_hash": "8c3bb828199d2db85326159cf1975d98bd6488a0fd26a4dee4d6303901883e36",
-      "generated_at": "2026-01-28T18:58:10.322509",
+      "generated_at": "2026-01-29T08:36:49.247284",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/tests/integration/test_allowed_email_domain_api.py": {
       "strategy": "always_overwrite",
       "content_hash": "2aacc6c42223b52ef4b2d7bf5dc314a462d8c0b5d6b473fc0c144875d1db2673",
-      "generated_at": "2026-01-28T18:58:10.325692",
+      "generated_at": "2026-01-29T08:36:49.250224",
       "has_hooks": false,
       "extends": null
     },
     "packages/backend/tests/graphql/test_allowed_email_domain.py": {
       "strategy": "always_overwrite",
       "content_hash": "ea7b446c6e6633294fb721a38151ad56e29dfab7ebb207ab9b26e781d58941ef",
-      "generated_at": "2026-01-28T18:58:10.328681",
+      "generated_at": "2026-01-29T08:36:49.253230",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/__tests__/components/AllowedEmailDomain.test.tsx": {
       "strategy": "always_overwrite",
       "content_hash": "fffde1bb4a2151b8f516d1ca19c05f42d4904ed73f894d34b06bff9cf08b81a1",
-      "generated_at": "2026-01-28T18:58:10.364191",
+      "generated_at": "2026-01-29T08:36:49.285227",
       "has_hooks": false,
       "extends": null
     },
     "packages/frontend/src/__tests__/hooks/useAllowedEmailDomain.test.tsx": {
       "strategy": "always_overwrite",
       "content_hash": "8789968ece48d500df2da63125d207fedbdbfaf8b9a9d25edd3d3e1228a2dd03",
-      "generated_at": "2026-01-28T18:58:10.368516",
+      "generated_at": "2026-01-29T08:36:49.288499",
+      "has_hooks": false,
+      "extends": null
+    },
+    "packages/backend/src/prisme_api/services/email_service.py": {
+      "strategy": "always_overwrite",
+      "content_hash": "96b90a864ec50decfa1287b053aac15bc0361b21a89c9ed82fc6cfb0f137895d",
+      "generated_at": "2026-01-29T08:36:48.551670",
+      "has_hooks": false,
+      "extends": null
+    },
+    "packages/backend/src/prisme_api/auth/totp_service.py": {
+      "strategy": "always_overwrite",
+      "content_hash": "7a6f59a5d034489cfe008717c3e05bd9093fa0aca0c0d96ea5ff9f0ddadfbe06",
+      "generated_at": "2026-01-29T08:36:48.555279",
+      "has_hooks": false,
+      "extends": null
+    },
+    "packages/frontend/src/ui/Icon.tsx": {
+      "strategy": "generate_once",
+      "content_hash": "62de967416cf249949f084da36aa0543502ab4789171fd437fc5c638b880cb8e",
+      "generated_at": "2026-01-29T08:31:30.523505",
+      "has_hooks": false,
+      "extends": null
+    },
+    "packages/frontend/src/ui/index.ts": {
+      "strategy": "always_overwrite",
+      "content_hash": "b7f3506409ecd25dbf98ba295760ad6be7545ac0081dfbfe136d4e629eb390c6",
+      "generated_at": "2026-01-29T08:36:48.902650",
+      "has_hooks": false,
+      "extends": null
+    },
+    "packages/frontend/src/lib/authApi.ts": {
+      "strategy": "always_overwrite",
+      "content_hash": "fd0330d91a2b8065d337dfa6d69046bf0dd238e3256f2348b54710086fa9af6f",
+      "generated_at": "2026-01-29T08:36:49.135111",
+      "has_hooks": false,
+      "extends": null
+    },
+    "packages/frontend/src/components/auth/ForgotPasswordForm.tsx": {
+      "strategy": "always_overwrite",
+      "content_hash": "55804890a838ea6deb7bbaab89a5fa825aa4b20ad8060dcb4bedc39b57b9857a",
+      "generated_at": "2026-01-29T08:36:49.160261",
+      "has_hooks": false,
+      "extends": null
+    },
+    "packages/frontend/src/pages/ResetPassword.tsx": {
+      "strategy": "always_overwrite",
+      "content_hash": "32a740b1682472ab13a298b9578d4b755023a8de461332c8a7c4aeca15704f41",
+      "generated_at": "2026-01-29T08:36:49.163919",
+      "has_hooks": false,
+      "extends": null
+    },
+    "packages/frontend/src/pages/VerifyEmail.tsx": {
+      "strategy": "always_overwrite",
+      "content_hash": "11c3585d76ac3667e296432205616af1017be3efca4c83e814caf8d7c2962326",
+      "generated_at": "2026-01-29T08:36:49.166894",
+      "has_hooks": false,
+      "extends": null
+    },
+    "packages/frontend/src/components/auth/EmailVerification.tsx": {
+      "strategy": "always_overwrite",
+      "content_hash": "98b2c0920de1528f218a16a3dfde83a71b9ea397ef43adfbf74ac7f86e488d9f",
+      "generated_at": "2026-01-29T08:36:49.170651",
+      "has_hooks": false,
+      "extends": null
+    },
+    "packages/frontend/src/components/auth/TOTPVerify.tsx": {
+      "strategy": "always_overwrite",
+      "content_hash": "1a8c0cc6d99472983d34c5ff10fe686ff15b34276186f022fce543c80c931a54",
+      "generated_at": "2026-01-29T08:36:49.173959",
+      "has_hooks": false,
+      "extends": null
+    },
+    "packages/frontend/src/pages/AuthCallback.tsx": {
+      "strategy": "always_overwrite",
+      "content_hash": "6c63421825185213a08bc6c82f308c895db693f0266a431e928d15bb25bd9b60",
+      "generated_at": "2026-01-29T08:36:49.177141",
       "has_hooks": false,
       "extends": null
     }

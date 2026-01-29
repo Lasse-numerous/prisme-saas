@@ -1,11 +1,17 @@
---- generated+++ user@@ -11,6 +11,7 @@ import { ThemeToggle } from './ui/ThemeToggle';
+--- generated+++ user@@ -11,10 +11,9 @@ import { ThemeToggle } from './ui/ThemeToggle';
  import { Login } from './pages/Login';
  import { Signup } from './pages/Signup';
+-import { ForgotPasswordForm } from './components/auth/ForgotPasswordForm';
+-import ResetPassword from './pages/ResetPassword';
+-import VerifyEmail from './pages/VerifyEmail';
+-import AuthCallback from './pages/AuthCallback';
++import { ForgotPassword } from './pages/ForgotPassword';
++import { AuthCallback } from './components/auth/AuthCallback';
 +import { ProtectedRoute } from './components/auth/ProtectedRoute';
  import UsersListPage from './pages/users';
  import UserDetailPage from './pages/users/[id]';
  import UserCreatePage from './pages/users/new';
-@@ -23,10 +24,6 @@ import SubdomainDetailPage from './pages/subdomains/[id]';
+@@ -27,15 +26,13 @@ import SubdomainDetailPage from './pages/subdomains/[id]';
  import SubdomainCreatePage from './pages/subdomains/new';
  import SubdomainEditPage from './pages/subdomains/[id]/edit';
 -import AllowedEmailDomainsListPage from './pages/allowed-email-domains';
@@ -15,7 +21,16 @@
  import { useAuth } from './contexts/AuthContext';
 
  // PRISM:PROTECTED:START - Custom Imports
-@@ -73,6 +70,8 @@
+-// Add your custom page imports here:
+-// import MyCustomPage from './pages/custom';
++import LandingPage from './pages/LandingPage';
++import Dashboard from './pages/Dashboard';
++import ResetPassword from './pages/ResetPassword';
++import VerifyEmail from './pages/VerifyEmail';
+ // PRISM:PROTECTED:END
+
+ /** App name and description for branding */
+@@ -77,6 +74,8 @@
            {/* Navigation */}
            <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
 +          {/* Admin-only: Users management */}
@@ -23,7 +38,7 @@
            <NavLink
              to="/users"
              className={({ isActive }) =>
-@@ -84,10 +83,13 @@             }
+@@ -88,10 +87,13 @@             }
            >
              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 -              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -37,7 +52,7 @@
            <NavLink
              to="/api-keys"
              className={({ isActive }) =>
-@@ -99,10 +101,13 @@             }
+@@ -103,10 +105,13 @@             }
            >
              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 -              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -54,7 +69,7 @@
            <NavLink
              to="/subdomains"
              className={({ isActive }) =>
-@@ -114,25 +119,46 @@             }
+@@ -118,25 +123,46 @@             }
            >
              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 -              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -116,11 +131,41 @@
              {/* PRISM:PROTECTED:START - Custom Nav Links */}
              {/* Add your custom navigation links here */}
              {/* PRISM:PROTECTED:END */}
-@@ -207,24 +233,23 @@     element: <Layout />,
+@@ -186,23 +212,10 @@   );
+ }
+
+-/** Home page with welcome message */
++/** Home page: landing for guests, dashboard for authenticated users */
+ function HomePage(): ReactElement {
+-  return (
+-    <div className="page-container">
+-      <div className="card p-8 text-center">
+-        <div className="w-16 h-16 bg-surface-sunken rounded-full flex items-center justify-center mx-auto mb-4">
+-          <svg className="w-8 h-8 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
+-          </svg>
+-        </div>
+-        <h1 className="text-2xl font-semibold text-foreground mb-2">Welcome</h1>
+-        <p className="text-muted max-w-md mx-auto">
+-          Select an item from the sidebar to get started.
+-        </p>
+-      </div>
+-    </div>
+-  );
++  const { isAuthenticated } = useAuth();
++  return isAuthenticated ? <Dashboard /> : <LandingPage />;
+ }
+
+ /** Application router with all model routes */
+@@ -211,31 +224,28 @@     element: <Layout />,
      children: [
        { path: '/', element: <HomePage /> },
 -  { path: '/login', element: <Login /> },
 -  { path: '/signup', element: <Signup /> },
+-  { path: '/forgot-password', element: <ForgotPasswordForm /> },
+-  { path: '/reset-password', element: <ResetPassword /> },
+-  { path: '/verify-email', element: <VerifyEmail /> },
+-  { path: '/auth/callback', element: <AuthCallback /> },
 -  { path: '/users', element: <UsersListPage /> },
 -  { path: '/users/:id', element: <UserDetailPage /> },
 -  { path: '/users/new', element: <UserCreatePage /> },
@@ -140,6 +185,8 @@
 +      // Public routes
 +      { path: '/login', element: <Login /> },
 +      { path: '/signup', element: <Signup /> },
++      { path: '/forgot-password', element: <ForgotPassword /> },
++      { path: '/auth/callback', element: <AuthCallback /> },
 +      // Admin-only routes (Users management)
 +      { path: '/users', element: <ProtectedRoute roles={['admin']}><UsersListPage /></ProtectedRoute> },
 +      { path: '/users/:id', element: <ProtectedRoute roles={['admin']}><UserDetailPage /></ProtectedRoute> },
@@ -155,5 +202,10 @@
 +      { path: '/subdomains/new', element: <ProtectedRoute><SubdomainCreatePage /></ProtectedRoute> },
 +      { path: '/subdomains/:id/edit', element: <ProtectedRoute><SubdomainEditPage /></ProtectedRoute> },
        // PRISM:PROTECTED:START - Custom Routes
-       // Add your custom routes here:
-       // { path: '/custom', element: <MyCustomPage /> },
+-      // Add your custom routes here:
+-      // { path: '/custom', element: <MyCustomPage /> },
++      { path: '/reset-password', element: <ResetPassword /> },
++      { path: '/verify-email', element: <VerifyEmail /> },
+       // PRISM:PROTECTED:END
+     ],
+   },

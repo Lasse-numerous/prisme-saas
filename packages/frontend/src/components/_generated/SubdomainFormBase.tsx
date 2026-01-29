@@ -79,7 +79,7 @@ export function SubdomainFormBase({
                 placeholder={field.placeholder}
                 required={field.required}
                 disabled={loading}
-                error={errors[field.name as keyof SubdomainCreate]?.message as string | undefined}
+                error={errors[field.name as keyof SubdomainCreate]?.message}
                 options={field.enumValues}
                 references={field.references}
                 {...field.widgetProps}

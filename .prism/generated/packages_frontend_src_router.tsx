@@ -11,6 +11,10 @@ import { createBrowserRouter, Link, NavLink, Outlet, useLocation } from 'react-r
 import { ThemeToggle } from './ui/ThemeToggle';
 import { Login } from './pages/Login';
 import { Signup } from './pages/Signup';
+import { ForgotPasswordForm } from './components/auth/ForgotPasswordForm';
+import ResetPassword from './pages/ResetPassword';
+import VerifyEmail from './pages/VerifyEmail';
+import AuthCallback from './pages/AuthCallback';
 import UsersListPage from './pages/users';
 import UserDetailPage from './pages/users/[id]';
 import UserCreatePage from './pages/users/new';
@@ -209,6 +213,10 @@ export const router = createBrowserRouter([
       { path: '/', element: <HomePage /> },
   { path: '/login', element: <Login /> },
   { path: '/signup', element: <Signup /> },
+  { path: '/forgot-password', element: <ForgotPasswordForm /> },
+  { path: '/reset-password', element: <ResetPassword /> },
+  { path: '/verify-email', element: <VerifyEmail /> },
+  { path: '/auth/callback', element: <AuthCallback /> },
   { path: '/users', element: <UsersListPage /> },
   { path: '/users/:id', element: <UserDetailPage /> },
   { path: '/users/new', element: <UserCreatePage /> },

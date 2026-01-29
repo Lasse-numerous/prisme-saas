@@ -74,7 +74,7 @@ export function AllowedEmailDomainFormBase({
                 placeholder={field.placeholder}
                 required={field.required}
                 disabled={loading}
-                error={errors[field.name as keyof AllowedEmailDomainCreate]?.message as string | undefined}
+                error={errors[field.name as keyof AllowedEmailDomainCreate]?.message}
                 options={field.enumValues}
                 references={field.references}
                 {...field.widgetProps}

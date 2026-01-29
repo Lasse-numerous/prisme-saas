@@ -17,7 +17,12 @@ export const UserFragment = graphql(`
     mfaSecret
     subdomainLimit
     isAdmin
-    authentikId
+    passwordResetToken
+    passwordResetTokenExpiresAt
+    emailVerificationTokenExpiresAt
+    failedLoginAttempts
+    lockedUntil
+    githubId
     username
     roles
     isActive
@@ -43,7 +48,12 @@ export const UserFields = `
     mfaSecret
     subdomainLimit
     isAdmin
-    authentikId
+    passwordResetToken
+    passwordResetTokenExpiresAt
+    emailVerificationTokenExpiresAt
+    failedLoginAttempts
+    lockedUntil
+    githubId
     username
     roles
     isActive

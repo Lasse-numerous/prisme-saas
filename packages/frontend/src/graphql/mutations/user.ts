@@ -19,7 +19,12 @@ export const CreateUserMutation = graphql(`
       mfaSecret
       subdomainLimit
       isAdmin
-      authentikId
+      passwordResetToken
+      passwordResetTokenExpiresAt
+      emailVerificationTokenExpiresAt
+      failedLoginAttempts
+      lockedUntil
+      githubId
       username
       roles
       isActive
@@ -49,7 +54,12 @@ export const UpdateUserMutation = graphql(`
       mfaSecret
       subdomainLimit
       isAdmin
-      authentikId
+      passwordResetToken
+      passwordResetTokenExpiresAt
+      emailVerificationTokenExpiresAt
+      failedLoginAttempts
+      lockedUntil
+      githubId
       username
       roles
       isActive

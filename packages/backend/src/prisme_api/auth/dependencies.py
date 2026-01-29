@@ -14,7 +14,7 @@ from fastapi import Cookie, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from prisme_api.auth.config import authentik_settings
+from prisme_api.auth.config import auth_settings
 from prisme_api.database import get_db
 from prisme_api.models.user import User
 
@@ -40,7 +40,7 @@ def create_session_jwt(user: User) -> str:
         "iat": now,
         "exp": now + SESSION_TOKEN_EXPIRY,
     }
-    return jwt.encode(payload, authentik_settings.jwt_secret, algorithm="HS256")
+    return jwt.encode(payload, auth_settings.jwt_secret, algorithm="HS256")
 
 
 def decode_session_jwt(token: str) -> dict[str, Any]:
@@ -55,13 +55,13 @@ def decode_session_jwt(token: str) -> dict[str, Any]:
     Raises:
         jwt.InvalidTokenError: If the token is invalid or expired.
     """
-    return jwt.decode(token, authentik_settings.jwt_secret, algorithms=["HS256"])
+    return jwt.decode(token, auth_settings.jwt_secret, algorithms=["HS256"])
 
 
 async def get_session_token(
     session_token: str | None = Cookie(
         None,
-        alias=authentik_settings.session_cookie_name,
+        alias=auth_settings.session_cookie_name,
     ),
 ) -> str:
     """Extract session token from cookie.

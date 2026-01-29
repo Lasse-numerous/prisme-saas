@@ -28,8 +28,21 @@ class UserBase(SchemaBase):
     mfa_secret: str | None = Field(default=None, max_length=255, description="TOTP MFA secret")
     subdomain_limit: int = Field(description="Maximum number of subdomains allowed")
     is_admin: bool = Field(description="Whether user has admin privileges")
-    authentik_id: str | None = Field(
-        default=None, max_length=255, description="Authentik user ID for SSO"
+    password_reset_token: str | None = Field(
+        default=None, max_length=255, description="Token for password reset"
+    )
+    password_reset_token_expires_at: datetime | None = Field(
+        default=None, description="When password reset token expires"
+    )
+    email_verification_token_expires_at: datetime | None = Field(
+        default=None, description="When email verification token expires"
+    )
+    failed_login_attempts: int = Field(description="Number of consecutive failed login attempts")
+    locked_until: datetime | None = Field(
+        default=None, description="Account locked until this time after too many failed logins"
+    )
+    github_id: str | None = Field(
+        default=None, max_length=255, description="GitHub user ID for OAuth"
     )
     username: str | None = Field(
         default=None, max_length=100, description="Username (optional, email is primary)"
@@ -49,6 +62,9 @@ class UserCreate(UserBase):
         default=10, description="Maximum number of subdomains allowed"
     )
     is_admin: bool | None = Field(default=False, description="Whether user has admin privileges")
+    failed_login_attempts: int | None = Field(
+        default=0, description="Number of consecutive failed login attempts"
+    )
     roles: dict[str, Any] | list[Any] | None = Field(
         default=["user"], description="User roles for authorization"
     )
@@ -74,8 +90,23 @@ class UserUpdate(SchemaBase):
         default=10, description="Maximum number of subdomains allowed"
     )
     is_admin: bool | None = Field(default=False, description="Whether user has admin privileges")
-    authentik_id: str | None = Field(
-        default=None, max_length=255, description="Authentik user ID for SSO"
+    password_reset_token: str | None = Field(
+        default=None, max_length=255, description="Token for password reset"
+    )
+    password_reset_token_expires_at: datetime | None = Field(
+        default=None, description="When password reset token expires"
+    )
+    email_verification_token_expires_at: datetime | None = Field(
+        default=None, description="When email verification token expires"
+    )
+    failed_login_attempts: int | None = Field(
+        default=0, description="Number of consecutive failed login attempts"
+    )
+    locked_until: datetime | None = Field(
+        default=None, description="Account locked until this time after too many failed logins"
+    )
+    github_id: str | None = Field(
+        default=None, max_length=255, description="GitHub user ID for OAuth"
     )
     username: str | None = Field(
         default=None, max_length=100, description="Username (optional, email is primary)"
@@ -109,7 +140,12 @@ class UserFilter(SchemaBase):
     mfa_secret: str | None = None
     subdomain_limit: int | None = None
     is_admin: bool | None = None
-    authentik_id: str | None = None
+    password_reset_token: str | None = None
+    password_reset_token_expires_at: datetime | None = None
+    email_verification_token_expires_at: datetime | None = None
+    failed_login_attempts: int | None = None
+    locked_until: datetime | None = None
+    github_id: str | None = None
     username: str | None = None
     roles: dict[str, Any] | list[Any] | None = None
     is_active: bool | None = None
