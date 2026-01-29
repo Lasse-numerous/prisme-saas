@@ -1,6 +1,23 @@
 # CHANGELOG
 
 
+## v0.15.3 (2026-01-29)
+
+### Bug Fixes
+
+- Add missing migrations, migration drift detection in CI and pre-push
+  ([`09e73bf`](https://github.com/Lasse-numerous/prisme-saas/commit/09e73bf41c2c0b7d835860f70a4461f1fffa8fbd))
+
+- Add initial schema migration (20260126000000) so migrations can run from scratch - Add missing
+  migration for user password reset and account lockout fields - Add cleanup migration to drop
+  removed authentik_id and convert status to enum - Add migration-check CI job that runs alembic
+  check against fresh postgres - Add pre-push hook using throwaway Docker postgres for local drift
+  detection - Improve deploy workflow with explicit migration error handling - Fix alembic env.py to
+  ignore DateTime timezone false positives from Prism codegen
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+
 ## v0.15.2 (2026-01-29)
 
 ### Bug Fixes
