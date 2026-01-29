@@ -64,7 +64,40 @@ async def db(engine) -> AsyncGenerator[AsyncSession]:
 
 @pytest_asyncio.fixture
 async def client(db):
-    """Create test client with database session."""
+    """Create test client with database session and auth bypass."""
+    from httpx import ASGITransport, AsyncClient
+
+    from prisme_api.auth.dependencies import get_current_active_user
+    from prisme_api.database import get_db
+    from prisme_api.main import app
+    from prisme_api.models.user import User
+
+    async def override_get_db():
+        yield db
+
+    async def override_get_current_active_user():
+        return User(
+            id=1,
+            email="test@example.com",
+            is_active=True,
+            email_verified=True,
+            subdomain_limit=10,
+            roles=["admin"],
+        )
+
+    app.dependency_overrides[get_db] = override_get_db
+    app.dependency_overrides[get_current_active_user] = override_get_current_active_user
+
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        yield client
+
+    app.dependency_overrides.clear()
+
+
+@pytest_asyncio.fixture
+async def unauthenticated_client(db):
+    """Create test client without auth override (requests will be unauthenticated)."""
     from httpx import ASGITransport, AsyncClient
 
     from prisme_api.database import get_db
