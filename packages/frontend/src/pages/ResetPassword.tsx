@@ -85,6 +85,7 @@ export default function ResetPassword(): JSX.Element {
               <input
                 type="password"
                 id="password"
+                autoComplete="new-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -101,6 +102,7 @@ export default function ResetPassword(): JSX.Element {
               <input
                 type="password"
                 id="confirmPassword"
+                autoComplete="new-password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
