@@ -28,6 +28,7 @@ services:
       - "com.prism.workspace.name=${WORKSPACE_NAME}"
       # Traefik routing - Frontend (port 5173)
       - "traefik.enable=true"
+      - "traefik.docker.network=prism_proxy_network"
       - "traefik.http.routers.${WORKSPACE_NAME}-frontend.rule=Host(`${WORKSPACE_NAME}.localhost`)"
       - "traefik.http.routers.${WORKSPACE_NAME}-frontend.priority=1"
       - "traefik.http.services.${WORKSPACE_NAME}-frontend.loadbalancer.server.port=5173"
