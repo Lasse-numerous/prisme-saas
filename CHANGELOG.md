@@ -1,6 +1,34 @@
 # CHANGELOG
 
 
+## v0.15.2 (2026-01-29)
+
+### Bug Fixes
+
+- Add missing pyotp and resend deps to backend pyproject.toml
+  ([`664f670`](https://github.com/Lasse-numerous/prisme-saas/commit/664f6709c204b3be03616c4a6fa206e962b6dce9))
+
+These were in the root pyproject.toml but missing from the backend package, causing silent
+  ImportError in Docker builds that prevented all REST API routes from registering.
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+### Chores
+
+- Add prism CLI and spec skills, streamline CLAUDE.md
+  ([`5d820bc`](https://github.com/Lasse-numerous/prisme-saas/commit/5d820bc9966954662044e27197c6843f977f4a73))
+
+Copy prism-cli and generate-prism-spec skills from the framework repo and refactor CLAUDE.md to
+  reference them instead of duplicating content.
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+- Update uv.lock for new backend dependencies
+  ([`b161e31`](https://github.com/Lasse-numerous/prisme-saas/commit/b161e31b37275c6a29c225f0bf5fc0b81ab034a4))
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+
 ## v0.15.1 (2026-01-29)
 
 ### Bug Fixes
