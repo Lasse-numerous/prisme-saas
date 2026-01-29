@@ -1,6 +1,58 @@
 # CHANGELOG
 
 
+## v0.15.0 (2026-01-29)
+
+### Bug Fixes
+
+- **tests**: Add auth fixtures and fix integration tests
+  ([`e39f64e`](https://github.com/Lasse-numerous/prisme-saas/commit/e39f64e484fea6b10eebe477e636e192989e1aa9))
+
+- Add auth bypass (get_current_active_user override) to test client fixture - Add
+  unauthenticated_client fixture for auth requirement tests - Set email_verified and subdomain_limit
+  on test user - Skip generated subdomain create/update tests (custom router uses /claim) - Fix
+  release idempotency assertion for admin users
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+### Chores
+
+- Regenerate after removing future annotations from all graphql templates
+  ([`6fc772e`](https://github.com/Lasse-numerous/prisme-saas/commit/6fc772e757acdfb931de7fd74b308777c28b461c))
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+- Regenerate after removing future annotations from graphql schema
+  ([`bac121a`](https://github.com/Lasse-numerous/prisme-saas/commit/bac121ac023d22f6663845afbd5c37c9cc9128c2))
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+- Regenerate from updated prism framework
+  ([`281be74`](https://github.com/Lasse-numerous/prisme-saas/commit/281be7440cdb8de0b73138c0bd79107b89a6ff72))
+
+Regenerated all code after prism fix for mutable defaults in strawberry input types (default_factory
+  for list/dict fields).
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+### Features
+
+- **auth**: Switch spec to JWT preset and regenerate
+  ([`379263b`](https://github.com/Lasse-numerous/prisme-saas/commit/379263b6fac52ad739724328b74a6af5a56e9ea1))
+
+Update spec from preset="custom" to preset="jwt" with full auth features: email verification,
+  password reset, MFA/TOTP, account lockout, signup, Resend email, and GitHub OAuth.
+
+Regenerate all backend and frontend code from updated spec. Remove Authentik remnants
+  (flow_executor, oidc, webhooks, auth_flow schema). Custom auth routes preserved via GENERATE_ONCE
+  strategy.
+
+Also exclude .prism/ from ruff and ignore B027 in generated service base (lifecycle hooks are
+  intentionally empty for subclass override).
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+
 ## v0.14.0 (2026-01-28)
 
 ### Chores
