@@ -1,6 +1,21 @@
 # CHANGELOG
 
 
+## v0.15.1 (2026-01-29)
+
+### Bug Fixes
+
+- **frontend**: Resolve TypeScript build errors
+  ([`c5810de`](https://github.com/Lasse-numerous/prisme-saas/commit/c5810de8a597dbf835c8cce044a128e3157a488a))
+
+- Fix import paths in auth pages (../../ → ../ for contexts and lib) - Add lucide-react dependency
+  for Icon component - Import Loader2/Minus/Check/X locally in Icon.tsx (re-export doesn't bind) -
+  Extract useTheme hook from ThemeToggle component - Cast FieldError.message to string in FormBase
+  components - Remove invalid string comparison for numeric userId field
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+
 ## v0.15.0 (2026-01-29)
 
 ### Bug Fixes
