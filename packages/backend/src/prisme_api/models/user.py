@@ -34,13 +34,13 @@ class User(Base, TimestampMixin, SoftDeleteMixin):
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
     password_reset_token: Mapped[str | None] = mapped_column(String(255), nullable=True)
     password_reset_token_expires_at: Mapped[datetime | None] = mapped_column(
-        DateTime, nullable=True
+        DateTime(timezone=True), nullable=True
     )
     email_verification_token_expires_at: Mapped[datetime | None] = mapped_column(
-        DateTime, nullable=True
+        DateTime(timezone=True), nullable=True
     )
     failed_login_attempts: Mapped[int] = mapped_column(Integer, default=0)
-    locked_until: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    locked_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     github_id: Mapped[str | None] = mapped_column(
         String(255), unique=True, index=True, nullable=True
     )
