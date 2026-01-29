@@ -1,6 +1,70 @@
 # CHANGELOG
 
 
+## v0.16.0 (2026-01-29)
+
+### Bug Fixes
+
+- Add explicit Traefik router-to-service mapping for devcontainer
+  ([`42778c6`](https://github.com/Lasse-numerous/prisme-saas/commit/42778c6ca399107176bf2994a43a14b39e0ff572))
+
+Traefik errored with "too many services" because a single container defines both frontend and API
+  services without explicitly linking each router to its service.
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+### Chores
+
+- Add traefik docker network label to devcontainer
+  ([`019de3a`](https://github.com/Lasse-numerous/prisme-saas/commit/019de3a8b9148c17b46901f1a105723c074f4a53))
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+- Gitignore pnpm-store and pnpm-lock.yaml
+  ([`4a8f15e`](https://github.com/Lasse-numerous/prisme-saas/commit/4a8f15e0f924e037daa3879cc8899b691b23d179))
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+- Regenerate with updated prism framework (auth test generators)
+  ([`3e61f59`](https://github.com/Lasse-numerous/prisme-saas/commit/3e61f59fb03819d1717f8542339af25c4fa1b1d7))
+
+Regenerated all code with the updated Prism framework that now includes auth test generators.
+  Preserved custom overrides (alembic env.py, AuthContext public page skip, subdomain test skip
+  markers).
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+- Update lockfiles
+  ([`a6b29ba`](https://github.com/Lasse-numerous/prisme-saas/commit/a6b29baf4c46e782efceb0967974054f3f8d48c1))
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+### Features
+
+- Add Playwright auto-start script and isolated browser sessions
+  ([`373b607`](https://github.com/Lasse-numerous/prisme-saas/commit/373b607d1dcd2cb83f880280bb82d437823d7c63))
+
+- Add scripts/ensure-devcontainer.sh that checks if dev servers are running, starts the devcontainer
+  and dev servers if not, and waits for readiness - Update playwright.config.ts to use the new
+  script as webServer command - Configure Playwright MCP with --isolated flag to start each session
+  with a fresh browser profile (no cached responses)
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+### Testing
+
+- Add comprehensive auth test coverage for backend and frontend
+  ([`14f2ef6`](https://github.com/Lasse-numerous/prisme-saas/commit/14f2ef695ae1383ee36b26fad32d14a0c3251c62))
+
+Backend (pytest): 49 tests covering auth utils, JWT dependencies, and integration tests for signup,
+  login, email verification, password reset, MFA setup/login, and session management.
+
+Frontend (vitest): 28 tests covering authApi client, AuthContext provider, LoginForm, SignupForm,
+  and ProtectedRoute components. Adds vitest, testing-library, jsdom, and msw as dev dependencies.
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+
 ## v0.15.6 (2026-01-29)
 
 ### Bug Fixes
