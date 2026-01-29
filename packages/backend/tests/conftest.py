@@ -113,3 +113,47 @@ async def unauthenticated_client(db):
         yield client
 
     app.dependency_overrides.clear()
+
+
+@pytest_asyncio.fixture
+async def authenticated_client(db):
+    """Client with a real persisted user for authenticated endpoint tests."""
+    import uuid
+
+    from httpx import ASGITransport, AsyncClient
+
+    from prisme_api.auth.dependencies import get_current_active_user
+    from prisme_api.auth.utils import hash_password
+    from prisme_api.database import get_db
+    from prisme_api.main import app
+    from prisme_api.models.user import User
+
+    unique = uuid.uuid4().hex[:8]
+    user = User(
+        email=f"authuser-{unique}@example.com",
+        username=f"authuser-{unique}",
+        password_hash=hash_password("StrongPass1"),
+        email_verified=True,
+        is_active=True,
+        roles=["admin"],
+        failed_login_attempts=0,
+    )
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+
+    async def override_get_db():
+        yield db
+
+    async def override_get_current_active_user():
+        await db.refresh(user)
+        return user
+
+    app.dependency_overrides[get_db] = override_get_db
+    app.dependency_overrides[get_current_active_user] = override_get_current_active_user
+
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        yield client
+
+    app.dependency_overrides.clear()

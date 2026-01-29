@@ -1,8 +1,8 @@
 # Code Override Log
 
-**Last Updated**: 2026-01-29T08:51:52.315510
+**Last Updated**: 2026-01-29T22:25:35.218110
 
-**Unreviewed Overrides**: 6
+**Unreviewed Overrides**: 7
 
 
 ---
@@ -13,7 +13,7 @@
 **Strategy**: merge
 **Status**: Not Reviewed
 **Changes**: +5 lines, -4 lines, ~93 lines
-**Last Modified**: 2026-01-29T08:51:52.315482
+**Last Modified**: 2026-01-29T22:25:35.218086
 
 ### What Changed
 
@@ -246,12 +246,38 @@
 ---
 
 
+## ⚠️ packages/frontend/src/ui/Icon.tsx
+
+**Strategy**: generate_once
+**Status**: Not Reviewed
+**Changes**: +0 lines, -0 lines, ~0 lines
+**Last Modified**: 2026-01-29T22:25:34.925924
+
+### What Changed
+
+<details>
+<summary>Show Diff</summary>
+
+*Diff not available (run generation again to regenerate)*
+
+
+</details>
+
+### Actions
+
+- Review your custom code to ensure it's still compatible
+- Run `prism test` to verify functionality
+- Run `prism review mark-reviewed packages/frontend/src/ui/Icon.tsx` when done
+
+---
+
+
 ## ⚠️ packages/backend/src/prisme_api/api/rest/subdomain.py
 
 **Strategy**: generate_once
 **Status**: Not Reviewed
 **Changes**: +0 lines, -0 lines, ~560 lines
-**Last Modified**: 2026-01-29T08:51:51.775624
+**Last Modified**: 2026-01-29T22:25:34.638196
 
 ### What Changed
 
@@ -864,7 +890,7 @@
 **Strategy**: generate_once
 **Status**: Not Reviewed
 **Changes**: +4 lines, -0 lines, ~178 lines
-**Last Modified**: 2026-01-29T08:51:51.770556
+**Last Modified**: 2026-01-29T22:25:34.631705
 
 ### What Changed
 
@@ -1098,7 +1124,7 @@
 **Strategy**: generate_once
 **Status**: Not Reviewed
 **Changes**: +0 lines, -0 lines, ~8 lines
-**Last Modified**: 2026-01-29T08:51:51.764702
+**Last Modified**: 2026-01-29T22:25:34.624310
 
 ### What Changed
 
@@ -1145,7 +1171,7 @@
 **Strategy**: generate_once
 **Status**: Not Reviewed
 **Changes**: +95 lines, -11 lines, ~57 lines
-**Last Modified**: 2026-01-29T08:51:51.722779
+**Last Modified**: 2026-01-29T22:25:34.583449
 
 ### What Changed
 
@@ -1566,7 +1592,7 @@
 **Strategy**: generate_once
 **Status**: Not Reviewed
 **Changes**: +4 lines, -0 lines, ~20 lines
-**Last Modified**: 2026-01-29T08:51:51.676870
+**Last Modified**: 2026-01-29T22:25:34.541321
 
 ### What Changed
 

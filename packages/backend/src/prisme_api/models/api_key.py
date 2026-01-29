@@ -27,8 +27,8 @@ class APIKey(Base, TimestampMixin):
     key_hash: Mapped[str] = mapped_column(String(255), index=True)
     key_prefix: Mapped[str] = mapped_column(String(20))
     name: Mapped[str] = mapped_column(String(100))
-    last_used_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
-    expires_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    last_used_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
     # Relationships

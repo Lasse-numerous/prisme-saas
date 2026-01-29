@@ -35,8 +35,10 @@ class Subdomain(Base, TimestampMixin):
     )
     dns_record_id: Mapped[str | None] = mapped_column(String(50), nullable=True)
     port: Mapped[int] = mapped_column(Integer, default=80)
-    released_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
-    cooldown_until: Mapped[datetime | None] = mapped_column(DateTime, index=True, nullable=True)
+    released_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    cooldown_until: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), index=True, nullable=True
+    )
 
     # Relationships
     owner: Mapped[User | None] = relationship("User", back_populates="subdomains")
