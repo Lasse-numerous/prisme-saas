@@ -73,6 +73,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     const initAuth = async () => {
+      // Skip auth check on public pages to avoid unnecessary 401 responses
+      const publicPaths = ['/login', '/signup', '/forgot-password', '/reset-password'];
+      if (publicPaths.some((p) => window.location.pathname.startsWith(p))) {
+        setIsLoading(false);
+        return;
+      }
+
       setIsLoading(true);
       const userData = await fetchUser();
       setUser(userData);
