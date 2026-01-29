@@ -1,10 +1,10 @@
 {
-  "last_updated": "2026-01-29T08:36:49.187174",
+  "last_updated": "2026-01-29T08:43:06.920898",
   "overrides": [
     {
       "path": "packages/backend/src/prisme_api/services/subdomain.py",
       "strategy": "generate_once",
-      "timestamp": "2026-01-29T08:36:48.451432",
+      "timestamp": "2026-01-29T08:43:05.945494",
       "generated_hash": "016540a92fa7559150db284329aabc6378e80abff53d11dabf09ef37710d5d08",
       "user_hash": "3a6109cd0df0dfc973e3f82e5ec74156288952668477081f9baea83560a48b3e",
       "reviewed": false,
@@ -17,7 +17,7 @@
     {
       "path": "packages/backend/src/prisme_api/api/rest/subdomain.py",
       "strategy": "generate_once",
-      "timestamp": "2026-01-29T08:36:48.598475",
+      "timestamp": "2026-01-29T08:43:06.108485",
       "generated_hash": "d24cbccb9f97b79688822c128d6a4590ecc599a0fa4beaaa7a83bb51793088ee",
       "user_hash": "d0bfe192b4bfa0c9f5334e6d609a1c9aea71d82d593d0393dcd6782f81b791e7",
       "reviewed": false,
@@ -30,7 +30,7 @@
     {
       "path": "packages/backend/src/prisme_api/api/rest/auth.py",
       "strategy": "generate_once",
-      "timestamp": "2026-01-29T08:36:48.533204",
+      "timestamp": "2026-01-29T08:43:06.014577",
       "generated_hash": "bab3326599eed2386278faada837c6e2c2375c9f2d4b190c68908ab9218a1103",
       "user_hash": "aeeef336d98cf3471066e033c6f5c215ba06d49638d70b83a9cb3413ad0cd2d2",
       "reviewed": false,
@@ -43,7 +43,7 @@
     {
       "path": "packages/backend/src/prisme_api/api/rest/user.py",
       "strategy": "generate_once",
-      "timestamp": "2026-01-29T08:36:48.586426",
+      "timestamp": "2026-01-29T08:43:06.087152",
       "generated_hash": "45cb16390c8d02245c8a2a0270be89def50838d8bcd3f2baef29bad8400abc72",
       "user_hash": "4ed3b9d6787ad4650582914e3d4217b1c7c3dfddef9c133eb942888356c86a76",
       "reviewed": false,
@@ -56,7 +56,7 @@
     {
       "path": "packages/backend/src/prisme_api/api/rest/api_key.py",
       "strategy": "generate_once",
-      "timestamp": "2026-01-29T08:36:48.592331",
+      "timestamp": "2026-01-29T08:43:06.097061",
       "generated_hash": "cf21d7f1e4d6cc53f761ac7fe1f5a967034c7f055d85325da73ada93c0891808",
       "user_hash": "6de5564890a50e485021623b343cfec5e244a88dd03f694912e20fc7cd85d004",
       "reviewed": false,
@@ -69,7 +69,7 @@
     {
       "path": "packages/frontend/src/router.tsx",
       "strategy": "merge",
-      "timestamp": "2026-01-29T08:36:49.187150",
+      "timestamp": "2026-01-29T08:43:06.919218",
       "generated_hash": "5feb678c1ca3b5ac1b06ca6ea05ada455961c8f7f661957c179f7950b11bb475",
       "user_hash": "94262ef7e8ded6f6bde62ecb701e7d1427ec0cbff860ba7f5fcfeef14c775bb9",
       "reviewed": false,

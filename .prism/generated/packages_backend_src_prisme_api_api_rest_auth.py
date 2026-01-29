@@ -19,7 +19,6 @@ from fastapi.responses import RedirectResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from prisme_api.auth.config import auth_settings
 from prisme_api.auth.password_service import (
     generate_token,
     hash_password,
@@ -27,31 +26,32 @@ from prisme_api.auth.password_service import (
     verify_password,
 )
 from prisme_api.auth.token_service import create_session_jwt
-from prisme_api.auth.totp_service import (
-    generate_totp_secret,
-    get_totp_uri,
-    verify_totp,
-)
+from prisme_api.auth.config import auth_settings
 from prisme_api.database import get_db
 from prisme_api.middleware.auth import CurrentActiveUser
 from prisme_api.models.user import User
 from prisme_api.schemas.auth import (
-    ForgotPasswordRequest,
-    LoginMFARequest,
     LoginRequest,
     LoginResponse,
+    UserResponse,
+    LoginMFARequest,
     MFADisableRequest,
     MFASetupResponse,
     MFAVerifySetupRequest,
     ResendVerificationRequest,
-    ResetPasswordRequest,
-    UserResponse,
     VerifyEmailRequest,
+    ForgotPasswordRequest,
+    ResetPasswordRequest,
 )
 from prisme_api.services.email_service import (
+    send_verification_email,
     send_password_changed_notification,
     send_password_reset_email,
-    send_verification_email,
+)
+from prisme_api.auth.totp_service import (
+    generate_totp_secret,
+    get_totp_uri,
+    verify_totp,
 )
 
 logger = logging.getLogger(__name__)
@@ -117,12 +117,15 @@ async def signup(
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> dict[str, str]:
     """Create a new user account and send verification email."""
+    from prisme_api.schemas.auth import SignupRequest
 
     pw_error = validate_password_strength(body.password)
     if pw_error:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=pw_error)
 
-    result = await db.execute(select(User).where(User.email == body.email))
+    result = await db.execute(
+        select(User).where(User.email == body.email)
+    )
     if result.scalar_one_or_none():
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -136,7 +139,8 @@ async def signup(
         password_hash=hash_password(body.password),
         email_verified=False,
         email_verification_token=token,
-        email_verification_token_expires_at=datetime.now(UTC) + timedelta(hours=24),
+        email_verification_token_expires_at=datetime.now(UTC)
+        + timedelta(hours=24),
         roles=["user"],
         is_active=True,
     )
@@ -157,7 +161,9 @@ async def verify_email(
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> dict:
     """Verify email address and auto-login."""
-    result = await db.execute(select(User).where(User.email_verification_token == body.token))
+    result = await db.execute(
+        select(User).where(User.email_verification_token == body.token)
+    )
     user = result.scalar_one_or_none()
 
     if not user:
@@ -193,13 +199,17 @@ async def resend_verification(
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> dict[str, str]:
     """Resend verification email. Always returns 200 to prevent email enumeration."""
-    result = await db.execute(select(User).where(User.email == body.email))
+    result = await db.execute(
+        select(User).where(User.email == body.email)
+    )
     user = result.scalar_one_or_none()
 
     if user and not user.email_verified:
         token = generate_token()
         user.email_verification_token = token
-        user.email_verification_token_expires_at = datetime.now(UTC) + timedelta(hours=24)
+        user.email_verification_token_expires_at = datetime.now(UTC) + timedelta(
+            hours=24
+        )
         await db.commit()
         send_verification_email(body.email, token)
 
@@ -216,7 +226,9 @@ async def login(
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> LoginResponse:
     """Login with email and password."""
-    result = await db.execute(select(User).where(User.email == body.email))
+    result = await db.execute(
+        select(User).where(User.email == body.email)
+    )
     user = result.scalar_one_or_none()
 
     if not user or not user.password_hash:
@@ -272,7 +284,9 @@ async def login_mfa(
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> LoginResponse:
     """Complete MFA login with TOTP code."""
-    result = await db.execute(select(User).where(User.email == body.email))
+    result = await db.execute(
+        select(User).where(User.email == body.email)
+    )
     user = result.scalar_one_or_none()
 
     if not user or not user.mfa_secret:
@@ -311,13 +325,17 @@ async def forgot_password(
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> dict[str, str]:
     """Send password reset email. Always returns 200 to prevent email enumeration."""
-    result = await db.execute(select(User).where(User.email == body.email))
+    result = await db.execute(
+        select(User).where(User.email == body.email)
+    )
     user = result.scalar_one_or_none()
 
     if user:
         token = generate_token()
         user.password_reset_token = token
-        user.password_reset_token_expires_at = datetime.now(UTC) + timedelta(hours=1)
+        user.password_reset_token_expires_at = datetime.now(UTC) + timedelta(
+            hours=1
+        )
         await db.commit()
         send_password_reset_email(body.email, token)
 
@@ -335,7 +353,9 @@ async def reset_password(
     if pw_error:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=pw_error)
 
-    result = await db.execute(select(User).where(User.password_reset_token == body.token))
+    result = await db.execute(
+        select(User).where(User.password_reset_token == body.token)
+    )
     user = result.scalar_one_or_none()
 
     if not user:
@@ -344,8 +364,9 @@ async def reset_password(
             detail="Invalid or expired reset token.",
         )
 
-    if user.password_reset_token_expires_at and user.password_reset_token_expires_at < datetime.now(
-        UTC
+    if (
+        user.password_reset_token_expires_at
+        and user.password_reset_token_expires_at < datetime.now(UTC)
     ):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
