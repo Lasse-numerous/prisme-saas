@@ -1,6 +1,24 @@
 # CHANGELOG
 
 
+## v0.15.4 (2026-01-29)
+
+### Bug Fixes
+
+- **frontend**: Replace vite.svg favicon, add autocomplete to password inputs
+  ([`0b1e042`](https://github.com/Lasse-numerous/prisme-saas/commit/0b1e042f17b69db32516975e993489af84b35131))
+
+- Replace default vite.svg reference with project favicon - Add autocomplete="current-password" on
+  login form - Add autocomplete="new-password" on signup and reset password forms
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+- **frontend**: Skip /auth/me call on public pages to avoid 401 in console
+  ([`f59a97b`](https://github.com/Lasse-numerous/prisme-saas/commit/f59a97b98c4042093f5b358ddd0a468c661183d6))
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+
 ## v0.15.3 (2026-01-29)
 
 ### Bug Fixes
