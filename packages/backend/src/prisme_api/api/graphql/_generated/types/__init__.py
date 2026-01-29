@@ -1,7 +1,5 @@
 """Generated GraphQL types."""
 
-from __future__ import annotations
-
 from .allowed_email_domain import (
     AllowedEmailDomainInput,
     AllowedEmailDomainType,
