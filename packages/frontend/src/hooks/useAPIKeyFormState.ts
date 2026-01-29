@@ -139,7 +139,7 @@ export type UseAPIKeyFormStateResult = APIKeyFormState & APIKeyFormActions;
  */
 function defaultValidate(values: Partial<APIKeyFormValues>): APIKeyFormErrors {
   const errors: APIKeyFormErrors = {};  // user_id is required
-  if (values.userId === undefined || values.userId === null || values.userId === '') {
+  if (values.userId === undefined || values.userId === null) {
     errors.userId = 'User Id is required';
   }  // key_prefix is required
   if (values.keyPrefix === undefined || values.keyPrefix === null || values.keyPrefix === '') {

@@ -6,8 +6,8 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
-import { verifyEmail } from '../../lib/authApi';
+import { useAuth } from '../contexts/AuthContext';
+import { verifyEmail } from '../lib/authApi';
 
 export default function VerifyEmail(): JSX.Element {
   const navigate = useNavigate();

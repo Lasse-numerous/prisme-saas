@@ -8,6 +8,7 @@
 
 import { type ReactElement, type ComponentType } from 'react';
 import type { LucideProps } from 'lucide-react';
+import { Loader2, Minus, Check, X } from 'lucide-react';
 
 // Re-export commonly used icons for convenience
 export {

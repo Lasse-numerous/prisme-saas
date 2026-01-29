@@ -6,8 +6,8 @@
 
 import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
-import { resetPassword } from '../../lib/authApi';
+import { useAuth } from '../contexts/AuthContext';
+import { resetPassword } from '../lib/authApi';
 
 export default function ResetPassword(): JSX.Element {
   const navigate = useNavigate();

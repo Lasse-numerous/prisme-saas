@@ -77,7 +77,7 @@ export function APIKeyFormBase({
                 placeholder={field.placeholder}
                 required={field.required}
                 disabled={loading}
-                error={errors[field.name as keyof APIKeyCreate]?.message}
+                error={errors[field.name as keyof APIKeyCreate]?.message as string | undefined}
                 options={field.enumValues}
                 references={field.references}
                 {...field.widgetProps}

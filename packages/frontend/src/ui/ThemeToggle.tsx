@@ -12,7 +12,7 @@ interface ThemeToggleProps {
   size?: 'sm' | 'md' | 'lg';
 }
 
-export function ThemeToggle({ size = 'md' }: ThemeToggleProps) {
+export function useTheme() {
   const [theme, setTheme] = useState<Theme>(() => {
     if (typeof window !== 'undefined') {
       return (localStorage.getItem('theme') as Theme) || 'system';
@@ -24,8 +24,8 @@ export function ThemeToggle({ size = 'md' }: ThemeToggleProps) {
     const root = document.documentElement;
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
-    const applyTheme = (theme: Theme) => {
-      if (theme === 'dark' || (theme === 'system' && mediaQuery.matches)) {
+    const applyTheme = (t: Theme) => {
+      if (t === 'dark' || (t === 'system' && mediaQuery.matches)) {
         root.classList.add('dark');
       } else {
         root.classList.remove('dark');
@@ -52,6 +52,12 @@ export function ThemeToggle({ size = 'md' }: ThemeToggleProps) {
       return 'light';
     });
   };
+
+  return { theme, setTheme, toggleTheme };
+}
+
+export function ThemeToggle({ size = 'md' }: ThemeToggleProps) {
+  const { theme, toggleTheme } = useTheme();
 
   const sizeClasses = {
     sm: 'w-6 h-6',
