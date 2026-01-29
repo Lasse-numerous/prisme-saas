@@ -1,6 +1,26 @@
 # CHANGELOG
 
 
+## v0.15.5 (2026-01-29)
+
+### Bug Fixes
+
+- Replace passlib with bcrypt directly for Python 3.13 compatibility
+  ([`4024aa4`](https://github.com/Lasse-numerous/prisme-saas/commit/4024aa4a5ba13fbab481fb831002339f69264764))
+
+passlib is unmaintained and incompatible with bcrypt 4.1+ on Python 3.13, causing 500 errors on
+  signup.
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+### Chores
+
+- Update lockfiles after passlib removal
+  ([`9472f6d`](https://github.com/Lasse-numerous/prisme-saas/commit/9472f6d963404586d410e03b71045e1284677250))
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+
 ## v0.15.4 (2026-01-29)
 
 ### Bug Fixes
