@@ -30,6 +30,8 @@ services:
       - GITHUB_REDIRECT_URI=${GITHUB_REDIRECT_URI}
       # MCP Server
       - MCP_ADMIN_API_KEY=${MCP_ADMIN_API_KEY}
+      # Email
+      - RESEND_API_KEY=${RESEND_API_KEY}
     depends_on:
       db:
         condition: service_healthy
