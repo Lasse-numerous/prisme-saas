@@ -20,9 +20,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Install uv (fast Python package manager)
 RUN pip install --no-cache-dir uv
 
-# Install Claude Code
-RUN npm install -g @anthropic-ai/claude-code
-
 # Install prism CLI
 RUN pip install --no-cache-dir prisme
 

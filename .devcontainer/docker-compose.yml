@@ -10,9 +10,7 @@ services:
     container_name: ${WORKSPACE_NAME}-app
     volumes:
       - ..:/workspace:cached
-      - venv:/workspace/.venv
-      - node-modules:/workspace/packages/frontend/node_modules
-      - prism-claude-config:/home/vscode/.claude
+      - persist:/persist
     environment:
       - WORKSPACE_NAME=${WORKSPACE_NAME}
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/${DATABASE_NAME}
@@ -59,15 +57,10 @@ services:
       - default
 
 volumes:
-  venv:
-    name: ${WORKSPACE_NAME}-venv
-  node-modules:
-    name: ${WORKSPACE_NAME}-node-modules
+  persist:
+    name: ${WORKSPACE_NAME}-persist
   pgdata:
     name: ${WORKSPACE_NAME}-pgdata
-  prism-claude-config:
-    name: prism-claude-config
-    external: true
 
 networks:
   prism_proxy_network:

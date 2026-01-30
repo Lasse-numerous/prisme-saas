@@ -3,6 +3,12 @@ set -e
 
 echo "Setting up workspace: ${WORKSPACE_NAME}"
 
+# Set up persist volume symlinks
+mkdir -p /persist/venv
+ln -sfn /persist/venv /workspace/.venv
+mkdir -p /persist/node_modules
+ln -sfn /persist/node_modules /workspace/packages/frontend/node_modules
+
 # Backend setup
 if [ -f "pyproject.toml" ]; then
     echo "Installing Python dependencies..."
@@ -25,5 +31,4 @@ fi
 echo ""
 echo "Workspace ready!"
 echo "  URL: http://${WORKSPACE_NAME}.localhost"
-echo "  Run 'claude' to start Claude Code"
 echo ""
