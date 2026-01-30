@@ -1,6 +1,19 @@
 # CHANGELOG
 
 
+## v0.16.2 (2026-01-30)
+
+### Bug Fixes
+
+- Increase devcontainer frontend Traefik router priority
+  ([`c535989`](https://github.com/Lasse-numerous/prisme-saas/commit/c53598937e0cf78722231dbd7e946d7570ada369))
+
+Priority 1 tied with the catchall error-pages router, causing the error page to be served instead of
+  the frontend.
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+
 ## v0.16.1 (2026-01-30)
 
 ### Bug Fixes
