@@ -1,6 +1,32 @@
 # CHANGELOG
 
 
+## v0.16.1 (2026-01-30)
+
+### Bug Fixes
+
+- Pass RESEND_API_KEY to backend container in staging compose
+  ([`6d30c38`](https://github.com/Lasse-numerous/prisme-saas/commit/6d30c38a40147291a198ef8daa55fccb0120dd1c))
+
+The environment variable was in .env but never injected into the backend service, causing email
+  sends to fail with "API key is invalid".
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+- Sync package-lock.json with test dependencies
+  ([`540bc60`](https://github.com/Lasse-numerous/prisme-saas/commit/540bc6047311c4048bce55f903e777b911503595))
+
+npm ci in the Docker build was failing because test deps (Playwright, Vitest, Testing Library, MSW,
+  jsdom) were missing from the lock file.
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+### Chores
+
+- Update uv.lock
+  ([`f19edcb`](https://github.com/Lasse-numerous/prisme-saas/commit/f19edcb19ce15a4f3d5c9e53a70e4fc5d07459d0))
+
+
 ## v0.16.0 (2026-01-29)
 
 ### Bug Fixes
