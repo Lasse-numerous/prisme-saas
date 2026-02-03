@@ -127,7 +127,7 @@ jobs:
 
       - name: Upload deploy config
         if: (github.event.inputs.action == 'apply' || github.event_name == 'workflow_run') && steps.outputs.outputs.server_ip != ''
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: deploy-config
           path: ${{ github.workspace }}/deploy-config/
